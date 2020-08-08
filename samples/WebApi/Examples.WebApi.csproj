@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+	<LangVersion>8.0</LangVersion>
+	<AssemblyName>Examples.WebApi</AssemblyName>
+	<RootNamespace>AK.DomainResults.Examples.WebApi</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Configuration\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.5.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Mvc\DomainResults.Mvc.csproj" />
+    <ProjectReference Include="..\Domain\Examples.Domain.csproj" />
+  </ItemGroup>
+
+
+</Project>
