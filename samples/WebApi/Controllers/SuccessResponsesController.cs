@@ -35,12 +35,17 @@ namespace AK.DomainResults.Examples.WebApi.Controllers
 			return _service.GetSuccessWithNumericValueTask().ToActionResultTask();
 		}
 
-		[HttpGet]
-		public IActionResult GetSuccess2()
+		[HttpGet("[action]")]
+		public IActionResult Get200OkTupleWithNumber()
 		{
 			var (res, error) = _service.GetSuccessWithNumericValueTuple();
-
 			return (res, error).ToActionResult();
+		}
+
+		[HttpGet("[action]")]
+		public Task<IActionResult> Get200OkTupleWithNumberTask()
+		{
+			return _service.GetSuccessWithNumericValueTupleTask().ToActionResult();
 		}
 	}
 }

@@ -2,14 +2,16 @@
 
 namespace AK.DomainResults.Domain
 {
-	public interface IDomainResult
+	public interface IDomainResultBase
 	{
 		IReadOnlyCollection<string> Errors { get; }
 		bool IsSuccess { get; }
 		DomainOperationStatus Status { get; }
 	}
 
-	public interface IDomainResult<TValue> : IDomainResult
+	public interface IDomainResult: IDomainResultBase	{}
+
+	public interface IDomainResult<TValue> : IDomainResultBase
 	{
 		TValue Value { get; }
 	}

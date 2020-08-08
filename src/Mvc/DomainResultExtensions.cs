@@ -49,9 +49,8 @@ namespace AK.DomainResults.Mvc
 		/// <typeparam name="V"> The value type returned in a successful response </typeparam>
 		/// <param name="domainResult"> Details of the operation results </param>
 		/// <param name="errorAction"> Optional processing in case of an error </param>
-		public static ActionResult ToActionResult<T, V>(this T domainResult,
-														Action<ProblemDetails, T> errorAction = null)
-														where T : IDomainResult<V>
+		public static ActionResult ToActionResult<T>(this IDomainResult<T> domainResult,
+													 Action<ProblemDetails, IDomainResult<T>> errorAction = null)
 			=> ToActionResult(domainResult.Value, domainResult, errorAction, (value) => new OkObjectResult(value));
 
 		/// <summary>
@@ -61,9 +60,8 @@ namespace AK.DomainResults.Mvc
 		/// <typeparam name="V"> The value type returned in a successful response </typeparam>
 		/// <param name="domainResultTask"> A task with details of the operation results </param>
 		/// <param name="errorAction"> Optional processing in case of an error </param>
-		public static async Task<IActionResult> ToActionResultTask<T, V>(this Task<T> domainResultTask,
-																		 Action<ProblemDetails, T> errorAction = null)
-																		 where T : IDomainResult<V>
+		public static async Task<IActionResult> ToActionResultTask<T>(this Task<IDomainResult<T>> domainResultTask,
+																	  Action<ProblemDetails, IDomainResult<T>> errorAction = null)
 		{
 			var domainResult = await domainResultTask;
 			return ToActionResult(domainResult.Value, domainResult, errorAction, (value) => new OkObjectResult(value));
@@ -112,14 +110,14 @@ namespace AK.DomainResults.Mvc
 		private static ActionResult ToActionResult<V, R>((V, R) domainResult,
 														Action<ProblemDetails, R> errorAction,
 														Func<V, ActionResult> valueToActionResultFunc)
-														where R : IDomainResult
+														where R : IDomainResultBase
 			=> ToActionResult(domainResult.Item1, domainResult.Item2, errorAction, valueToActionResultFunc);
 
 		private static ActionResult ToActionResult<V, R>(V value,
 														R errorDetails,
 														Action<ProblemDetails, R> errorAction,
 														Func<V, ActionResult> valueToActionResultFunc)
-														where R : IDomainResult
+														where R : IDomainResultBase
 			=> errorDetails.Status switch
 			{
 				DomainOperationStatus.NotFound => SadResponse(404, "Not Found", errorDetails, errorAction),
@@ -137,7 +135,7 @@ namespace AK.DomainResults.Mvc
 		///		Alternatively can simply return <seealso cref="NotFoundResult"/> or <seealso cref="BadRequestObjectResult"/> without a JSON
 		/// </remarks>
 		/// <param name="messages"> A list of messages clarifying what's not found </param>
-		private static ObjectResult SadResponse<R>(int statusCode, string title, R errorDetails, Action<ProblemDetails, R> errorAction = null) where R : IDomainResult
+		private static ObjectResult SadResponse<R>(int statusCode, string title, R errorDetails, Action<ProblemDetails, R> errorAction = null) where R : IDomainResultBase
 		{
 			var problemDetails = new ProblemDetails
 			{

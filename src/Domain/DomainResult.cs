@@ -41,7 +41,7 @@ namespace AK.DomainResults.Domain
 		public static Task<IDomainResult<TValue>> ErrorTask<TValue>(IEnumerable<ValidationResult> validationResults) => Task.FromResult(DomainResult<TValue>.Error(validationResults) as IDomainResult<TValue>);
 	}
 
-	public class DomainResult<TValue> : Tuple<TValue, ErrorDetails>, IDomainResult<TValue>
+	public class DomainResult<TValue> : Tuple<TValue, IDomainResult>, IDomainResult<TValue>
 	{
 		public DomainOperationStatus Status => Item2.Status;
 		public IReadOnlyCollection<string> Errors => Item2.Errors;
