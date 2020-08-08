@@ -11,7 +11,7 @@ namespace AK.DomainResults.Examples.WebApi.Controllers
 	[Route("[controller]")]
 	public class SuccessResponsesController : ControllerBase
 	{
-		private readonly TupleServiceSync _service = new TupleServiceSync();
+		private readonly DomainService _service = new DomainService();
 
 		[HttpGet("[action]")]
 		public NoContentResult Get204NoContent()

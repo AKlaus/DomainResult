@@ -5,7 +5,7 @@ using AK.DomainResults.Domain;
 
 namespace AK.DomainResults.Examples.Domain
 {
-	public class TupleServiceSync
+	public class DomainService
 	{
 		#region Success responses ---------------------------------------------
 
