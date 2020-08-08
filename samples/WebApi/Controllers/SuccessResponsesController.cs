@@ -11,7 +11,7 @@ namespace AK.DomainResults.Examples.WebApi.Controllers
 	[Route("[controller]")]
 	public class SuccessResponsesController : ControllerBase
 	{
-		private readonly DomainService _service = new DomainService();
+		private readonly DomainSuccessService _service = new DomainSuccessService();
 
 		[HttpGet("[action]")]
 		public NoContentResult Get204NoContent()
