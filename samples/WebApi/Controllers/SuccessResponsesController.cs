@@ -21,18 +21,18 @@ namespace AK.DomainResults.Examples.WebApi.Controllers
 		[HttpGet("[action]")]
 		public Task<IActionResult> Get204NoContentTask()
 		{
-			return _service.GetSuccessTask().ToActionResultTask();
+			return _service.GetSuccessTask().ToActionResult();
 		}
 
 		[HttpGet("[action]")]
-		public IActionResult Get200OkWithNumber()
+		public OkResult Get200OkWithNumber()
 		{
-			return _service.GetSuccessWithNumericValue().ToActionResult();// as OkResult;
+			return _service.GetSuccessWithNumericValue().ToActionResult() as OkResult;
 		}
 		[HttpGet("[action]")]
 		public Task<IActionResult> Get200OkWithNumberTask()
 		{
-			return _service.GetSuccessWithNumericValueTask().ToActionResultTask();
+			return _service.GetSuccessWithNumericValueTask().ToActionResult();
 		}
 
 		[HttpGet("[action]")]
