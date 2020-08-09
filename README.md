@@ -1,3 +1,3 @@
 # DomainResult
-![.NET Core](https://github.com/AKlaus/DomainResult/workflows/ci/badge.svg)
+![CI](https://github.com/AKlaus/DomainResult/workflows/CI/badge.svg)
 <br/>
