@@ -21,7 +21,7 @@ namespace AK.DomainResults.Domain
 		{
 			Status = DomainOperationStatus.Error;
 			Errors = (from message in validationResults
-					  select $"{message.ErrorMessage} {(message.MemberNames != null ? "(" + string.Join(", ", message.MemberNames) + ")" : "")})"
+					  select $"{message.ErrorMessage}{(message.MemberNames?.Any() == true ? " (" + string.Join(", ", message.MemberNames) + ")" : "")}"
 					 ).ToArray();
 		}
 	}
