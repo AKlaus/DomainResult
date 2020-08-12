@@ -2,7 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-	<LangVersion>8.0</LangVersion>
+	<LangVersion>latest</LangVersion>
+	<Nullable>enable</Nullable>
+	<Features>strict</Features>
+	<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 	<AssemblyName>Examples.WebApi</AssemblyName>
 	<RootNamespace>AK.DomainResults.Examples.WebApi</RootNamespace>
   </PropertyGroup>

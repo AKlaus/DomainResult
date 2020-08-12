@@ -2,10 +2,13 @@
 
 	<PropertyGroup>
 		<TargetFrameworks>netcoreapp3.0;netstandard2.0</TargetFrameworks>
-		<LangVersion>8.0</LangVersion>
+		<LangVersion>latest</LangVersion>
+		<Nullable>enable</Nullable>
+		<Features>strict</Features>
 		<AssemblyName>AK.DomainResults.Mvc</AssemblyName>
 		<RootNamespace>AK.DomainResults.Mvc</RootNamespace>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 	</PropertyGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0'">
