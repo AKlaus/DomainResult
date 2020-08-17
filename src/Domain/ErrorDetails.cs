@@ -24,5 +24,10 @@ namespace AK.DomainResults.Domain
 					  select $"{message.ErrorMessage}{(message.MemberNames?.Any() == true ? " (" + string.Join(", ", message.MemberNames) + ")" : "")}"
 					 ).ToArray();
 		}
+
+		public static IDomainResult Success() => new ErrorDetails();
+		public static IDomainResult NotFound(IEnumerable<string> errors) => new ErrorDetails(DomainOperationStatus.NotFound, errors);
+		public static IDomainResult Error(IEnumerable<string> errors)	 => new ErrorDetails(DomainOperationStatus.Error, errors);
+		public static IDomainResult Error(IEnumerable<ValidationResult> validationResults) => new ErrorDetails(validationResults);
 	}
 }
