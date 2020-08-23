@@ -11,13 +11,13 @@ using Xunit;
 
 namespace DomainResults.Mvc.Tests
 {
-	public class ValueResultToActionTests
+	public class ValueResultToActionResultTests
 	{
 		#region Test of successful '(TValue, IDomainResult)' response conversion ------------------
 
 		[Theory]
 		[MemberData(nameof(SuccessfulTestCases))]
-		public void SuccessfulNumericValueResult<TValue>((TValue, IDomainResult) tupleValue, Func<OkObjectResult, TValue> getValueFunc)
+		public void SuccessfulValueResult<TValue>((TValue, IDomainResult) tupleValue, Func<OkObjectResult, TValue> getValueFunc)
 		{
 			// WHEN convert a value to ActionResult
 			var actionRes = tupleValue.ToActionResult();
@@ -48,7 +48,7 @@ namespace DomainResults.Mvc.Tests
 
 		[Theory]
 		[MemberData(nameof(SuccessfulTaskTestCases))]
-		public async Task SuccessfulNumericValueResultTask<TValue>(Task<(TValue, IDomainResult)> tupleValueTask, Func<OkObjectResult, TValue> getValueFunc)
+		public async Task SuccessfulValueResultTask<TValue>(Task<(TValue, IDomainResult)> tupleValueTask, Func<OkObjectResult, TValue> getValueFunc)
 		{
 			// WHEN convert a value to ActionResult
 			var actionRes = await tupleValueTask.ToActionResult();
@@ -79,7 +79,7 @@ namespace DomainResults.Mvc.Tests
 
 		[Theory]
 		[MemberData(nameof(FailedTestCases))]
-		public void FailedNumericValueResult<TValue>((TValue, IDomainResult) tupleValue, int expectedCode, string expectedTitle, string expectedErrorMsg)
+		public void FailedValueResult<TValue>((TValue, IDomainResult) tupleValue, int expectedCode, string expectedTitle, string expectedErrorMsg)
 		{
 			// WHEN convert a value to ActionResult
 			var actionRes = tupleValue.ToActionResult();
@@ -109,7 +109,7 @@ namespace DomainResults.Mvc.Tests
 
 		[Theory]
 		[MemberData(nameof(FailedTaskTestCases))]
-		public async Task FailedNumericValueResultTask<TValue>(Task<(TValue, IDomainResult)> tupleValueTask, int expectedCode, string expectedTitle, string expectedErrorMsg)
+		public async Task FailedValueResultTask<TValue>(Task<(TValue, IDomainResult)> tupleValueTask, int expectedCode, string expectedTitle, string expectedErrorMsg)
 		{
 			// WHEN convert a value to ActionResult
 			var actionRes = await tupleValueTask.ToActionResult();
@@ -134,10 +134,5 @@ namespace DomainResults.Mvc.Tests
 			new object[] { Task.FromResult((10, ErrorDetails.NotFound(new [] { "1", "2" }))),404, "Not Found",   "1, 2" },
 		};
 		#endregion // Test of failed 'Task<(TValue, IDomainResult)>' response conversion ----------
-
-		class TestDto
-		{
-			public string Prop { get; set; }
-		}
 	}
 }

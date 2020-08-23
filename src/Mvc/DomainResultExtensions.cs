@@ -35,7 +35,7 @@ namespace AK.DomainResults.Mvc
 		/// <param name="errorAction"> Optional processing in case of an error </param>
 		public static ActionResult ToActionResult<R>(this R domainResult,
 													 Action<ProblemDetails, R>? errorAction = null)
-													 where R : IDomainResultBase
+													 where R : IDomainResult
 			=> ToActionResult<object, R, NoContentResult>(null, domainResult, errorAction, (value) => new NoContentResult());
 
 		/// <summary>
@@ -46,7 +46,7 @@ namespace AK.DomainResults.Mvc
 		/// <param name="errorAction"> Optional processing in case of an error </param>
 		public static async Task<IActionResult> ToActionResult<R>(this Task<R> domainResultTask,
 																  Action<ProblemDetails, R>? errorAction = null)
-																  where R : IDomainResultBase
+																  where R : IDomainResult
 			=> ToActionResult<object, R, NoContentResult>(null, await domainResultTask, errorAction, (value) => new NoContentResult());
 
 		#endregion // HTTP code 204 (NoContent) [PUBLIC, STATIC] --------------
@@ -56,7 +56,7 @@ namespace AK.DomainResults.Mvc
 		/// <summary>
 		///		Returns HTTP code 200 (OK) with a value or a 4xx code in case of an error
 		/// </summary>
-		/// <typeparam name="T"> The type derived from <see cref="IDomainResult&lt;V&gt;"/>, e.g. <see cref="DomainResult&lt;V&gt;"/> </typeparam>
+		/// <typeparam name="T"> The type derived from <see cref="IDomainResult{V}"/>, e.g. <see cref="DomainResult{V}"/> </typeparam>
 		/// <typeparam name="V"> The value type returned in a successful response </typeparam>
 		/// <param name="domainResult"> Details of the operation results </param>
 		/// <param name="errorAction"> Optional processing in case of an error </param>
@@ -67,7 +67,7 @@ namespace AK.DomainResults.Mvc
 		/// <summary>
 		///		Returns HTTP code 200 (OK) with a value or a 4xx code in case of an error
 		/// </summary>
-		/// <typeparam name="T"> The type derived from <see cref="IDomainResult&lt;V&gt;"/>, e.g. <see cref="DomainResult&lt;V&gt;"/> </typeparam>
+		/// <typeparam name="T"> The type derived from <see cref="IDomainResult{V}"/>, e.g. <see cref="DomainResult{V}"/> </typeparam>
 		/// <typeparam name="V"> The value type returned in a successful response </typeparam>
 		/// <param name="domainResultTask"> A task with details of the operation results </param>
 		/// <param name="errorAction"> Optional processing in case of an error </param>
