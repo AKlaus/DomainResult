@@ -116,6 +116,18 @@ namespace AK.DomainResults.Mvc
 														 where R : IDomainResult
 			=> ToActionResult((domainResult.Item1, domainResult.Item2), errorAction, (value) => new CreatedResult(location, value));
 
+		public static ActionResult ToCreatedResult<T>(this IDomainResult<T> domainResult,
+													  string location,
+													  Action<ProblemDetails, IDomainResult<T>>? errorAction = null)
+			=> ToActionResult((domainResult.Value, domainResult), errorAction, (value) => new CreatedResult(location, value));
+		public static async Task<ActionResult> ToCreatedResult<T>(this Task<IDomainResult<T>> domainResultTask,
+													  string location,
+													  Action<ProblemDetails, IDomainResult<T>>? errorAction = null)
+		{
+			var domainResult = await domainResultTask;
+			return ToActionResult((domainResult.Value, domainResult), errorAction, (value) => new CreatedResult(location, value));
+		}
+
 		public static ActionResult ToCreatedResult<T, V, R>(this T domainResult,
 														 Uri location,
 														 Action<ProblemDetails, R>? errorAction = null)
