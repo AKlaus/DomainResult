@@ -11,13 +11,11 @@ using Xunit;
 
 namespace DomainResults.Mvc.Tests
 {
-	public class DomainResultValueToOkResultTests
+	public class DomainResult_Value_To_OkResult_Tests
 	{
-		#region Test of successful 'IDomainResult<TValue>' response conversion --------------------
-
 		[Theory]
 		[MemberData(nameof(SuccessfulTestCases))]
-		public void SuccessfulValueResult<TValue>(IDomainResult<TValue> domainValue, Func<OkObjectResult, TValue> getValueFunc)
+		public void Successful_DomainResult_With_Value_Test<TValue>(IDomainResult<TValue> domainValue, Func<IDomainResult<TValue>, TValue> getValueFunc)
 		{
 			// WHEN convert a value to ActionResult
 			var actionRes = domainValue.ToActionResult();
@@ -27,28 +25,13 @@ namespace DomainResults.Mvc.Tests
 			Assert.NotNull(okResult);
 
 			// and value remains there
-			Assert.Equal(domainValue.Value, getValueFunc(okResult));
+			Assert.Equal(getValueFunc(domainValue), okResult.Value);
 		}
-
-		public static readonly IEnumerable<object[]> SuccessfulTestCases = new List<object[]>
-		{
-			new object[] {	DomainResult.Success(10), 
-							(Func<OkObjectResult, int>)(res => (int)res.Value) 
-						 },
-			new object[] {	DomainResult.Success("1"), 
-							(Func<OkObjectResult, string>)(res => (string)res.Value) 
-						 },
-			new object[] {  DomainResult.Success(new TestDto { Prop = "1" }), 
-							(Func<OkObjectResult, TestDto>)(res => (TestDto)res.Value) 
-						 },
-		};
-		#endregion // Test of successful 'IDomainResult<TValue>' response conversion --------------
-
-		#region Test of successful 'Task<IDomainResult<TValue>>' response conversion --------------
+		public static readonly IEnumerable<object[]> SuccessfulTestCases = GetTestCases(false);
 
 		[Theory]
 		[MemberData(nameof(SuccessfulTaskTestCases))]
-		public async Task SuccessfulValueResultTask<TValue>(Task<IDomainResult<TValue>> domainValueTask, Func<OkObjectResult, TValue> getValueFunc)
+		public async Task Successful_DomainResult_With_Value_Task_Test<TValue>(Task<IDomainResult<TValue>> domainValueTask, Func<Task<IDomainResult<TValue>>, TValue> getValueFunc)
 		{
 			// WHEN convert a value to ActionResult
 			var actionRes = await domainValueTask.ToActionResult();
@@ -58,21 +41,27 @@ namespace DomainResults.Mvc.Tests
 			Assert.NotNull(okResult);
 
 			// and value remains there
-			Assert.Equal(domainValueTask.Result.Value, getValueFunc(okResult));
+			Assert.Equal(getValueFunc(domainValueTask), okResult.Value);
 		}
+		public static readonly IEnumerable<object[]> SuccessfulTaskTestCases = GetTestCases(true);
 
-		public static readonly IEnumerable<object[]> SuccessfulTaskTestCases = new List<object[]>
-		{
-			new object[] {  DomainResult.SuccessTask(10),
-							(Func<OkObjectResult, int>)(res => (int)res.Value)
-						 },
-			new object[] {  DomainResult.SuccessTask("1"),
-							(Func<OkObjectResult, string>)(res => (string)res.Value)
-						 },
-			new object[] {  DomainResult.SuccessTask(new TestDto { Prop = "1" }),
-							(Func<OkObjectResult, TestDto>)(res => (TestDto)res.Value)
-						 },
-		};
-		#endregion // Test of successful 'Task<IDomainResult<TValue>>' response conversion --------
+		private static IEnumerable<object[]> GetTestCases(bool wrapInTask)
+			=> new List<object[]> 
+				{ 
+					GetTestCase(10,  wrapInTask),							// E.g. { DomainResult.Success(10), res => res.Value }
+					GetTestCase("1", wrapInTask), 
+					GetTestCase(new TestDto { Prop = "1" }, wrapInTask) 
+				};
+
+		private static object[] GetTestCase<T>(T domainValue, bool wrapInTask = false)
+			=> wrapInTask 
+				? new object[] {
+					DomainResult.SuccessTask(domainValue), 
+					(Func<Task<IDomainResult<T>>, T>)(res => res.Result.Value) 
+				 }
+				: new object[] {
+					DomainResult.Success(domainValue),
+					(Func<IDomainResult<T>, T>)(res => res.Value)
+				 };
 	}
 }
