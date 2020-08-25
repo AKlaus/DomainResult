@@ -15,6 +15,8 @@ namespace AK.DomainResults.Mvc
 	/// </summary>
 	public static class DomainResultExtensions
 	{
+		public static ActionResultConventions Conventions = new ActionResultConventions();
+
 		/// <summary>
 		///		Delegeate for a function to convert a value to <see cref="IActionResult"/>.
 		///		It could have been replaced with 'Func<V, ActionResult>', but there is no way to enforce [AllowNull] on the generic Func declaration
@@ -187,8 +189,8 @@ namespace AK.DomainResults.Mvc
 														where TResult : ActionResult
 			=> errorDetails.Status switch
 			{
-				DomainOperationStatus.NotFound	=> SadResponse(404, "Not Found",   errorDetails, errorAction),
-				DomainOperationStatus.Error		=> SadResponse(400, "Bad Request", errorDetails, errorAction),  // Can be a '422'. Opinions: https://stackoverflow.com/a/52098667/968003, https://stackoverflow.com/a/20215807/968003
+				DomainOperationStatus.NotFound	=> SadResponse(Conventions.NotFoundHttpCode, Conventions.NotFoundProblemDetailsTitle, errorDetails, errorAction),
+				DomainOperationStatus.Error		=> SadResponse(Conventions.ErrorHttpCode,	 Conventions.ErrorProblemDetailsTitle,	  errorDetails, errorAction),
 				DomainOperationStatus.Success	=> EqualityComparer<V>.Default.Equals(value!, default!)
 																		? new NoContentResult() as ActionResult // No value, means returning HTTP status 204
 																		: valueToActionResultFunc(value),
