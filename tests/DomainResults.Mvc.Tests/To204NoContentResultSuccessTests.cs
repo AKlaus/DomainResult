@@ -9,10 +9,10 @@ using Xunit;
 
 namespace DomainResults.Mvc.Tests
 {
-	public class DomainResult_To_NoContentResult_Tests
+	public class To_204_NoContentResult_Success_Tests
 	{
 		[Fact]
-		public void Successful_Result_NoContent()
+		public void DomainResultConverted_To_NoContent()
 		{
 			// GIVEN a successful domain result
 			var domainRes = DomainResult.Success();
@@ -25,7 +25,7 @@ namespace DomainResults.Mvc.Tests
 		}
 
 		[Fact]
-		public async Task Successful_Result_Task_NoContent()
+		public async Task DomainResult_Task_Converted_To_NoContent()
 		{
 			// GIVEN a successful domain result
 			var domainRes = DomainResult.SuccessTask();

@@ -15,7 +15,7 @@ namespace DomainResults.Mvc.Tests
 	{
 		[Theory]
 		[MemberData(nameof(SuccessfulTestCases))]
-		public void Successful_DomainResult_With_Value_Test<TValue>(IDomainResult<TValue> domainValue, Func<IDomainResult<TValue>, TValue> getValueFunc)
+		public void DomainResult_With_Value_Converted_ToActionResult_Test<TValue>(IDomainResult<TValue> domainValue, Func<IDomainResult<TValue>, TValue> getValueFunc)
 		{
 			// WHEN convert a value to ActionResult
 			var actionRes = domainValue.ToActionResult();
@@ -31,7 +31,7 @@ namespace DomainResults.Mvc.Tests
 
 		[Theory]
 		[MemberData(nameof(SuccessfulTaskTestCases))]
-		public async Task Successful_DomainResult_With_Value_Task_Test<TValue>(Task<IDomainResult<TValue>> domainValueTask, Func<Task<IDomainResult<TValue>>, TValue> getValueFunc)
+		public async Task DomainResult_With_Value_Task_Converted_ToActionResult_Test<TValue>(Task<IDomainResult<TValue>> domainValueTask, Func<Task<IDomainResult<TValue>>, TValue> getValueFunc)
 		{
 			// WHEN convert a value to ActionResult
 			var actionRes = await domainValueTask.ToActionResult();

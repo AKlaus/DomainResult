@@ -11,13 +11,11 @@ using Xunit;
 
 namespace DomainResults.Mvc.Tests
 {
-	public class DomainResult_To_201_ActionResult_Tests
+	public class To_201_CreatedResult_Success_Tests
 	{
-		private const string expectedUrl = "http://localhost/";
-
 		[Theory]
 		[MemberData(nameof(DomainResultTestCases))]
-		public void Successful_DomainResult_To_CreatedResult_Test<TValue>(IDomainResult<TValue> domainValue, Func<IDomainResult<TValue>, TValue> getValueFunc, string urlString, Uri urlUri)
+		public void DomainResult_Converted_To_CreatedResult_Test<TValue>(IDomainResult<TValue> domainValue, Func<IDomainResult<TValue>, TValue> getValueFunc, string urlString, Uri urlUri)
 		{
 			var actionResult = urlUri == null ? domainValue.ToCreatedResult(urlString)
 											  : domainValue.ToCreatedResult(urlUri);
@@ -28,7 +26,7 @@ namespace DomainResults.Mvc.Tests
 
 		[Theory]
 		[MemberData(nameof(DomainResultTaskTestCases))]
-		public async Task Successful_DomainResult_Task_To_CreatedResult_Test<TValue>(Task<IDomainResult<TValue>> domainValueTask, Func<Task<IDomainResult<TValue>>, TValue> getValueFunc, string urlString, Uri urlUri)
+		public async Task DomainResult_Task_Converted_To_CreatedResult_Test<TValue>(Task<IDomainResult<TValue>> domainValueTask, Func<Task<IDomainResult<TValue>>, TValue> getValueFunc, string urlString, Uri urlUri)
 		{
 			var actionResult = await (urlUri == null ? domainValueTask.ToCreatedResult(urlString)
 													 : domainValueTask.ToCreatedResult(urlUri));
@@ -39,7 +37,7 @@ namespace DomainResults.Mvc.Tests
 
 		[Theory]
 		[MemberData(nameof(ValueResultTestCases))]
-		public void Successful_ValueResult_To_CreatedResult_Test<TValue>((TValue, IDomainResult) domainValue, string urlString, Uri urlUri)
+		public void ValueResult_Converted_To_CreatedResult_Test<TValue>((TValue, IDomainResult) domainValue, string urlString, Uri urlUri)
 		{
 			var actionResult = urlUri == null ? domainValue.ToCreatedResult(urlString)
 											  : domainValue.ToCreatedResult(urlUri);
@@ -50,7 +48,7 @@ namespace DomainResults.Mvc.Tests
 
 		[Theory]
 		[MemberData(nameof(ValueResultTaskTestCases))]
-		public async Task Successful_ValueResult_Task_To_CreatedResult_Test<TValue>(Task<(TValue, IDomainResult)> domainValueTask, string urlString, Uri urlUri)
+		public async Task ValueResult_Task_Converted_To_CreatedResult_Test<TValue>(Task<(TValue, IDomainResult)> domainValueTask, string urlString, Uri urlUri)
 		{
 			var actionResult = await (urlUri == null ? domainValueTask.ToCreatedResult(urlString)
 													 : domainValueTask.ToCreatedResult(urlUri));
@@ -60,6 +58,8 @@ namespace DomainResults.Mvc.Tests
 		public static readonly IEnumerable<object[]> ValueResultTaskTestCases = GetValueResultTestCases(true);
 
 		#region Auxiliary methods [PRIVATE] -----------------------------------
+
+		private const string expectedUrl = "http://localhost/";
 
 		/// <summary>
 		///		The 'THEN' section of the tests, checking the Response type, HTTP code, location URL and the returned value
