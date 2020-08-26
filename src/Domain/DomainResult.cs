@@ -12,12 +12,12 @@ namespace AK.DomainResults.Domain
 		public DomainResult(DomainOperationStatus status, IEnumerable<string> errors) : base(status, errors) { }
 		public DomainResult(IEnumerable<ValidationResult> errors) : base(errors) { }
 
-		public static IDomainResult Success()							 => new DomainResult();
-		public static IDomainResult NotFound(string? message = null)	 => new DomainResult(DomainOperationStatus.NotFound, message);
-		public static IDomainResult NotFound(IEnumerable<string> messages)=> new DomainResult(DomainOperationStatus.NotFound, messages);
-		public static IDomainResult Error(string? message = null)		 => new DomainResult(DomainOperationStatus.Error, message);
-		public static IDomainResult Error(IEnumerable<string> errors)	 => new DomainResult(DomainOperationStatus.Error, errors);
-		public static IDomainResult Error(IEnumerable<ValidationResult> validationResults) => new DomainResult(validationResults);
+		public static new IDomainResult Success()							 => new DomainResult();
+		public static new IDomainResult NotFound(string? message = null)	 => new DomainResult(DomainOperationStatus.NotFound, message);
+		public static new IDomainResult NotFound(IEnumerable<string> messages)=> new DomainResult(DomainOperationStatus.NotFound, messages);
+		public static	  IDomainResult Error(string? message = null)		 => new DomainResult(DomainOperationStatus.Error, message);
+		public static new IDomainResult Error(IEnumerable<string> errors)	 => new DomainResult(DomainOperationStatus.Error, errors);
+		public static new IDomainResult Error(IEnumerable<ValidationResult> validationResults) => new DomainResult(validationResults);
 
 		public static Task<IDomainResult> SuccessTask()								=> Task.FromResult(Success());
 		public static Task<IDomainResult> NotFoundTask(string? message = null)		=> Task.FromResult(NotFound(message));

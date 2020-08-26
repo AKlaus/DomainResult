@@ -14,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Domain\DomainResults.Domain.csproj" />
     <ProjectReference Include="..\..\src\Mvc\DomainResults.Mvc.csproj" />
   </ItemGroup>
 
