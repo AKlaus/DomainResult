@@ -1,13 +1,26 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
+		<Authors>Alex Klaus</Authors>
+		<Description>Simple way for decoupling the Service Layer response from the IActionResult complexity of the WebAPI in the .NET</Description>
+		<Copyright>Copyright Alex Klaus</Copyright>
+
 		<TargetFrameworks>netcoreapp3.0;netstandard2.0</TargetFrameworks>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
 		<Features>strict</Features>
+		
 		<AssemblyName>AK.DomainResults.Mvc</AssemblyName>
 		<RootNamespace>AK.DomainResults.Mvc</RootNamespace>
+		<PackageId>DomainResults.Mvc</PackageId>
+		<PackageTags>actionresult;domainresult;webapi;service</PackageTags>
+		
+		<SignAssembly>true</SignAssembly>
+    	<AssemblyOriginatorKeyFile>..\..\DomainResult.snk</AssemblyOriginatorKeyFile>
+
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<Deterministic>true</Deterministic>
+		
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 	</PropertyGroup>
 
