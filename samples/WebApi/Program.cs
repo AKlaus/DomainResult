@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-namespace AK.DomainResults.Examples.WebApi
+namespace DomainResults.Examples.WebApi
 {
 	public class Program
 	{

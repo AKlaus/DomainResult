@@ -1,12 +1,12 @@
 ﻿using System.Threading.Tasks;
 
-using AK.DomainResults.Examples.Domain;
-using AK.DomainResults.Mvc;
+using DomainResults.Examples.Domain;
+using DomainResults.Mvc;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AK.DomainResults.Examples.WebApi.Controllers
+namespace DomainResults.Examples.WebApi.Controllers
 {
 	[ApiController]
 	[Route("[controller]")]

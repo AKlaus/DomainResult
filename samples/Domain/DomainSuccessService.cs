@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 
-using AK.DomainResults.Domain;
+using DomainResults.Domain;
 
-namespace AK.DomainResults.Examples.Domain
+namespace DomainResults.Examples.Domain
 {
 	public class DomainSuccessService
 	{

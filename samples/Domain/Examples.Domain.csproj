@@ -6,7 +6,7 @@
 	<Nullable>enable</Nullable>
 	<Features>strict</Features>
 	<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <RootNamespace>AK.DomainResults.Examples.Domain</RootNamespace>
+    <RootNamespace>DomainResults.Examples.Domain</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

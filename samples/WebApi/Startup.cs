@@ -1,11 +1,11 @@
+using DomainResult.Examples.WebApi.Configuration;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-using AK.DomainResult.Examples.WebApi.Configuration;
-
-namespace AK.DomainResults.Examples.WebApi
+namespace DomainResults.Examples.WebApi
 {
 	public class Startup
 	{

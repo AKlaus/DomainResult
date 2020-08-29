@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 
-namespace AK.DomainResult.Examples.WebApi.Configuration
+namespace DomainResult.Examples.WebApi.Configuration
 {
 	internal static partial class ServiceCollectionExtensions
 	{

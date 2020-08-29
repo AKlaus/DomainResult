@@ -7,7 +7,7 @@
 	<Features>strict</Features>
 	<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 	<AssemblyName>Examples.WebApi</AssemblyName>
-	<RootNamespace>AK.DomainResults.Examples.WebApi</RootNamespace>
+	<RootNamespace>DomainResults.Examples.WebApi</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
