@@ -3,19 +3,25 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
-using DomainResults.Domain;
-
 using Xunit;
 
 namespace DomainResults.Domain.Tests
 {
-	public class IDomainResultValueTests
+	public class IDomainResult_Value_Tests
 	{
 		#region Test of 'IDomainResult<TValue>' responses ---------------------
+		[Fact]
+		public void Implicitly_Convert_DomainResult_Test()
+		{
+			// If the code below gets complied, then implicit conversion works
+
+			Func<int, DomainResult<int>> func = (i) => i;
+			var res = func(10);
+		}
 
 		[Theory]
 		[MemberData(nameof(TestCasesWithValue))]
-		public void IDomainResultValueResponseTest(Func<IDomainResult<int>> method, DomainOperationStatus expectedStatus, IEnumerable<string> expectedErrMessages)
+		public void IDomainResult_Value_Response_Test(Func<IDomainResult<int>> method, DomainOperationStatus expectedStatus, IEnumerable<string> expectedErrMessages)
 		{
 			var domainResult = method();
 
@@ -63,7 +69,7 @@ namespace DomainResults.Domain.Tests
 
 		[Theory]
 		[MemberData(nameof(TestCasesWithValueWrappedInTask))]
-		public async Task TaskIDomainResultValueResponseTest(Func<Task<IDomainResult<int>>> method, DomainOperationStatus expectedStatus, IEnumerable<string> expectedErrMessages)
+		public async Task Task_IDomainResult_Value_Response_Test(Func<Task<IDomainResult<int>>> method, DomainOperationStatus expectedStatus, IEnumerable<string> expectedErrMessages)
 		{
 			var domainResult = await method();
 

@@ -22,6 +22,12 @@ namespace DomainResults.Domain
 			_status = errorDetails;
 		}
 
+		/// <summary>
+		///		Implictly converts the specified <paramref name="value"/> to an <see cref="DomainResult{TValue}"/>.
+		/// </summary>
+		/// <param name="value">The parameter for conversion.</param>
+		public static implicit operator DomainResult<TValue>(TValue value) => new DomainResult<TValue>(value);
+
 		public static IDomainResult<TValue> Success(TValue value)					=> new DomainResult<TValue>(value);
 		public static IDomainResult<TValue> NotFound(string? message = null)		=> new DomainResult<TValue>(DomainResult.NotFound(message));
 		public static IDomainResult<TValue> NotFound(IEnumerable<string> messages)	=> new DomainResult<TValue>(DomainResult.NotFound(messages));
@@ -29,12 +35,12 @@ namespace DomainResults.Domain
 		public static IDomainResult<TValue> Error(IEnumerable<string> errors)		=> new DomainResult<TValue>(DomainResult.Error(errors));
 		public static IDomainResult<TValue> Error(IEnumerable<ValidationResult> validationResults) => new DomainResult<TValue>(DomainResult.Error(validationResults));
 
-		public static Task<IDomainResult<TValue>> SuccessTask(TValue value)					=> Task.FromResult(Success(value)		as IDomainResult<TValue>);
-		public static Task<IDomainResult<TValue>> NotFoundTask(string? message = null)		=> Task.FromResult(NotFound(message)	as IDomainResult<TValue>);
-		public static Task<IDomainResult<TValue>> NotFoundTask(IEnumerable<string> messages)=> Task.FromResult(NotFound(messages)	as IDomainResult<TValue>);
-		public static Task<IDomainResult<TValue>> ErrorTask(string? message = null)			=> Task.FromResult(Error(message)		as IDomainResult<TValue>);
-		public static Task<IDomainResult<TValue>> ErrorTask(IEnumerable<string> errors)		=> Task.FromResult(Error(errors)		as IDomainResult<TValue>);
+		public static Task<IDomainResult<TValue>> SuccessTask(TValue value)					=> Task.FromResult(Success(value));
+		public static Task<IDomainResult<TValue>> NotFoundTask(string? message = null)		=> Task.FromResult(NotFound(message));
+		public static Task<IDomainResult<TValue>> NotFoundTask(IEnumerable<string> messages)=> Task.FromResult(NotFound(messages));
+		public static Task<IDomainResult<TValue>> ErrorTask(string? message = null)			=> Task.FromResult(Error(message));
+		public static Task<IDomainResult<TValue>> ErrorTask(IEnumerable<string> errors)		=> Task.FromResult(Error(errors));
 		public static Task<IDomainResult<TValue>> ErrorTask(IEnumerable<ValidationResult> validationResults)
-																							=> Task.FromResult(Error(validationResults) as IDomainResult<TValue>);
+																							=> Task.FromResult(Error(validationResults));
 	}
 }

@@ -9,13 +9,13 @@ using Xunit;
 
 namespace DomainResults.Domain.Tests
 {
-	public class IDomainResultTests
+	public class IDomainResult_Tests
 	{
 		#region Test of 'IDomainResult' responses -----------------------------
 
 		[Theory]
 		[MemberData(nameof(TestCasesWithNoValue))]
-		public void IDomainResultResponseTest(Func<IDomainResult> method, DomainOperationStatus expectedStatus, IEnumerable<string> expectedErrMessages)
+		public void IDomainResult_Response_Test(Func<IDomainResult> method, DomainOperationStatus expectedStatus, IEnumerable<string> expectedErrMessages)
 		{
 			var domainResult = method();
 
@@ -51,7 +51,7 @@ namespace DomainResults.Domain.Tests
 
 		[Theory]
 		[MemberData(nameof(TestCasesWithNoValueWrappedInTask))]
-		public async Task TaskIDomainResultResponseTest(Func<Task<IDomainResult>> method, DomainOperationStatus expectedStatus, IEnumerable<string> expectedErrMessages)
+		public async Task Task_IDomainResult_Response_Test(Func<Task<IDomainResult>> method, DomainOperationStatus expectedStatus, IEnumerable<string> expectedErrMessages)
 		{
 			var domainResult = await method();
 

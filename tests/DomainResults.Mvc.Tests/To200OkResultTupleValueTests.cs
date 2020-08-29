@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using DomainResults.Domain;
-using DomainResults.Mvc;
 
 using Microsoft.AspNetCore.Mvc;
 
