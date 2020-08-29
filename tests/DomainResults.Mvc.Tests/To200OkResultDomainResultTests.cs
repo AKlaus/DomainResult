@@ -11,7 +11,7 @@ using Xunit;
 
 namespace DomainResults.Mvc.Tests
 {
-	public class DomainResult_Value_To_OkResult_Tests
+	public class To_200_OkResult_DomainResult_Tests
 	{
 		[Theory]
 		[MemberData(nameof(SuccessfulTestCases))]

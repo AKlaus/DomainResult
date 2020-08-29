@@ -11,7 +11,7 @@ using Xunit;
 
 namespace DomainResults.Mvc.Tests
 {
-	public class ValueResult_To_OkResult_Tests
+	public class To_200_OkResult_TupleValue_Tests
 	{
 		#region Test of successful '(TValue, IDomainResult)' response conversion ------------------
 
