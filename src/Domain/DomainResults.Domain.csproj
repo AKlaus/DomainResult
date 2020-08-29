@@ -10,9 +10,9 @@
 		<Nullable>enable</Nullable>
 		<Features>strict</Features>
 		
-		<AssemblyName>AK.DomainResults.Domain</AssemblyName>
-		<RootNamespace>AK.DomainResults.Domain</RootNamespace>
-		<PackageId>DomainResults</PackageId>
+		<AssemblyName>DomainResults.Domain</AssemblyName>
+		<RootNamespace>DomainResults.Domain</RootNamespace>
+		<PackageId>DomainResults.Domain</PackageId>
 		<PackageTags>actionresult;domainresult;webapi;service</PackageTags>
 		
 		<SignAssembly>true</SignAssembly>

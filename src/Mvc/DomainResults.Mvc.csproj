@@ -10,8 +10,8 @@
 		<Nullable>enable</Nullable>
 		<Features>strict</Features>
 		
-		<AssemblyName>AK.DomainResults.Mvc</AssemblyName>
-		<RootNamespace>AK.DomainResults.Mvc</RootNamespace>
+		<AssemblyName>DomainResults.Mvc</AssemblyName>
+		<RootNamespace>DomainResults.Mvc</RootNamespace>
 		<PackageId>DomainResults.Mvc</PackageId>
 		<PackageTags>actionresult;domainresult;webapi;service</PackageTags>
 		

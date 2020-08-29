@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AK.DomainResults.Domain
+namespace DomainResults.Domain
 {
 	public class DomainResult : IDomainResult
 	{

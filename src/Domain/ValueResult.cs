@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
-namespace AK.DomainResults.Domain
+namespace DomainResults.Domain
 {
 	public static class ValueResult
 	{

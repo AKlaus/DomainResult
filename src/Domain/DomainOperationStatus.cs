@@ -1,4 +1,4 @@
-﻿namespace AK.DomainResults.Domain
+﻿namespace DomainResults.Domain
 {
 	public enum DomainOperationStatus
 	{

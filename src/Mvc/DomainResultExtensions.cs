@@ -4,11 +4,11 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 
-using AK.DomainResults.Domain;
+using DomainResults.Domain;
 
 using Microsoft.AspNetCore.Mvc;
 
-namespace AK.DomainResults.Mvc
+namespace DomainResults.Mvc
 {
 	/// <summary>
 	///     Converts domain response to <see cref="ActionResult" />

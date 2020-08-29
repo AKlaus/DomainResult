@@ -2,8 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-using AK.DomainResults.Domain;
-using AK.DomainResults.Mvc;
+using DomainResults.Domain;
 
 using Microsoft.AspNetCore.Mvc;
 

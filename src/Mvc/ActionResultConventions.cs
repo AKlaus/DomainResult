@@ -1,4 +1,4 @@
-﻿namespace AK.DomainResults.Mvc
+﻿namespace DomainResults.Mvc
 {
 	public class ActionResultConventions
 	{

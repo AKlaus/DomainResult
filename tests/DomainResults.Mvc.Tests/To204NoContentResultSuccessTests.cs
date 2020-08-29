@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 
-using AK.DomainResults.Domain;
-using AK.DomainResults.Mvc;
+using DomainResults.Domain;
+using DomainResults.Mvc;
 
 using Microsoft.AspNetCore.Mvc;
 

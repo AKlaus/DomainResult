@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace AK.DomainResults.Domain
+namespace DomainResults.Domain
 {
 	public interface IDomainResultBase
 	{
