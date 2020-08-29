@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
@@ -7,13 +6,13 @@ namespace AK.DomainResults.Domain
 {
 	public static class ValueResult
 	{
-		public static (TValue, IDomainResult) Success<TValue>(TValue value)					=> DomainResult<TValue>.Success(value)		.ToValueTuple();
-		public static (TValue, IDomainResult) NotFound<TValue>(string? message = null)		=> DomainResult<TValue>.NotFound(message)	.ToValueTuple();
-		public static (TValue, IDomainResult) NotFound<TValue>(IEnumerable<string> messages)=> DomainResult<TValue>.NotFound(messages)	.ToValueTuple();
-		public static (TValue, IDomainResult) Error<TValue>(string? message = null)			=> DomainResult<TValue>.Error(message)		.ToValueTuple();
-		public static (TValue, IDomainResult) Error<TValue>(IEnumerable<string> errors)		=> DomainResult<TValue>.Error(errors)		.ToValueTuple();
+		public static (TValue, IDomainResult) Success<TValue>(TValue value)					=> (value, DomainResult.Success());
+		public static (TValue, IDomainResult) NotFound<TValue>(string? message = null)		=> (default, DomainResult.NotFound(message));
+		public static (TValue, IDomainResult) NotFound<TValue>(IEnumerable<string> messages)=> (default, DomainResult.NotFound(messages));
+		public static (TValue, IDomainResult) Error<TValue>(string? error = null)			=> (default, DomainResult.Error(error));
+		public static (TValue, IDomainResult) Error<TValue>(IEnumerable<string> errors)		=> (default, DomainResult.Error(errors));
 		public static (TValue, IDomainResult) Error<TValue>(IEnumerable<ValidationResult> validationResults) 
-																							=> DomainResult<TValue>.Error(validationResults).ToValueTuple();
+																							=> (default, DomainResult.Error(validationResults));
 
 		public static Task<(TValue, IDomainResult)> SuccessTask<TValue>(TValue value)				  => Task.FromResult(Success(value));
 		public static Task<(TValue, IDomainResult)> NotFoundTask<TValue>(string? message = null)	  => Task.FromResult(NotFound<TValue>(message));

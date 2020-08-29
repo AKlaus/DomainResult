@@ -33,18 +33,7 @@ or if you prefer a more expressive way:
 ```csharp
 public async Task<(InvoiceResponseDto, IDomainResult)> GetInvoice(int invoiceId)
 {
-    if (invoiceId < 0)
-        // Return a validation error
-        return ValueResult.Error<InvoiceResponseDto>("Try harder");
-
-    var invoice = await DataContext.Invoices.FindAsync(invoiceId);
-    
-    if (invoice == null)
-        // Not found response
-        return ValueResult.NotFound<InvoiceResponseDto>();
-
-    // Returning the invoice
-    ValueResult.Success(invoice);
+    ...
 }
 ```
 

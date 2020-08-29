@@ -32,13 +32,13 @@ namespace DomainResults.Mvc.Tests
 
 		public static readonly IEnumerable<object[]> SuccessfulTestCases = new List<object[]>
 		{
-			new object[] {  (10,  ErrorDetails.Success()),
+			new object[] {  (10,  IDomainResult.Success()),
 							(Func<OkObjectResult, int>)(res => (int)res.Value)
 						 },
-			new object[] {  ("1", ErrorDetails.Success()),
+			new object[] {  ("1", IDomainResult.Success()),
 							(Func<OkObjectResult, string>)(res => (string)res.Value)
 						 },
-			new object[] {  (new TestDto { Prop = "1" }, ErrorDetails.Success()),
+			new object[] {  (new TestDto { Prop = "1" }, IDomainResult.Success()),
 							(Func<OkObjectResult, TestDto>)(res => (TestDto)res.Value)
 						 },
 		};
@@ -63,13 +63,13 @@ namespace DomainResults.Mvc.Tests
 
 		public static readonly IEnumerable<object[]> SuccessfulTaskTestCases = new List<object[]>
 		{
-			new object[] {  Task.FromResult((10,  ErrorDetails.Success())),
+			new object[] {  Task.FromResult((10,  IDomainResult.Success())),
 							(Func<OkObjectResult, int>)(res => (int)res.Value)
 						 },
-			new object[] {  Task.FromResult(("1", ErrorDetails.Success())),
+			new object[] {  Task.FromResult(("1", IDomainResult.Success())),
 							(Func<OkObjectResult, string>)(res => (string)res.Value)
 						 },
-			new object[] {  Task.FromResult((new TestDto { Prop = "1" }, ErrorDetails.Success())),
+			new object[] {  Task.FromResult((new TestDto { Prop = "1" }, IDomainResult.Success())),
 							(Func<OkObjectResult, TestDto>)(res => (TestDto)res.Value)
 						 },
 		};

@@ -111,8 +111,8 @@ namespace DomainResults.Mvc.Tests
 		private static object[] GetValueResultTestCase<T>(T domainValue, bool urlAsString, bool wrapInTask = false)
 			=> new object[] 
 			{
-				wrapInTask  ? Task.FromResult((domainValue, ErrorDetails.Success())) as object
-							: (domainValue, ErrorDetails.Success()),
+				wrapInTask  ? Task.FromResult((domainValue, IDomainResult.Success())) as object
+							: (domainValue, IDomainResult.Success()),
 				urlAsString ? expectedUrl : null,
 				urlAsString ? null: new Uri(expectedUrl)
 			};
