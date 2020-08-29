@@ -1,24 +1,29 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace AK.DomainResults.Domain
 {
 	public class DomainResult : IDomainResult
 	{
-		private readonly IDomainResult _status;
+		public DomainOperationStatus Status { get; }
+		public IReadOnlyCollection<string> Errors { get; }
+		public bool IsSuccess => Status == DomainOperationStatus.Success;
 
-		public DomainOperationStatus Status			=> _status.Status;
-		public IReadOnlyCollection<string> Errors	=> _status.Errors;
-		public bool IsSuccess						=> _status.IsSuccess;
-
-		private DomainResult()															: this(DomainStatus.Success()) { }
-		private DomainResult(DomainOperationStatus status, string? error)				: this(new DomainStatus(status, !string.IsNullOrEmpty(error) ? new[] { error } : new string[0])) { }
-		private DomainResult(DomainOperationStatus status, IEnumerable<string> errors)	: this(new DomainStatus(status, errors)) { }
-		private DomainResult(IEnumerable<ValidationResult> errors)						: this(new DomainStatus(errors)) {}
-		private DomainResult(IDomainResult errorDetails)
+		protected DomainResult()														: this(DomainOperationStatus.Success, string.Empty) { }
+		protected DomainResult(DomainOperationStatus status, string? error)				: this(status, !string.IsNullOrEmpty(error) ? new[] { error } : new string[0]) { }
+		public DomainResult(DomainOperationStatus status, IEnumerable<string> errors)
 		{
-			_status = errorDetails;
+			Status = status;
+			Errors = errors.ToArray();
+		}
+		protected DomainResult(IEnumerable<ValidationResult> validationResults)
+		{
+			Status = DomainOperationStatus.Error;
+			Errors = (from message in validationResults
+					  select $"{message.ErrorMessage}{(message.MemberNames?.Any() == true ? " (" + string.Join(", ", message.MemberNames) + ")" : "")}"
+					 ).ToArray();
 		}
 
 		public static IDomainResult Success()							 => new DomainResult();
@@ -35,6 +40,8 @@ namespace AK.DomainResults.Domain
 		public static Task<IDomainResult> ErrorTask(IEnumerable<string> errors)		=> Task.FromResult(Error(errors));
 		public static Task<IDomainResult> ErrorTask(IEnumerable<ValidationResult> validationResults) => Task.FromResult(Error(validationResults));
 
+		#region Aliases for DomainResult<TValue> extensions [PUBLIC, STATIC] --
+
 		public static DomainResult<TValue> Success<TValue>(TValue value)					=> DomainResult<TValue>.Success(value);
 		public static DomainResult<TValue> NotFound<TValue>(string? message = null)			=> DomainResult<TValue>.NotFound(message);
 		public static DomainResult<TValue> NotFound<TValue>(IEnumerable<string> messages)	=> DomainResult<TValue>.NotFound(messages);
@@ -48,5 +55,7 @@ namespace AK.DomainResults.Domain
 		public static Task<IDomainResult<TValue>> ErrorTask<TValue>(string? message = null)			=> Task.FromResult(DomainResult<TValue>.Error(message) as IDomainResult<TValue>);
 		public static Task<IDomainResult<TValue>> ErrorTask<TValue>(IEnumerable<string> errors)		=> Task.FromResult(DomainResult<TValue>.Error(errors) as IDomainResult<TValue>);
 		public static Task<IDomainResult<TValue>> ErrorTask<TValue>(IEnumerable<ValidationResult> validationResults) => Task.FromResult(DomainResult<TValue>.Error(validationResults) as IDomainResult<TValue>);
+		
+		#endregion // Aliases for DomainResult<TValue> extensions [PUBLIC, STATIC]
 	}
 }
