@@ -5,14 +5,14 @@ using System.Threading.Tasks;
 
 namespace DomainResults.Domain
 {
-	public class DomainResult : IDomainResult
+	public partial class DomainResult : IDomainResult
 	{
 		public DomainOperationStatus Status { get; }
 		public IReadOnlyCollection<string> Errors { get; }
 		public bool IsSuccess => Status == DomainOperationStatus.Success;
 
 		protected DomainResult()														: this(DomainOperationStatus.Success, string.Empty) { }
-		protected DomainResult(DomainOperationStatus status, string? error)				: this(status, !string.IsNullOrEmpty(error) ? new[] { error } : new string[0]) { }
+		protected DomainResult(DomainOperationStatus status, string? error)				: this(status, (!string.IsNullOrEmpty(error) ? new[] { error } : new string[0])!) { }
 		public DomainResult(DomainOperationStatus status, IEnumerable<string> errors)
 		{
 			Status = status;
@@ -39,23 +39,5 @@ namespace DomainResults.Domain
 		public static Task<IDomainResult> ErrorTask(string? message = null)			=> Task.FromResult(Error(message));
 		public static Task<IDomainResult> ErrorTask(IEnumerable<string> errors)		=> Task.FromResult(Error(errors));
 		public static Task<IDomainResult> ErrorTask(IEnumerable<ValidationResult> validationResults) => Task.FromResult(Error(validationResults));
-
-		#region Aliases for DomainResult<TValue> extensions [PUBLIC, STATIC] --
-
-		public static DomainResult<TValue> Success<TValue>(TValue value)					=> DomainResult<TValue>.Success(value);
-		public static DomainResult<TValue> NotFound<TValue>(string? message = null)			=> DomainResult<TValue>.NotFound(message);
-		public static DomainResult<TValue> NotFound<TValue>(IEnumerable<string> messages)	=> DomainResult<TValue>.NotFound(messages);
-		public static DomainResult<TValue> Error<TValue>(string? message = null)			=> DomainResult<TValue>.Error(message);
-		public static DomainResult<TValue> Error<TValue>(IEnumerable<string> errors)		=> DomainResult<TValue>.Error(errors);
-		public static DomainResult<TValue> Error<TValue>(IEnumerable<ValidationResult> validationResults) => DomainResult<TValue>.Error(validationResults);
-
-		public static Task<IDomainResult<TValue>> SuccessTask<TValue>(TValue value)					=> Task.FromResult(DomainResult<TValue>.Success(value) as IDomainResult<TValue>);
-		public static Task<IDomainResult<TValue>> NotFoundTask<TValue>(string? message = null)		=> Task.FromResult(DomainResult<TValue>.NotFound(message) as IDomainResult<TValue>);
-		public static Task<IDomainResult<TValue>> NotFoundTask<TValue>(IEnumerable<string> messages)=> Task.FromResult(DomainResult<TValue>.NotFound(messages) as IDomainResult<TValue>);
-		public static Task<IDomainResult<TValue>> ErrorTask<TValue>(string? message = null)			=> Task.FromResult(DomainResult<TValue>.Error(message) as IDomainResult<TValue>);
-		public static Task<IDomainResult<TValue>> ErrorTask<TValue>(IEnumerable<string> errors)		=> Task.FromResult(DomainResult<TValue>.Error(errors) as IDomainResult<TValue>);
-		public static Task<IDomainResult<TValue>> ErrorTask<TValue>(IEnumerable<ValidationResult> validationResults) => Task.FromResult(DomainResult<TValue>.Error(validationResults) as IDomainResult<TValue>);
-		
-		#endregion // Aliases for DomainResult<TValue> extensions [PUBLIC, STATIC]
 	}
 }

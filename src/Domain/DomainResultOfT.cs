@@ -22,12 +22,12 @@ namespace DomainResults.Domain
 			_status = errorDetails;
 		}
 
-		public static DomainResult<TValue> Success(TValue value)					=> new DomainResult<TValue>(value);
-		public static DomainResult<TValue> NotFound(string? message = null)			=> new DomainResult<TValue>(DomainResult.NotFound(message));
-		public static DomainResult<TValue> NotFound(IEnumerable<string> messages)	=> new DomainResult<TValue>(DomainResult.NotFound(messages));
-		public static DomainResult<TValue> Error(string? message = null)			=> new DomainResult<TValue>(DomainResult.Error(message));
-		public static DomainResult<TValue> Error(IEnumerable<string> errors)		=> new DomainResult<TValue>(DomainResult.Error(errors));
-		public static DomainResult<TValue> Error(IEnumerable<ValidationResult> validationResults) => new DomainResult<TValue>(DomainResult.Error(validationResults));
+		public static IDomainResult<TValue> Success(TValue value)					=> new DomainResult<TValue>(value);
+		public static IDomainResult<TValue> NotFound(string? message = null)		=> new DomainResult<TValue>(DomainResult.NotFound(message));
+		public static IDomainResult<TValue> NotFound(IEnumerable<string> messages)	=> new DomainResult<TValue>(DomainResult.NotFound(messages));
+		public static IDomainResult<TValue> Error(string? message = null)			=> new DomainResult<TValue>(DomainResult.Error(message));
+		public static IDomainResult<TValue> Error(IEnumerable<string> errors)		=> new DomainResult<TValue>(DomainResult.Error(errors));
+		public static IDomainResult<TValue> Error(IEnumerable<ValidationResult> validationResults) => new DomainResult<TValue>(DomainResult.Error(validationResults));
 
 		public static Task<IDomainResult<TValue>> SuccessTask(TValue value)					=> Task.FromResult(Success(value)		as IDomainResult<TValue>);
 		public static Task<IDomainResult<TValue>> NotFoundTask(string? message = null)		=> Task.FromResult(NotFound(message)	as IDomainResult<TValue>);
