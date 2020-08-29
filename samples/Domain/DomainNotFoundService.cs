@@ -22,12 +22,12 @@ namespace DomainResults.Examples.Domain
 		public Task<IDomainResult<int>> GetNotFoundWithMessageWhenExpectedNumberTask()	=> DomainResult.NotFoundTask<int>("No, really not found");
 		public Task<IDomainResult<int>> GetNotFoundWithMessagesWhenExpectedNumberTask()	=> DomainResult.NotFoundTask<int>(new[] { "No, really not found", "Searched everwhere" });
 
-		public (int, IDomainResult) GetNotFoundWithNoMessageWhenExpectedNumberTuple()	=> ValueResult.NotFound<int>();
-		public (int, IDomainResult) GetNotFoundWithMessageWhenExpectedNumberTuple()		=> ValueResult.NotFound<int>("No, really not found");
-		public (int, IDomainResult) GetNotFoundWithMessagesWhenExpectedNumberTuple()	=> ValueResult.NotFound<int>(new[] { "No, really not found", "Searched everwhere" });
+		public (int, IDomainResult) GetNotFoundWithNoMessageWhenExpectedNumberTuple()	=> IDomainResult.NotFound<int>();
+		public (int, IDomainResult) GetNotFoundWithMessageWhenExpectedNumberTuple()		=> IDomainResult.NotFound<int>("No, really not found");
+		public (int, IDomainResult) GetNotFoundWithMessagesWhenExpectedNumberTuple()	=> IDomainResult.NotFound<int>(new[] { "No, really not found", "Searched everwhere" });
 
-		public Task<(int, IDomainResult)> GetNotFoundWithNoMessageWhenExpectedNumberTupleTask()	=> ValueResult.NotFoundTask<int>();
-		public Task<(int, IDomainResult)> GetNotFoundWithMessageWhenExpectedNumberTupleTask()	=> ValueResult.NotFoundTask<int>("No, really not found");
-		public Task<(int, IDomainResult)> GetNotFoundWithMessagesWhenExpectedNumberTupleTask()	=> ValueResult.NotFoundTask<int>(new[] { "No, really not found", "Searched everwhere" });
+		public Task<(int, IDomainResult)> GetNotFoundWithNoMessageWhenExpectedNumberTupleTask()	=> IDomainResult.NotFoundTask<int>();
+		public Task<(int, IDomainResult)> GetNotFoundWithMessageWhenExpectedNumberTupleTask()	=> IDomainResult.NotFoundTask<int>("No, really not found");
+		public Task<(int, IDomainResult)> GetNotFoundWithMessagesWhenExpectedNumberTupleTask()	=> IDomainResult.NotFoundTask<int>(new[] { "No, really not found", "Searched everwhere" });
 	}
 }

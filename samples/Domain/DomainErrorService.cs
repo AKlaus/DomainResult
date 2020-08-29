@@ -47,21 +47,21 @@ namespace DomainResults.Examples.Domain
 					new ValidationResult("Validation message2", new[] { "fieldName2" })
 				});
 
-		public (int, IDomainResult) GetErrorWithNoMessageWhenExpectedNumberTuple()	=> ValueResult.Error<int>();
-		public (int, IDomainResult) GetErrorWithMessageWhenExpectedNumberTuple()	=> ValueResult.Error<int>("Ah, error");
-		public (int, IDomainResult) GetErrorWithMessagesWhenExpectedNumberTuple()	=> ValueResult.Error<int>(new[] { "Ah, error", "Terrible error" });
+		public (int, IDomainResult) GetErrorWithNoMessageWhenExpectedNumberTuple()	=> IDomainResult.Error<int>();
+		public (int, IDomainResult) GetErrorWithMessageWhenExpectedNumberTuple()	=> IDomainResult.Error<int>("Ah, error");
+		public (int, IDomainResult) GetErrorWithMessagesWhenExpectedNumberTuple()	=> IDomainResult.Error<int>(new[] { "Ah, error", "Terrible error" });
 		public (int, IDomainResult) GetErrorWithValidationMessagesWhenExpectedNumberTuple() =>
-			ValueResult.Error<int>(new[]
+			IDomainResult.Error<int>(new[]
 				{
 					new ValidationResult("Validation message1", new[] { "fieldName1" }),
 					new ValidationResult("Validation message2", new[] { "fieldName2" })
 				});
 
-		public Task<(int, IDomainResult)> GetErrorWithNoMessageWhenExpectedNumberTupleTask()=> ValueResult.ErrorTask<int>();
-		public Task<(int, IDomainResult)> GetErrorWithMessageWhenExpectedNumberTupleTask()	=> ValueResult.ErrorTask<int>("Ah, error");
-		public Task<(int, IDomainResult)> GetErrorWithMessagesWhenExpectedNumberTupleTask() => ValueResult.ErrorTask<int>(new[] { "Ah, error", "Terrible error" });
+		public Task<(int, IDomainResult)> GetErrorWithNoMessageWhenExpectedNumberTupleTask()=> IDomainResult.ErrorTask<int>();
+		public Task<(int, IDomainResult)> GetErrorWithMessageWhenExpectedNumberTupleTask()	=> IDomainResult.ErrorTask<int>("Ah, error");
+		public Task<(int, IDomainResult)> GetErrorWithMessagesWhenExpectedNumberTupleTask() => IDomainResult.ErrorTask<int>(new[] { "Ah, error", "Terrible error" });
 		public Task<(int, IDomainResult)> GetErrorWithValidationMessagesWhenExpectedNumberTupleTask() =>
-			ValueResult.ErrorTask<int>(new[]
+			IDomainResult.ErrorTask<int>(new[]
 				{
 					new ValidationResult("Validation message1", new[] { "fieldName1" }),
 					new ValidationResult("Validation message2", new[] { "fieldName2" })
