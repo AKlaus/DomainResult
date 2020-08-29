@@ -1,9 +1,10 @@
 ﻿using System.Threading.Tasks;
 
-using Microsoft.AspNetCore.Mvc;
-
 using AK.DomainResults.Examples.Domain;
 using AK.DomainResults.Mvc;
+
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AK.DomainResults.Examples.WebApi.Controllers
 {
@@ -14,6 +15,7 @@ namespace AK.DomainResults.Examples.WebApi.Controllers
 		private readonly DomainSuccessService _service = new DomainSuccessService();
 
 		[HttpGet("[action]")]
+		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		public NoContentResult Get204NoContent()
 		{
 #pragma warning disable CS8603 // Possible null reference return.
@@ -21,6 +23,7 @@ namespace AK.DomainResults.Examples.WebApi.Controllers
 #pragma warning restore CS8603 // Possible null reference return.
 		}
 		[HttpGet("[action]")]
+		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		public Task<IActionResult> Get204NoContentTask()
 		{
 			return _service.GetSuccessTask().ToActionResult();

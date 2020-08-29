@@ -13,7 +13,7 @@ namespace AK.DomainResults.Domain
 		public DomainResult(IEnumerable<ValidationResult> errors) : base(errors) { }
 
 		public static new IDomainResult Success()							 => new DomainResult();
-		public static new IDomainResult NotFound(string? message = null)	 => new DomainResult(DomainOperationStatus.NotFound, message);
+		public static	  IDomainResult NotFound(string? message = null)	 => new DomainResult(DomainOperationStatus.NotFound, message);
 		public static new IDomainResult NotFound(IEnumerable<string> messages)=> new DomainResult(DomainOperationStatus.NotFound, messages);
 		public static	  IDomainResult Error(string? message = null)		 => new DomainResult(DomainOperationStatus.Error, message);
 		public static new IDomainResult Error(IEnumerable<string> errors)	 => new DomainResult(DomainOperationStatus.Error, errors);
