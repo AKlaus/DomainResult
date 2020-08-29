@@ -12,7 +12,7 @@
 		
 		<AssemblyName>DomainResults.Mvc</AssemblyName>
 		<RootNamespace>DomainResults.Mvc</RootNamespace>
-		<PackageId>DomainResults</PackageId>
+		<PackageId>DomainResult</PackageId>
 		<PackageTags>actionresult;domainresult;webapi;service</PackageTags>
 		
 		<SignAssembly>true</SignAssembly>
