@@ -3,7 +3,9 @@ name: CI
 on:
   push:
     branches: [ master ]
-
+  pull_request:
+    # Need pull requests so Coveralls comments get added to pull requests
+    branches: [ master ]
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -28,32 +30,9 @@ jobs:
     - name: Test
       run: dotnet test --no-restore --verbosity normal /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
 
-    #- name: Publish coverage report to coveralls.io
-    #  uses: coverallsapp/github-action@master
-    #  with:
-    #    github-token: ${{ secrets.GITHUB_TOKEN }}
-    #    path-to-lcov: ./tests/DomainResults.Tests/TestResults/coverage.info 
-
-    - name: NuGet publish of DomainResult (Domain)
-      uses: rohith/publish-nuget@v2
+    - name: Publish coverage report to coveralls.io
+      uses: coverallsapp/github-action@master
       with:
-        # Filepath of the project to be packaged, relative to root of repository
-        PROJECT_FILE_PATH: ./src/Domain/DomainResults.Domain.csproj
-        
-        # NuGet package id, used for version detection & defaults to project name
-        PACKAGE_NAME: DomainResult.Domain
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        path-to-lcov: ./tests/DomainResults.Tests/TestResults/coverage.info 
 
-        # API key to authenticate with NuGet server
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
-
-    - name: NuGet publish of DomainResult (full)
-      uses: rohith/publish-nuget@v2
-      with:
-        # Filepath of the project to be packaged, relative to root of repository
-        PROJECT_FILE_PATH: ./src/Mvc/DomainResults.Mvc.csproj
-        
-        # NuGet package id, used for version detection & defaults to project name
-        PACKAGE_NAME: DomainResult
-
-        # API key to authenticate with NuGet server
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
