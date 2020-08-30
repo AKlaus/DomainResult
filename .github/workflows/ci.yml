@@ -24,25 +24,10 @@ jobs:
     - name: Build
       run: dotnet build --configuration Release --no-restore
     - name: Test
-      run: dotnet test --no-restore --verbosity normal
+      run: dotnet test --no-restore --verbosity normal /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
 
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v1.0.13
+    - name: Publish coverage report to coveralls.io
+      uses: coverallsapp/github-action@master
       with:
-        file: "!**/.nuget/packages/**/*.*"
-        # Repository upload token - get it from codecov.io. Required only for private repositories
-        token: ${{secrets.CODECOV_TOKEN}}
-        # Path to coverage file to upload
-        #file: # optional
-        # Comma-separated list of files to upload
-        #files: # optional
-        # Directory to search for coverage reports.
-        #directory: # optional
-        # Flag upload to group coverage metrics (e.g. unittests | integration | ui,chrome)
-        #flags: # optional
-        # Write upload file to path before uploading
-        #path_to_write_report: # optional
-        # Environment variables to tag the upload with (e.g. PYTHON | OS,PYTHON)
-        #env_vars: # optional
-        # Specify whether or not CI build should fail if Codecov runs into an error during upload
-        #fail_ci_if_error: # optional
+        github-token: ${{ secrets.COVERALL_TOKEN }}
+        path-to-lcov: ./tests/DomainResults.Mvc.Tests/TestResults/coverage.info 
