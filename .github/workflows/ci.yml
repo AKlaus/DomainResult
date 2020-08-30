@@ -30,9 +30,15 @@ jobs:
     - name: Test
       run: dotnet test --no-restore --verbosity normal /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
 
-    - name: Publish coverage report to coveralls.io
-      uses: coverallsapp/github-action@master
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        path-to-lcov: ./tests/DomainResults.Tests/TestResults/coverage.info 
+    #- name: Publish coverage report to coveralls.io
+    #  uses: coverallsapp/github-action@master
+    #  with:
+    #    github-token: ${{ secrets.GITHUB_TOKEN }}
+    #    path-to-lcov: ./tests/DomainResults.Tests/TestResults/coverage.info 
 
+    - name: Pack DomainResult (Domain)
+      run: dotnet pack ./src/Domain/DomainResults.Domain.csproj --output nuget-packages --configuration Release
+    - name: Pack DomainResult (full)
+      run: dotnet pack ./src/Mvc/DomainResults.Mvc.csproj --output nuget-packages --configuration Release
+    - name: NuGet publish
+      run: dotnet nuget push nuget-packages/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
