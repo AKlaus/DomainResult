@@ -30,7 +30,10 @@
 		<!-- Optional: Build symbol package (.snupkg) to distribute the PDB containing Source Link -->
 		<IncludeSymbols>true</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-		
+
+		<!-- Prefix for tag names [MinVer] -->
+		<MinVerTagPrefix>v</MinVerTagPrefix>
+
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 	</PropertyGroup>
 
