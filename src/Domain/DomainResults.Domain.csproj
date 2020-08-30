@@ -21,6 +21,7 @@
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     	<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<Deterministic>true</Deterministic>
+		<ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>
 
 		<!-- SourceLink settings (source debugging experiences) -->
 		<!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
