@@ -20,7 +20,9 @@
 
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<Deterministic>true</Deterministic>
-		<ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>
+
+		<!-- Below is commented out till https://github.com/coverlet-coverage/coverlet/issues/900 is fixed -->
+		<!-- <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>  -->
 
 		<!-- SourceLink settings (source debugging experiences) -->
 		<!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
@@ -30,6 +32,9 @@
 		<!-- Optional: Build symbol package (.snupkg) to distribute the PDB containing Source Link -->
 		<IncludeSymbols>true</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+
+		<!-- Prefix for tag names MinVer -->
+		<MinVerTagPrefix>v</MinVerTagPrefix>
 
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 	</PropertyGroup>
