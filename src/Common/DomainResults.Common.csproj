@@ -12,7 +12,7 @@
 		
 		<AssemblyName>DomainResults.Common</AssemblyName>
 		<RootNamespace>DomainResults.Common</RootNamespace>
-		<PackageId>DomainResult.Domain</PackageId>
+		<PackageId>DomainResult.Common</PackageId>
 		<PackageTags>actionresult;domainresult;webapi;service</PackageTags>
 		
 		<SignAssembly>true</SignAssembly>
