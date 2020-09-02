@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace DomainResults.Mvc.Tests
+﻿namespace DomainResults.Mvc.Tests
 {
 	internal class TestDto
 	{

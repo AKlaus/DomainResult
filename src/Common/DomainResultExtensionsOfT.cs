@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
-namespace DomainResults.Domain
+namespace DomainResults.Common
 {
 	public partial class DomainResult
 	{

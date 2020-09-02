@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30128.74
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DomainResults.Domain", "src\Domain\DomainResults.Domain.csproj", "{8FC70E0B-0B36-4477-A40F-D39F7089427A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DomainResults.Common", "src\Common\DomainResults.Common.csproj", "{8FC70E0B-0B36-4477-A40F-D39F7089427A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DomainResults.Mvc", "src\Mvc\DomainResults.Mvc.csproj", "{D6CE0C27-AFE5-4C12-A3D6-B335FEAF9A37}"
 EndProject

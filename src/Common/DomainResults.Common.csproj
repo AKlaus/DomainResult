@@ -10,8 +10,8 @@
 		<Nullable>enable</Nullable>
 		<Features>strict</Features>
 		
-		<AssemblyName>DomainResults.Domain</AssemblyName>
-		<RootNamespace>DomainResults.Domain</RootNamespace>
+		<AssemblyName>DomainResults.Common</AssemblyName>
+		<RootNamespace>DomainResults.Common</RootNamespace>
 		<PackageId>DomainResult.Domain</PackageId>
 		<PackageTags>actionresult;domainresult;webapi;service</PackageTags>
 		

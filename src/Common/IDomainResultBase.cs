@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace DomainResults.Domain
+namespace DomainResults.Common
 {
 	public interface IDomainResultBase
 	{

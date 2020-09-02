@@ -1,4 +1,4 @@
-﻿namespace DomainResults.Domain
+﻿namespace DomainResults.Common
 {
 	public enum DomainOperationStatus
 	{

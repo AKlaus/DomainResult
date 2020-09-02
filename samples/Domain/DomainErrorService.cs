@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
-using DomainResults.Domain;
+using DomainResults.Common;
 
 namespace DomainResults.Examples.Domain
 {

@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Threading.Tasks;
 
-using DomainResults.Domain;
+using DomainResults.Common;
 
 using Microsoft.AspNetCore.Mvc;
 
