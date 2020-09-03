@@ -47,19 +47,21 @@ namespace DomainResults.Mvc.Tests
 		private static IEnumerable<object[]> GetTestCases(bool wrapInTask)
 			=> new List<object[]> 
 				{ 
-					GetTestCase(10,  wrapInTask),							// E.g. { DomainResult.Success(10), res => res.Value }
-					GetTestCase("1", wrapInTask), 
-					GetTestCase(new TestDto { Prop = "1" }, wrapInTask) 
+					GetTestCase(10,  true, wrapInTask),							// E.g. { DomainResult.Success(10), res => res.Value }
+					GetTestCase(10,  false, wrapInTask),
+					GetTestCase("1", true, wrapInTask),
+					GetTestCase("1", false, wrapInTask),
+					GetTestCase(new TestDto { Prop = "1" }, true, wrapInTask) 
 				};
 
-		private static object[] GetTestCase<T>(T domainValue, bool wrapInTask = false)
+		private static object[] GetTestCase<T>(T domainValue, bool genericClass, bool wrapInTask = false)
 			=> wrapInTask 
 				? new object[] {
-					DomainResult.SuccessTask(domainValue), 
+					genericClass ? DomainResult<T>.SuccessTask(domainValue) : DomainResult.SuccessTask(domainValue), 
 					(Func<Task<IDomainResult<T>>, T>)(res => res.Result.Value) 
 				 }
 				: new object[] {
-					DomainResult.Success(domainValue),
+					genericClass ? DomainResult<T>.Success(domainValue) : DomainResult.Success(domainValue),
 					(Func<IDomainResult<T>, T>)(res => res.Value)
 				 };
 	}
