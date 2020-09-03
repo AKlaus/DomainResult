@@ -48,7 +48,7 @@ namespace DomainResults.Mvc
 		public static ActionResult ToActionResult<V, R>(this (V, R) domainResult,
 														Action<ProblemDetails, R>? errorAction = null)
 														where R : IDomainResult
-			=> ToActionResult(domainResult, errorAction, (value) => new OkObjectResult(value));
+			=> domainResult.ToCustomActionResult((value) => new OkObjectResult(value), errorAction);
 
 		/// <summary>
 		///		Returns HTTP code 200 (OK) with a value or a 4xx code in case of an error
@@ -62,7 +62,7 @@ namespace DomainResults.Mvc
 																	 where R : IDomainResult
 		{
 			var domainResult = await domainResultTask;
-			return ToActionResult(domainResult, errorAction, (value) => new OkObjectResult(value));
+			return domainResult.ToCustomActionResult((value) => new OkObjectResult(value), errorAction);
 		}
 	}
 }

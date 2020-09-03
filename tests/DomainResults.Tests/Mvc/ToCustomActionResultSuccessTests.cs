@@ -10,25 +10,23 @@ using Xunit;
 
 namespace DomainResults.Mvc.Tests
 {
-	public class To_201_CreatedResult_Success_Tests
+	public class To_Custom_ActionResult_Success_Tests
 	{
 		[Theory]
 		[MemberData(nameof(DomainResultTestCases))]
-		public void DomainResult_Converted_To_CreatedResult_Test<TValue>(IDomainResult<TValue> domainValue, Func<IDomainResult<TValue>, TValue> getValueFunc, string urlString, Uri urlUri)
+		public void DomainResult_Converted_To_CreatedResult_Test<TValue>(IDomainResult<TValue> domainValue, Func<IDomainResult<TValue>, TValue> getValueFunc, Uri urlUri)
 		{
-			var actionResult = urlUri == null ? domainValue.ToCreatedResult(urlString)
-											  : domainValue.ToCreatedResult(urlUri);
+			var actionResult = domainValue.ToCustomActionResult(val => new CreatedResult(urlUri, val));
 
 			Then_ResponseType_And_Value_And_Url_Are_Correct(actionResult, getValueFunc(domainValue));
 		}
 		public static readonly IEnumerable<object[]> DomainResultTestCases = GetDomainResultTestCases(false);
-
+		
 		[Theory]
 		[MemberData(nameof(DomainResultTaskTestCases))]
-		public async Task DomainResult_Task_Converted_To_CreatedResult_Test<TValue>(Task<IDomainResult<TValue>> domainValueTask, Func<Task<IDomainResult<TValue>>, TValue> getValueFunc, string urlString, Uri urlUri)
+		public async Task DomainResult_Task_Converted_To_CreatedResult_Test<TValue>(Task<IDomainResult<TValue>> domainValueTask, Func<Task<IDomainResult<TValue>>, TValue> getValueFunc,  Uri urlUri)
 		{
-			var actionResult = await (urlUri == null ? domainValueTask.ToCreatedResult(urlString)
-													 : domainValueTask.ToCreatedResult(urlUri));
+			var actionResult = await domainValueTask.ToCustomActionResult(val => new CreatedResult(urlUri, val));
 
 			Then_ResponseType_And_Value_And_Url_Are_Correct(actionResult, getValueFunc(domainValueTask));
 		}
@@ -36,10 +34,9 @@ namespace DomainResults.Mvc.Tests
 
 		[Theory]
 		[MemberData(nameof(ValueResultTestCases))]
-		public void ValueResult_Converted_To_CreatedResult_Test<TValue>((TValue, IDomainResult) domainValue, string urlString, Uri urlUri)
+		public void ValueResult_Converted_To_CreatedResult_Test<TValue>((TValue, IDomainResult) domainValue, Uri urlUri)
 		{
-			var actionResult = urlUri == null ? domainValue.ToCreatedResult(urlString)
-											  : domainValue.ToCreatedResult(urlUri);
+			var actionResult = domainValue.ToCustomActionResult(val => new CreatedResult(urlUri, val));
 
 			Then_ResponseType_And_Value_And_Url_Are_Correct(actionResult, domainValue.Item1);
 		}
@@ -47,10 +44,9 @@ namespace DomainResults.Mvc.Tests
 
 		[Theory]
 		[MemberData(nameof(ValueResultTaskTestCases))]
-		public async Task ValueResult_Task_Converted_To_CreatedResult_Test<TValue>(Task<(TValue, IDomainResult)> domainValueTask, string urlString, Uri urlUri)
+		public async Task ValueResult_Task_Converted_To_CreatedResult_Test<TValue>(Task<(TValue, IDomainResult)> domainValueTask, Uri urlUri)
 		{
-			var actionResult = await (urlUri == null ? domainValueTask.ToCreatedResult(urlString)
-													 : domainValueTask.ToCreatedResult(urlUri));
+			var actionResult = await domainValueTask.ToCustomActionResult(val => new CreatedResult(urlUri, val));
 
 			Then_ResponseType_And_Value_And_Url_Are_Correct(actionResult, domainValueTask.Result.Item1);
 		}
@@ -82,20 +78,20 @@ namespace DomainResults.Mvc.Tests
 		private static IEnumerable<object[]> GetDomainResultTestCases(bool wrapInTask)
 			=> new List<object[]>
 				{
-					GetDomainResultTestCase(10,  false, wrapInTask),						// E.g. { DomainResult.Success(10), res => res.Value }
-					GetDomainResultTestCase("1", true,  wrapInTask),
-					GetDomainResultTestCase(new TestDto { Prop = "1" }, true,  wrapInTask)
+					GetDomainResultTestCase(10,  wrapInTask),						// E.g. { DomainResult.Success(10), res => res.Value }
+					GetDomainResultTestCase("1",  wrapInTask),
+					GetDomainResultTestCase(new TestDto { Prop = "1" },  wrapInTask)
 				};
 
 		private static IEnumerable<object[]> GetValueResultTestCases(bool wrapInTask)
 			=> new List<object[]>
 				{
-					GetValueResultTestCase(10,  false, wrapInTask),						// E.g. { DomainResult.Success(10), res => res.Value }
-					GetValueResultTestCase("1", true,  wrapInTask),
-					GetValueResultTestCase(new TestDto { Prop = "1" }, true, wrapInTask)
+					GetValueResultTestCase(10,  wrapInTask),						// E.g. { DomainResult.Success(10), res => res.Value }
+					GetValueResultTestCase("1",  wrapInTask),
+					GetValueResultTestCase(new TestDto { Prop = "1" }, wrapInTask)
 				};
 
-		private static object[] GetDomainResultTestCase<T>(T domainValue, bool urlAsString, bool wrapInTask = false)
+		private static object[] GetDomainResultTestCase<T>(T domainValue, bool wrapInTask = false)
 			=> new object[] {
 				wrapInTask
 					? DomainResult.SuccessTask(domainValue) as object
@@ -103,18 +99,16 @@ namespace DomainResults.Mvc.Tests
 				wrapInTask
 					? (Func<Task<IDomainResult<T>>, T>)(res => res.Result.Value) as object
 					: (Func<IDomainResult<T>, T>)(res => res.Value),
-				urlAsString ? expectedUrl : null,
-				urlAsString ? null: new Uri(expectedUrl)
+				new Uri(expectedUrl)
 			};
 
-		private static object[] GetValueResultTestCase<T>(T domainValue, bool urlAsString, bool wrapInTask = false)
+		private static object[] GetValueResultTestCase<T>(T domainValue, bool wrapInTask = false)
 			=> new object[] 
 			{
 				wrapInTask  ? Task.FromResult((domainValue, IDomainResult.Success())) as object
 							: (domainValue, IDomainResult.Success()),
-				urlAsString ? expectedUrl : null,
-				urlAsString ? null: new Uri(expectedUrl)
+				new Uri(expectedUrl)
 			};
-		#endregion // Auxiliary methods [PRIVATE] -----------------------------
+		#endregion // Auxiliary methods [PRIVATE] -----------------------------*/
 	}
 }

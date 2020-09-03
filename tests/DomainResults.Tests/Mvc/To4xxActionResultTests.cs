@@ -109,10 +109,10 @@ namespace DomainResults.Mvc.Tests
 
 			var returnValues = new List<object[]>
 				{
-					new object[] { optionalWrapper(domainErrorFunc(new[] { "1" })),			DomainResultExtensions.Conventions.ErrorHttpCode,	 "Bad Request", "1" },
-					new object[] { optionalWrapper(domainErrorFunc(new[] { "1", "2" })),	DomainResultExtensions.Conventions.ErrorHttpCode,	 "Bad Request", "1, 2" },
-					new object[] { optionalWrapper(domainNotFoundFunc(new[] { "1" })),		DomainResultExtensions.Conventions.NotFoundHttpCode, "Not Found",   "1" },
-					new object[] { optionalWrapper(domainNotFoundFunc(new[] { "1", "2" })), DomainResultExtensions.Conventions.NotFoundHttpCode, "Not Found",   "1, 2" },
+					new object[] { optionalWrapper(domainErrorFunc(new[] { "1" })),			ActionResultConventions.ErrorHttpCode,	 "Bad Request", "1" },
+					new object[] { optionalWrapper(domainErrorFunc(new[] { "1", "2" })),	ActionResultConventions.ErrorHttpCode,	 "Bad Request", "1, 2" },
+					new object[] { optionalWrapper(domainNotFoundFunc(new[] { "1" })),		ActionResultConventions.NotFoundHttpCode, "Not Found",   "1" },
+					new object[] { optionalWrapper(domainNotFoundFunc(new[] { "1", "2" })), ActionResultConventions.NotFoundHttpCode, "Not Found",   "1, 2" },
 				};
 			foreach (var val in returnValues)
 				yield return val;

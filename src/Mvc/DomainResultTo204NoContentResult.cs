@@ -19,7 +19,7 @@ namespace DomainResults.Mvc
 		/// <typeparam name="R"> The type derived from <see cref="IDomainResult"/>, e.g. <see cref="DomainResult"/> </typeparam>
 		/// <param name="domainResult"> Details of the operation results </param>
 		/// <param name="errorAction"> Optional processing in case of an error </param>
-		public static ActionResult ToActionResult<R>(this R domainResult,
+		public static IActionResult ToActionResult<R>(this R domainResult,
 													 Action<ProblemDetails, R>? errorAction = null)
 													 where R : IDomainResult
 			=> ToActionResult<object, R, NoContentResult>(null, domainResult, errorAction, (value) => new NoContentResult());
