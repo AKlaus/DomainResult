@@ -4,8 +4,15 @@ using System.Threading.Tasks;
 
 namespace DomainResults.Common
 {
+	/// <summary>
+	///		Represents the status id the domain operation along with returned value
+	/// </summary>
+	/// <typeparam name="T"> Value type of returned by the domain operation </typeparam>
 	public interface IDomainResult<T> : IDomainResultBase
 	{
+		/// <summary>
+		///		Value returned by the domain operation
+		/// </summary>
 		T Value { get; }
 
 #if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1

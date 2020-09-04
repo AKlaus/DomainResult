@@ -4,14 +4,19 @@ using System.Threading.Tasks;
 
 namespace DomainResults.Common
 {
+	/// <inheritdoc/>
 	public class DomainResult<TValue> : IDomainResult<TValue>
 	{
 		private readonly IDomainResult _status;
 
+		/// <inheritdoc/>
 		public DomainOperationStatus Status			=> _status.Status;
+		/// <inheritdoc/>
 		public IReadOnlyCollection<string> Errors	=> _status.Errors;
+		/// <inheritdoc/>
 		public bool IsSuccess						=> _status.IsSuccess;
 
+		/// <inheritdoc/>
 		public TValue Value { get; }
 
 		protected DomainResult(IDomainResult errorDetails)				: this(default!, errorDetails) { }

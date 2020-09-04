@@ -5,10 +5,14 @@ using System.Threading.Tasks;
 
 namespace DomainResults.Common
 {
+	/// <inheritdoc/>
 	public partial class DomainResult : IDomainResult
 	{
+		/// <inheritdoc/>
 		public DomainOperationStatus Status { get; }
+		/// <inheritdoc/>
 		public IReadOnlyCollection<string> Errors { get; }
+		/// <inheritdoc/>
 		public bool IsSuccess => Status == DomainOperationStatus.Success;
 
 		protected DomainResult()														: this(DomainOperationStatus.Success, string.Empty) { }

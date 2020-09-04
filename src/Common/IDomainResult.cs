@@ -4,18 +4,43 @@ using System.Threading.Tasks;
 
 namespace DomainResults.Common
 {
+	/// <summary>
+	///		Defines a status of the domain operation (e.g. 'success', 'error', 'not found')
+	/// </summary>
 	public interface IDomainResult: IDomainResultBase
 	{
 #if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
+		/// <summary>
+		///		Get 'success' status
+		/// </summary>
 		static IDomainResult Success()								=> DomainResult.Success();
+		/// <summary>
+		///		Get 'not found' status. Later it can be converte to HTTP code 404 (NotFound)
+		/// </summary>
+		/// <param name="message"> Optional message </param>
 		static IDomainResult NotFound(string? message = null)		=> DomainResult.NotFound(message);
+		/// <summary>
+		///		Get 'not found' status. Later it can be converte to HTTP code 404 (NotFound)
+		/// </summary>
+		/// <param name="messages"> Optional messages </param>
 		static IDomainResult NotFound(IEnumerable<string> messages) => DomainResult.NotFound(messages);
 		static IDomainResult Error(string? error = null)			=> DomainResult.Error(error);
 		static IDomainResult Error(IEnumerable<string> errors)		=> DomainResult.Error(errors);
 		static IDomainResult Error(IEnumerable<ValidationResult> validationResults) => DomainResult.Error(validationResults);
 
+		/// <summary>
+		///		Get 'success' status wrapped in a <see cref="Task{TResult}"/>
+		/// </summary>
 		static Task<IDomainResult> SuccessTask()								=> DomainResult.SuccessTask();
+		/// <summary>
+		///		Get 'not found' status wrapped in a <see cref="Task{TResult}"/>. Later it can be converte to HTTP code 404 (NotFound)
+		/// </summary>
+		/// <param name="message"> Optional message </param>
 		static Task<IDomainResult> NotFoundTask(string? message = null)			=> DomainResult.NotFoundTask(message);
+		/// <summary>
+		///		Get 'not found' status wrapped in a <see cref="Task{TResult}"/>. Later it can be converte to HTTP code 404 (NotFound)
+		/// </summary>
+		/// <param name="messages"> Optional messages </param>
 		static Task<IDomainResult> NotFoundTask(IEnumerable<string> messages)	=> DomainResult.NotFoundTask(messages);
 		static Task<IDomainResult> ErrorTask(string? message = null)			=> DomainResult.ErrorTask(message);
 		static Task<IDomainResult> ErrorTask(IEnumerable<string> errors)		=> DomainResult.ErrorTask(errors);

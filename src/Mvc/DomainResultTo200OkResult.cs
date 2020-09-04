@@ -16,20 +16,19 @@ namespace DomainResults.Mvc
 		/// <summary>
 		///		Returns HTTP code 200 (OK) with a value or a 4xx code in case of an error
 		/// </summary>
-		/// <typeparam name="T"> The type derived from <see cref="IDomainResult{V}"/>, e.g. <see cref="DomainResult{V}"/> </typeparam>
-		/// <typeparam name="V"> The value type returned in a successful response </typeparam>
-		/// <param name="domainResult"> Details of the operation results </param>
+		/// <typeparam name="T"> The returned value type from the domain operation in <paramref name="domainResult"/> </typeparam>
+		/// <param name="domainResult"> Details of the operation results (<see cref="DomainResult{T}"/>) </param>
 		/// <param name="errorAction"> Optional processing in case of an error </param>
 		public static ActionResult ToActionResult<T>(this IDomainResult<T> domainResult,
 													 Action<ProblemDetails, IDomainResult<T>>? errorAction = null)
 			=> ToActionResult(domainResult.Value, domainResult, errorAction, (value) => new OkObjectResult(value));
 
 		/// <summary>
-		///		Returns HTTP code 200 (OK) with a value or a 4xx code in case of an error
+		///		Returns HTTP code 200 (OK) with a value or a 4xx code in case of an error.
+		///		The reesult is wrapped in a <see cref="Task{V}"/>
 		/// </summary>
-		/// <typeparam name="T"> The type derived from <see cref="IDomainResult{V}"/>, e.g. <see cref="DomainResult{V}"/> </typeparam>
-		/// <typeparam name="V"> The value type returned in a successful response </typeparam>
-		/// <param name="domainResultTask"> A task with details of the operation results </param>
+		/// <typeparam name="T"> The returned value type from the domain operation in <paramref name="domainResultTask"/> </typeparam>
+		/// <param name="domainResultTask"> Details of the operation results (<see cref="DomainResult{T}"/>) </param>
 		/// <param name="errorAction"> Optional processing in case of an error </param>
 		public static async Task<IActionResult> ToActionResult<T>(this Task<IDomainResult<T>> domainResultTask,
 																  Action<ProblemDetails, IDomainResult<T>>? errorAction = null)
@@ -51,7 +50,8 @@ namespace DomainResults.Mvc
 			=> domainResult.ToCustomActionResult((value) => new OkObjectResult(value), errorAction);
 
 		/// <summary>
-		///		Returns HTTP code 200 (OK) with a value or a 4xx code in case of an error
+		///		Returns HTTP code 200 (OK) with a value or a 4xx code in case of an error.
+		///		The reesult is wrapped in a <see cref="Task{T}"/>
 		/// </summary>
 		/// <typeparam name="V"> The value type returned in a successful response </typeparam>
 		/// <typeparam name="R"> The type derived from <see cref="IDomainResult"/>, e.g. <see cref="DomainResult"/> </typeparam>

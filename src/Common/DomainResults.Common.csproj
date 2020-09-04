@@ -22,6 +22,9 @@
     	<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<Deterministic>true</Deterministic>
 		
+		<!-- Generate XML docs for all targets https://stackoverflow.com/a/47118584/968003 -->
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+
 		<!-- Below is commented out till https://github.com/coverlet-coverage/coverlet/issues/900 is fixed -->
 		<!-- <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>  -->
 
@@ -38,10 +41,6 @@
 		<MinVerTagPrefix>v</MinVerTagPrefix>
 
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp3.0|AnyCPU'">
-	  <NoWarn>1701;1702;1591</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>

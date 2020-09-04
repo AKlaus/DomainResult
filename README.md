@@ -1,5 +1,5 @@
 # DomainResult
-![CI](https://github.com/AKlaus/DomainResult/workflows/CI/badge.svg) [![Coverage](https://coveralls.io/repos/github/AKlaus/DomainResult/badge.svg?branch=master)](https://coveralls.io/github/AKlaus/DomainResult?branch=master)
+![CI](https://github.com/AKlaus/DomainResult/workflows/CI/badge.svg) [![Test Coverage](https://coveralls.io/repos/github/AKlaus/DomainResult/badge.svg?branch=master)](https://coveralls.io/github/AKlaus/DomainResult?branch=master) [![NuGet version](https://img.shields.io/nuget/v/DomainResult.svg)](https://www.nuget.org/packages/DomainResult)
 <br/>
 
 A tiny NuGet package for the [ASP.NET Web API](https://dotnet.microsoft.com/apps/aspnet/apis) realm addressing two challenge posed by separation of the _Domain Layer_ (aka _Business Layer_) from the _Application Layer_:
