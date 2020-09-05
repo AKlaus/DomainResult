@@ -104,8 +104,7 @@ namespace DomainResults.Mvc.Tests
 		/// <returns> Input test parameters </returns>
 		private static IEnumerable<object[]> TestCases<T>(Func<IEnumerable<string>,T> domainErrorFunc, Func<IEnumerable<string>, T> domainNotFoundFunc, Func<T, object> wrapInFunc = null)
 		{
-			Func<T, object> optionalWrapper 
-				= (T value) => wrapInFunc != null ? wrapInFunc(value) : value as object;
+			object optionalWrapper (T value) => wrapInFunc != null ? wrapInFunc(value) : value as object;
 
 			var returnValues = new List<object[]>
 				{

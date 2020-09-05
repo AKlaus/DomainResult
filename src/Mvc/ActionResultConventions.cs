@@ -1,5 +1,8 @@
 ﻿namespace DomainResults.Mvc
 {
+	/// <summary>
+	///		Conventions for returned HTTP codes and messages
+	/// </summary>
 	public static class ActionResultConventions
 	{
 		/// <summary>
