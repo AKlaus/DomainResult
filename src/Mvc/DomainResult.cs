@@ -27,11 +27,11 @@ namespace DomainResults.Mvc
 		public delegate T ValueToActionResultFunc<V, T>([AllowNull] V value) where T : IActionResult;
 
 		private static ActionResult ToActionResult<V, R, TResult>([AllowNull] V value,
-														R errorDetails,
-														Action<ProblemDetails, R>? errorAction,
-														ValueToActionResultFunc<V, TResult> valueToActionResultFunc)
-														where R : IDomainResultBase
-														where TResult : ActionResult
+																	R errorDetails,
+																	Action<ProblemDetails, R>? errorAction,
+																	ValueToActionResultFunc<V, TResult> valueToActionResultFunc)
+																	where R : IDomainResultBase
+																	where TResult : ActionResult
 			=> errorDetails.Status switch
 			{
 				DomainOperationStatus.NotFound	=> SadResponse(ActionResultConventions.NotFoundHttpCode, ActionResultConventions.NotFoundProblemDetailsTitle, errorDetails, errorAction),

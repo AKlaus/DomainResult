@@ -3,7 +3,6 @@
 using DomainResults.Examples.Domain;
 using DomainResults.Mvc;
 
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DomainResults.Examples.WebApi.Controllers
@@ -15,27 +14,11 @@ namespace DomainResults.Examples.WebApi.Controllers
 		private readonly DomainSuccessService _service = new DomainSuccessService();
 
 		[HttpGet("[action]")]
-		[ProducesResponseType(StatusCodes.Status204NoContent)]
-		public NoContentResult Get204NoContent()
+		public IActionResult Get200OkWithNumber()
 		{
-#pragma warning disable CS8603 // Possible null reference return.
-			return _service.GetSuccess().ToActionResult() as NoContentResult;
-#pragma warning restore CS8603 // Possible null reference return.
-		}
-		[HttpGet("[action]")]
-		[ProducesResponseType(StatusCodes.Status204NoContent)]
-		public Task<IActionResult> Get204NoContentTask()
-		{
-			return _service.GetSuccessTask().ToActionResult();
+			return _service.GetSuccessWithNumericValue().ToActionResult();
 		}
 
-		[HttpGet("[action]")]
-		public OkResult Get200OkWithNumber()
-		{
-#pragma warning disable CS8603 // Possible null reference return.
-			return _service.GetSuccessWithNumericValue().ToActionResult() as OkResult;
-#pragma warning restore CS8603 // Possible null reference return.
-		}
 		[HttpGet("[action]")]
 		public Task<IActionResult> Get200OkWithNumberTask()
 		{

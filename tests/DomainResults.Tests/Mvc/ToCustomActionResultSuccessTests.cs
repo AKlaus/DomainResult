@@ -20,6 +20,16 @@ namespace DomainResults.Mvc.Tests
 
 			Then_ResponseType_And_Value_And_Url_Are_Correct(actionResult, getValueFunc(domainValue));
 		}
+#if !NETCOREAPP2_0
+		[Theory]
+		[MemberData(nameof(DomainResultTestCases))]
+		public void DomainResult_Converted_To_CreatedResultOfT_Test<TValue>(IDomainResult<TValue> domainValue, Func<IDomainResult<TValue>, TValue> getValueFunc, Uri urlUri)
+		{
+			var actionResult = domainValue.ToCustomActionResultOfT(val => new CreatedResult(urlUri, val));
+
+			Then_ResponseType_And_Value_And_Url_Are_Correct(actionResult, getValueFunc(domainValue));
+		}
+#endif
 		public static readonly IEnumerable<object[]> DomainResultTestCases = GetDomainResultTestCases(false);
 		
 		[Theory]
@@ -30,6 +40,16 @@ namespace DomainResults.Mvc.Tests
 
 			Then_ResponseType_And_Value_And_Url_Are_Correct(actionResult, getValueFunc(domainValueTask));
 		}
+#if !NETCOREAPP2_0
+		[Theory]
+		[MemberData(nameof(DomainResultTaskTestCases))]
+		public async Task DomainResult_Task_Converted_To_CreatedResultOfT_Test<TValue>(Task<IDomainResult<TValue>> domainValueTask, Func<Task<IDomainResult<TValue>>, TValue> getValueFunc, Uri urlUri)
+		{
+			var actionResult = await domainValueTask.ToCustomActionResultOfT(val => new CreatedResult(urlUri, val));
+
+			Then_ResponseType_And_Value_And_Url_Are_Correct(actionResult, getValueFunc(domainValueTask));
+		}
+#endif
 		public static readonly IEnumerable<object[]> DomainResultTaskTestCases = GetDomainResultTestCases(true);
 
 		[Theory]
@@ -40,6 +60,16 @@ namespace DomainResults.Mvc.Tests
 
 			Then_ResponseType_And_Value_And_Url_Are_Correct(actionResult, domainValue.Item1);
 		}
+#if !NETCOREAPP2_0
+		[Theory]
+		[MemberData(nameof(ValueResultTestCases))]
+		public void ValueResult_Converted_To_CreatedResultOfT_Test<TValue>((TValue, IDomainResult) domainValue, Uri urlUri)
+		{
+			var actionResult = domainValue.ToCustomActionResultOfT(val => new CreatedResult(urlUri, val));
+
+			Then_ResponseType_And_Value_And_Url_Are_Correct(actionResult, domainValue.Item1);
+		}
+#endif
 		public static readonly IEnumerable<object[]> ValueResultTestCases = GetValueResultTestCases(false);
 
 		[Theory]
@@ -50,6 +80,16 @@ namespace DomainResults.Mvc.Tests
 
 			Then_ResponseType_And_Value_And_Url_Are_Correct(actionResult, domainValueTask.Result.Item1);
 		}
+#if !NETCOREAPP2_0
+		[Theory]
+		[MemberData(nameof(ValueResultTaskTestCases))]
+		public async Task ValueResult_Task_Converted_To_CreatedResultOfT_Test<TValue>(Task<(TValue, IDomainResult)> domainValueTask, Uri urlUri)
+		{
+			var actionResult = await domainValueTask.ToCustomActionResultOfT(val => new CreatedResult(urlUri, val));
+
+			Then_ResponseType_And_Value_And_Url_Are_Correct(actionResult, domainValueTask.Result.Item1);
+		}
+#endif
 		public static readonly IEnumerable<object[]> ValueResultTaskTestCases = GetValueResultTestCases(true);
 
 		#region Auxiliary methods [PRIVATE] -----------------------------------
@@ -59,12 +99,18 @@ namespace DomainResults.Mvc.Tests
 		/// <summary>
 		///		The 'THEN' section of the tests, checking the Response type, HTTP code, location URL and the returned value
 		/// </summary>
-		/// <param name="actionResult"> The <see cref="IActionResult"/> in question </param>
+		/// <param name="actionResult"> The <see cref="ActionResult"/> in question </param>
 		/// <param name="expectedValue"> The expected identification value in the response </param>
-		private void Then_ResponseType_And_Value_And_Url_Are_Correct<TValue>(IActionResult actionResult, TValue expectedValue)
+		private void Then_ResponseType_And_Value_And_Url_Are_Correct<TValue, TAction>(TAction actionResult, TValue expectedValue)
 		{
 			// THEN the response type is correct
-			var createdResult = actionResult as CreatedResult;
+			CreatedResult createdResult = null;
+			if (typeof(TAction).IsAssignableFrom(typeof(IActionResult)))
+				createdResult = actionResult as CreatedResult;
+			else
+#if !NETCOREAPP2_0
+				createdResult = (actionResult as ActionResult<TValue>)?.Result as CreatedResult;
+#endif
 			Assert.NotNull(createdResult);
 			Assert.Equal(201, createdResult.StatusCode);
 

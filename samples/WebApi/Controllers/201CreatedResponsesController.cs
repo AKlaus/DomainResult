@@ -18,31 +18,31 @@ namespace DomainResults.Examples.WebApi.Controllers
 		[ProducesResponseType(StatusCodes.Status201Created)]
 		public IActionResult Get201CreatedFromTuple()
 		{
-			return _service.GetSuccessWithNumericValueTuple().ToCustomActionResult(val => CreatedAtRoute(nameof(GetById), new { id = val }, val));
+			return _service.GetSuccessWithNumericValueTuple().ToCustomActionResult(val => CreatedAtAction(nameof(GetById), new { id = val }, val));
 		}
 
 		[HttpGet("[action]")]
 		[ProducesResponseType(StatusCodes.Status201Created)]
-		public Task<ActionResult> Get201CreatedFromTupleTask()
+		public Task<IActionResult> Get201CreatedFromTupleTask()
 		{
-			return _service.GetSuccessWithNumericValueTupleTask().ToCustomActionResult(val => CreatedAtRoute(nameof(GetById), new { id = val }, val));
+			return _service.GetSuccessWithNumericValueTupleTask().ToCustomActionResult(val => CreatedAtAction(nameof(GetById), new { id = val }, val));
 		}
 
 		[HttpGet("[action]")]
 		[ProducesResponseType(StatusCodes.Status201Created)]
 		public IActionResult Get201Created()
 		{
-			return _service.GetSuccessWithNumericValue().ToCustomActionResult(val => CreatedAtRoute(nameof(GetById), new { id = val }, val));
+			return _service.GetSuccessWithNumericValue().ToCustomActionResult(val => CreatedAtAction(nameof(GetById), new { id = val }, val));
 		}
 
 		[HttpGet("[action]")]
 		[ProducesResponseType(StatusCodes.Status201Created)]
-		public Task<ActionResult> Get201CreatedTask()
+		public Task<IActionResult> Get201CreatedTask()
 		{
-			return _service.GetSuccessWithNumericValueTask().ToCustomActionResult(val => CreatedAtRoute(nameof(GetById), new { id = val }, val));
+			return _service.GetSuccessWithNumericValueTask().ToCustomActionResult(val => CreatedAtAction(nameof(GetById), new { id = val }, val));
 		}
 
-		[HttpGet("{id}", Name = nameof(GetById))]
+		[HttpGet("{id}")]
 		public IActionResult GetById([FromRoute] int id)
 		{
 			return Ok(new { id });
