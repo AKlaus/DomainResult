@@ -6,12 +6,12 @@
 	public static class ActionResultConventions
 	{
 		/// <summary>
-		///		The HTTP code to return for client request error. Can be either 400 or 422 (default)
+		///		The HTTP code to return for client request error. Can be either 400 (default) or 422
 		/// </summary>
 		/// <remarks>
 		///		Opinions: https://stackoverflow.com/a/52098667/968003, https://stackoverflow.com/a/20215807/968003
 		/// </remarks>
-		public static int ErrorHttpCode { get; set; } = 422;
+		public static int ErrorHttpCode { get; set; } = 400;
 		/// <summary>
 		///		The title in the returned JSON accompanying the <see cref="ErrorHttpCode"/> response (HTTP code 4xx).
 		///		The default value: "Bad Request"
