@@ -117,6 +117,7 @@ It has more than **50 static extension methods** to return a successful or unsuc
 | `IDomainResult.ErrorTask("Ahh!")`<sup>[1](#myfootnote1)</sup><sup>, [2](#myfootnote2)</sup>   | `Task<IDomainResult>`, where `Status` = `DomainOperationStatus.Error`<br>and `Errors` = `new []{ "Ahh!" }`                                 |
 | `IDomainResult.Success(10)`<sup>[1](#myfootnote1)</sup>                                       | `(int, IDomainResult)`, where `Status` = `DomainOperationStatus.Success`<br>and the `int` type value = `10`                                |
 | `IDomainResult.NotFoundTask<int>()`<sup>[1](#myfootnote1)</sup><sup>, [2](#myfootnote2)</sup> | `Task<(int, IDomainResult)>`, where `Status` = `DomainOperationStatus.NotFound`<br>and the `int` type value = `default` (`0` in this case) |
+
 <sup><a name="myfootnote1">1</a></sup> <small>Note that extension methods on interface are supported starting from `.NET Standard 2.1`. For older version use static extensions on `DomainResult` class.</small><br>
 <sup><a name="myfootnote2">2</a></sup> <small>The `Task` suffix on the extension methods indicates that the returned type is wrapped in a `Task` (e.g. `SuccessTask()`, `ErrorTask()`, `NotFoundTask()`).</small>
 
@@ -128,6 +129,7 @@ It has more than **50 static extension methods** to return a successful or unsuc
 | --------------------------------------------- | --------------------------------------------------- |
 | `IActionResult`                               | `Task<IActionResult>`                               |
 | `ActionResult<T>`<sup>[3](#myfootnote3)</sup> | `Task<ActionResult<T>>`<sup>[3](#myfootnote3)</sup> |
+
 <sup><a name="myfootnote3">3</a></sup> <small>[ActionResult&lt;T&gt;](https://docs.microsoft.com/en-us/aspnet/core/web-api/action-return-types#actionresultt-type) type was introduced in ASP.NET Core 2.1.</small>
 
 ### Examples:
