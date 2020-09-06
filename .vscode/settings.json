@@ -1,0 +1,15 @@
+{
+	"editor.detectIndentation": false,
+	"editor.formatOnSave": true,
+	"editor.insertSpaces": false,
+	"cSpell.language": "en-GB",
+	"cSpell.words": ["Unprocessable"],
+	"search.exclude": {
+		"**/.cache": true,
+		"**/.git": true,
+		"**/.vs": true,
+		"**/.vscode": true,
+		"**/bin": true,
+		"**/obj": true
+	}
+}

@@ -11,7 +11,7 @@ Two tiny NuGet packages addressing challenges in the [ASP.NET Web API](https://d
 - eliminating a dependency on _Microsoft.AspNetCore.Mvc_ (and [IActionResult](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.iactionresult) in particular) in the _Domain Layer_ (usually a separate project);
 - mapping a variety of responses from the _Domain Layer_ to appropriate [IActionResult](https://docs.microsoft.com/en-us/aspnet/core/web-api/action-return-types)-related type.
 
-## Common use-case
+## Basic use-case
 
 For a _Domain Layer_ method like this:
 
@@ -63,25 +63,21 @@ public Task<ActionResult<InvoiceResponseDto>> GetInvoice()
 ```
 
 The above returns:
-- HTTP code `200 OK` along with an instance of `InvoiceResponseDto` for successful execution.
-- HTTP code `400 Bad Request` with a message "_Try harder_" for invoice ID < 1.
-- HTTP code `404 Not Found` for incorrect invoice ID.
+- HTTP code `200 OK` along with an instance of `InvoiceResponseDto` on successful executions.
+- HTTP code `400 Bad Request` or `422 Unprocessable Entity` (configurable) with a message "_Try harder_" when the invoice ID < 1.
+- HTTP code `404 Not Found` for incorrect invoice IDs.
 
 All non-2xx codes are wrapped in [ProblemDetails](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.problemdetails) as per [RFC 7807](https://tools.ietf.org/html/rfc7807).
 
 ## Quick start
 
 - Install [DomainResult](https://www.nuget.org/packages/DomainResult) NuGet package to the _Web API_ project.
-- Install [DomainResult.Common](https://www.nuget.org/packages/DomainResult.Common) NuGet package to the _Domain Layer_ (aka _Business Layer_) projects. If the _Domain Layer_ is in the _Web API_ project, then skip this step.
-- Follow the documentation below, `samples` in the repo or your heart.
+- Install [DomainResult.Common](https://www.nuget.org/packages/DomainResult.Common) NuGet package to the _Domain Layer_ (aka _Business Layer_) projects. If the _Domain Layer_ is inside the _Web API_ project, then skip this step.
+- Follow the documentation below, `samples` in the repo and common sense.
 
-The library targets `.NET Standard 2.0` and `.NET Core 3.0` (see [supported .NET implementations](https://dotnet.microsoft.com/platform/dotnet-standard#versions)).
+The library targets `.NET Standard 2.0` ([supported .NET implementations](https://dotnet.microsoft.com/platform/dotnet-standard#versions)) and `.NET Core 3.0`.
 
-## How it works
-
-There are 2 packages: `DomainResult.Common` and `DomainResult` (that refers `DomainResult.Common` under the hood).
-
-### DomainResult.Common package
+## 'DomainResult.Common' package. How it works?
 
 **Wraps response of the domain operation to handle the happy path (returning of the result) and various sad paths (errors like '_not found_').**
 
@@ -105,10 +101,40 @@ And `IDomainResult<T>` interface that also adds
 T Value { get; }
 ```
 
-It has more than `50` static extension methods to satisfy various ways of returning the result from the domain method.
+It has more than **50 static extension methods** to return a successful or unsuccessful result from the domain method with one of the following types:
 
-### DomainResult package
+| Returned type        | Returned type wrapped in `Task` |
+| -------------------- | ------------------------------- |
+| `IDomainResult`      | `Task<IDomainResult>`           |
+| `IDomainResult<T>`   | `Task<IDomainResult<T>>`        |
+| `(T, IDomainResult)` | `Task<(T, IDomainResult)>`      |
 
-**Convert a `IDomainResult`-based object to various `ActionResult`-based types providing more than `20` static extension methods.**
+### Examples:
+| Extension method                                                                              | Details on the returned object                                                                                                             |
+| --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `IDomainResult.Success()`<sup>[1](#myfootnote1)</sup>                                         | `IDomainResult`, where `Status` = `DomainOperationStatus.Success`                                                                          |
+| `IDomainResult.Error("Ahh!")`<sup>[1](#myfootnote1)</sup>                                     | `IDomainResult`, where `Status` = `DomainOperationStatus.Error`<br>and `Errors` = `new []{ "Ahh!" }`                                       |
+| `IDomainResult.ErrorTask("Ahh!")`<sup>[1](#myfootnote1)</sup><sup>, [2](#myfootnote2)</sup>   | `Task<IDomainResult>`, where `Status` = `DomainOperationStatus.Error`<br>and `Errors` = `new []{ "Ahh!" }`                                 |
+| `IDomainResult.Success(10)`<sup>[1](#myfootnote1)</sup>                                       | `(int, IDomainResult)`, where `Status` = `DomainOperationStatus.Success`<br>and the `int` type value = `10`                                |
+| `IDomainResult.NotFoundTask<int>()`<sup>[1](#myfootnote1)</sup><sup>, [2](#myfootnote2)</sup> | `Task<(int, IDomainResult)>`, where `Status` = `DomainOperationStatus.NotFound`<br>and the `int` type value = `default` (`0` in this case) |
+<sup><a name="myfootnote1">1</a></sup> <small>Note that extension methods on interface are supported starting from `.NET Standard 2.1`. For older version use static extensions on `DomainResult` class.</small><br>
+<sup><a name="myfootnote2">2</a></sup> <small>The `Task` suffix on the extension methods indicates that the returned type is wrapped in a `Task` (e.g. `SuccessTask()`, `ErrorTask()`, `NotFoundTask()`).</small>
 
-This package has dependency on `Microsoft.AspNetCore.*` namespace and `DomainResult.Common` package.
+## 'DomainResult' package. How it works?
+
+**Converts a `IDomainResult`-based object to various `ActionResult`-based types providing more than `20` static extension methods.**
+
+| Returned type                                 | Returned type wrapped in `Task`                     |
+| --------------------------------------------- | --------------------------------------------------- |
+| `IActionResult`                               | `Task<IActionResult>`                               |
+| `ActionResult<T>`<sup>[3](#myfootnote3)</sup> | `Task<ActionResult<T>>`<sup>[3](#myfootnote3)</sup> |
+<sup><a name="myfootnote3">3</a></sup> <small>[ActionResult&lt;T&gt;](https://docs.microsoft.com/en-us/aspnet/core/web-api/action-return-types#actionresultt-type) type was introduced in ASP.NET Core 2.1.</small>
+
+### Examples:
+| Extension method                    | Details on the returned object                                                                                                                                                                                     |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `IDomainResult.ToActionResult()`    | `IActionResult` with HTTP code `204 NoContent`,<br>or `404 NotFound` if `IDomainResult.Status==DomainOperationStatus.NotFound`,<br>or `400`/`422` HTTP code if `IDomainResult.Status==DomainOperationStatus.Error` |
+| `IDomainResult<T>.ToActionResult()` | `IActionResult` with HTTP code `204 NoContent`                                                                                                                                                                     |
+
+
+'DomainResult' package has dependency on `Microsoft.AspNetCore.*` namespace and `DomainResult.Common` package.
