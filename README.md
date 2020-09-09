@@ -118,20 +118,20 @@ It has more than **50 static extension methods** to return a successful or unsuc
 ### Examples:
 ```cs
 // Successful result with no value
-IDomainResult res = IDomainResult.Success();			// res.Status is 'Success'
+IDomainResult res = IDomainResult.Success();        // res.Status is 'Success'
 // Successful result with an int
-(value, state) = IDomainResult.Success(10);				// value = 10; state.Status is 'Success'
+(value, state) = IDomainResult.Success(10);         // value = 10; state.Status is 'Success'
 // The same but wrapped in a task
-var res = IDomainResult.SuccessTask(10);				// res is Task<(int, IDomainResult)>
+var res = IDomainResult.SuccessTask(10);            // res is Task<(int, IDomainResult)>
 
 // Error message
-IDomainResult res = IDomainResult.Error("Ahh!");		// res.Status is 'Error' and res.Errors = new []{ "Ahh!" }
+IDomainResult res = IDomainResult.Error("Ahh!");    // res.Status is 'Error' and res.Errors = new []{ "Ahh!" }
 // Error when expected an int
-(value, state) = IDomainResult.Error<int>("Ahh!");		// value = 0, state.Status is 'Error' and state.Errors = new []{ "Ahh!" }
+(value, state) = IDomainResult.Error<int>("Ahh!");  // value = 0, state.Status is 'Error' and state.Errors = new []{ "Ahh!" }
 
 // 'Not Found' acts like the errors
-(value, state) = IDomainResult.NotFound<int>();			// value = 0, state.Status is 'NotFound'
-Task<(int val, IDomainResult state)> res = IDomainResult.NotFoundTask<int>();	// value = 0, state.Status is 'NotFound'
+(value, state) = IDomainResult.NotFound<int>();     // value = 0, state.Status is 'NotFound'
+Task<(int val, IDomainResult state)> res = IDomainResult.NotFoundTask<int>();  // value = 0, state.Status is 'NotFound'
 ```
 <sub><sup>Notes:</sup></sub><br>
 <sub><sup>- Support for extension methods on interfaces starts from `.NET Standard 2.1`. For older versions use static extensions on `DomainResult` class.</sup></sub><br>
