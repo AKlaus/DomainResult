@@ -116,14 +116,23 @@ It has more than **50 static extension methods** to return a successful or unsuc
 | `(T, IDomainResult)` | `Task<(T, IDomainResult)>`      |
 
 ### Examples:
-| Extension method                    | Details on the returned object                                                                                                                          |
-| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `IDomainResult.Success()`           | `IDomainResult`, where `Status` is `Success`                                                                                                            |
-| `IDomainResult.Error("Ahh!")`       | `IDomainResult`, where `Status` is `Error`<br>and `Errors` = `new []{ "Ahh!" }`                                                                         |
-| `IDomainResult.ErrorTask("Ahh!")`   | `Task<IDomainResult>`, where `Status` is `Error`<br>and `Errors` = `new []{ "Ahh!" }`                                                                   |
-| `IDomainResult.Success(10)`         | `(int, IDomainResult)`, where `Status` is `Success`<br>and the `int` type value = `10`                                                                  |
-| `IDomainResult.NotFoundTask<int>()` | `Task<(int, IDomainResult)>`, where `Status` is `NotFound`,<br> no custom messages provided<br> and the `int` type value = `default` (`0` in this case) |
+```cs
+// Successful result with no value
+IDomainResult res = IDomainResult.Success();			// res.Status is 'Success'
+// Successful result with an int
+(value, state) = IDomainResult.Success(10);				// value = 10; state.Status is 'Success'
+// The same but wrapped in a task
+var res = IDomainResult.SuccessTask(10);				// res is Task<(int, IDomainResult)>
 
+// Error message
+IDomainResult res = IDomainResult.Error("Ahh!");		// res.Status is 'Error' and res.Errors = new []{ "Ahh!" }
+// Error when expected an int
+(value, state) = IDomainResult.Error<int>("Ahh!");		// value = 0, state.Status is 'Error' and state.Errors = new []{ "Ahh!" }
+
+// 'Not Found' acts like the errors
+(value, state) = IDomainResult.NotFound<int>();			// value = 0, state.Status is 'NotFound'
+Task<(int val, IDomainResult state)> res = IDomainResult.NotFoundTask<int>();	// value = 0, state.Status is 'NotFound'
+```
 <sub><sup>Notes:</sup></sub><br>
 <sub><sup>- Support for extension methods on interfaces starts from `.NET Standard 2.1`. For older versions use static extensions on `DomainResult` class.</sup></sub><br>
 <sub><sup>- The `Task` suffix on the extension methods indicates that the returned type is wrapped in a `Task` (e.g. `SuccessTask()`, `ErrorTask()`, `NotFoundTask()`).</sup></sub>
