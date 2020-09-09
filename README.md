@@ -15,7 +15,7 @@ Two tiny NuGet packages addressing challenges in the [ASP.NET Web API](https://d
 
 For a _Domain Layer_ method like this:
 
-```csharp
+```cs
 public async Task<(InvoiceResponseDto, IDomainResult)> GetInvoice(int invoiceId)
 {
     if (invoiceId < 0)
@@ -35,7 +35,7 @@ public async Task<(InvoiceResponseDto, IDomainResult)> GetInvoice(int invoiceId)
 
 or if you're against [ValueTuple](https://docs.microsoft.com/en-us/dotnet/api/system.valuetuple), then a more traditional method signature:
 
-```csharp
+```cs
 public async Task<IDomainResult<InvoiceResponseDto>> GetInvoice(int invoiceId)
 {
     if (invoiceId < 0)
@@ -47,7 +47,7 @@ public async Task<IDomainResult<InvoiceResponseDto>> GetInvoice(int invoiceId)
 
 The _Web API_ controller method would look like:
 
-```csharp
+```cs
 [ProducesResponseType(typeof(InvoiceResponseDto), StatusCodes.Status200OK)]
 [ProducesResponseType(StatusCodes.Status400BadRequest)]
 [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -58,7 +58,7 @@ public Task<IActionResult> GetInvoice()
 ```
 or for ASP.NET Core 2.1+ we can leverage [ActionResult&lt;T&gt;](https://docs.microsoft.com/en-us/aspnet/core/web-api/action-return-types#actionresultt-type)
 
-```csharp
+```cs
 [ProducesResponseType(StatusCodes.Status200OK)]
 [ProducesResponseType(StatusCodes.Status400BadRequest)]
 [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -86,11 +86,11 @@ The library targets `.NET Standard 2.0` ([supported .NET implementations](https:
 ## 'DomainResult.Common' package. How it works?
 
 A tiny package with no dependency on `Microsoft.AspNetCore.*` namespaces that provides:
-- data types for returning from domain operations (wraps up the returned value, operation status and error messages if applicable);
+- data types for returning from domain operations (wraps up the returned value and adds operation status with error messages if applicable);
 - extension methods to effortlessly form the desired response.
 
 It's built around `IDomainResult` interface that has 3 properties:
-```csharp
+```cs
 // Collection of error messages if any
 IReadOnlyCollection<string> Errors { get; }
 
@@ -102,7 +102,7 @@ DomainOperationStatus Status { get; }
 ```
 
 And `IDomainResult<T>` interface that also adds
-```csharp
+```cs
 // Value returned by the domain operation
 T Value { get; }
 ```
@@ -124,9 +124,9 @@ It has more than **50 static extension methods** to return a successful or unsuc
 | `IDomainResult.Success(10)`         | `(int, IDomainResult)`, where `Status` is `Success`<br>and the `int` type value = `10`                                                                  |
 | `IDomainResult.NotFoundTask<int>()` | `Task<(int, IDomainResult)>`, where `Status` is `NotFound`,<br> no custom messages provided<br> and the `int` type value = `default` (`0` in this case) |
 
-<small>Notes:
-- Support for extension methods on interfaces starts from `.NET Standard 2.1`. For older version use static extensions on `DomainResult` class.
-- The `Task` suffix on the extension methods indicates that the returned type is wrapped in a `Task` (e.g. `SuccessTask()`, `ErrorTask()`, `NotFoundTask()`).</small>
+<sub><sup>Notes:</sup></sub><br>
+<sub><sup>- Support for extension methods on interfaces starts from `.NET Standard 2.1`. For older versions use static extensions on `DomainResult` class.</sup></sub><br>
+<sub><sup>- The `Task` suffix on the extension methods indicates that the returned type is wrapped in a `Task` (e.g. `SuccessTask()`, `ErrorTask()`, `NotFoundTask()`).</sup></sub>
 
 ## 'DomainResult' package. How it works?
 
@@ -137,9 +137,15 @@ It has more than **50 static extension methods** to return a successful or unsuc
 | `IActionResult`                               | `Task<IActionResult>`                               |
 | `ActionResult<T>`<sup>[*](#myfootnote1)</sup> | `Task<ActionResult<T>>`<sup>[*](#myfootnote1)</sup> |
 
-<sup><a name="myfootnote1">*</a></sup> <small>[ActionResult&lt;T&gt;](https://docs.microsoft.com/en-us/aspnet/core/web-api/action-return-types#actionresultt-type) type was introduced in ASP.NET Core 2.1.</small>
+<sup><a name="myfootnote1">*</a></sup> <sub><sup>[ActionResult&lt;T&gt;](https://docs.microsoft.com/en-us/aspnet/core/web-api/action-return-types#actionresultt-type) type was introduced in ASP.NET Core 2.1.</sup></sub>
 
-If successful (`IDomainResult.Status` is `Success`), then returns a corresponding `2xx` HTTP code. Otherwise, returns HTTP code `404 NotFound` if `IDomainResult.Status` is `NotFound` or `400`/`422` HTTP code if `IDomainResult.Status` is `Error`.
+Mapping rules are built around `IDomainResult.Status`:
+
+| `IDomainResult.Status` | Returned `ActionResult`-based type                                                                               |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `Success`              | If no value is returned then `204 NoContent`, otherwise - `200 OK`<br>Supports custom codes (e.g. `201 Created`) |
+| `NotFound`             | HTTP code `404 NotFound`                                                                                         |
+| `Error`                | HTTP code `400` (default) or can be configured to `422`                                                          |
 
 ### Basic examples:
 | Extension method                                                                                                            | Returned object if successful                                                                    |
@@ -151,7 +157,7 @@ If successful (`IDomainResult.Status` is `Success`), then returns a correspondin
 | `IDomainResult<T>.ToActionResultOfT()`,<br>`(T, IDomainResult).ToActionResultOfT()`<sup>[*](#myfootnote2)</sup>             | `ActionResult<T>`<sup>[*](#myfootnote2)</sup> with HTTP code `200 Ok` along with the value       |
 | `Task<IDomainResult<T>>.ToActionResultOfT()`,<br>`Task<(T, IDomainResult)>.ToActionResultOfT()`<sup>[*](#myfootnote2)</sup> | `Task<ActionResult<T>>`<sup>[*](#myfootnote2)</sup> with HTTP code `200 Ok` along with the value |
 
-<sup><a name="myfootnote1">*</a></sup> <small>[ActionResult&lt;T&gt;](https://docs.microsoft.com/en-us/aspnet/core/web-api/action-return-types#actionresultt-type) type was introduced in ASP.NET Core 2.1.</small>
+<sup><a name="myfootnote1">*</a></sup> <sub><sup>[ActionResult&lt;T&gt;](https://docs.microsoft.com/en-us/aspnet/core/web-api/action-return-types#actionresultt-type) type was introduced in ASP.NET Core 2.1.</sup></sub>
 
 ### Custom ActionResult type for 2xx responses:
 | Extension method                                                                                         | Returned object if successful                                                                                                                                   |
