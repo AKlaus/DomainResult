@@ -39,7 +39,7 @@ public async Task<(InvoiceResponseDto, IDomainResult)> GetInvoice(int invoiceId)
         return IDomainResult.NotFound<InvoiceResponseDto>();
 
     // Returns the invoice
-    IDomainResult.Success(invoice);
+    return IDomainResult.Success(invoice);
 }
 ```
 
@@ -63,7 +63,7 @@ The _Web API_ controller method would look like:
 [ProducesResponseType(StatusCodes.Status404NotFound)]
 public Task<IActionResult> GetInvoice()
 {
-    _service.GetInvoice().ToActionResult();
+    return _service.GetInvoice().ToActionResult();
 }
 ```
 or for ASP.NET Core 2.1+ we can leverage [ActionResult&lt;T&gt;](https://docs.microsoft.com/en-us/aspnet/core/web-api/action-return-types#actionresultt-type)
@@ -74,7 +74,7 @@ or for ASP.NET Core 2.1+ we can leverage [ActionResult&lt;T&gt;](https://docs.mi
 [ProducesResponseType(StatusCodes.Status404NotFound)]
 public Task<ActionResult<InvoiceResponseDto>> GetInvoice()
 {
-    _service.GetInvoice().ToActionResultOfT();
+    return _service.GetInvoice().ToActionResultOfT();
 }
 ```
 
