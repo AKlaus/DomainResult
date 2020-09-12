@@ -130,22 +130,23 @@ IDomainResult res = IDomainResult.Error("Ahh!");    // res.Status is 'Error' and
 (value, state) = IDomainResult.NotFound<int>();     // value = 0, state.Status is 'NotFound'
 Task<(int val, IDomainResult state)> res = IDomainResult.NotFoundTask<int>();  // value = 0, state.Status is 'NotFound'
 ```
-<sub><sup>Notes:</sup></sub><br>
-<sub><sup>- Support for extension methods on interfaces starts from `.NET Standard 2.1`. For older versions use static extensions on `DomainResult` class.</sup></sub><br>
-<sub><sup>- The `Task` suffix on the extension methods indicates that the returned type is wrapped in a `Task` (e.g. `SuccessTask()`, `ErrorTask()`, `NotFoundTask()`).</sup></sub>
+*Notes*:
+
+- Support for extension methods on interfaces starts from `.NET Standard 2.1`. For older versions use static extensions on `DomainResult` class.
+- The `Task` suffix on the extension methods indicates that the returned type is wrapped in a `Task` (e.g. `SuccessTask()`, `ErrorTask()`, `NotFoundTask()`).
 
 ## 'DomainResult' package. How it works?
 
-**Converts a `IDomainResult`-based object to various `ActionResult`-based types providing more than `20` static extension methods.**
+**Converts a `IDomainResult`-based object to various `ActionResult`-based types providing 20+ static extension methods.**
 
-| Returned type                                 | Returned type wrapped in `Task`                     |
-| --------------------------------------------- | --------------------------------------------------- |
-| `IActionResult`                               | `Task<IActionResult>`                               |
-| `ActionResult<T>`<sup>[*](#myfootnote1)</sup> | `Task<ActionResult<T>>`<sup>[*](#myfootnote1)</sup> |
+| Returned type                                 | Returned type wrapped in `Task`                     | Extension methods                                    |
+| --------------------------------------------- | --------------------------------------------------- | ---------------------------------------------------- |
+| `IActionResult`                               | `Task<IActionResult>`                               | `ToActionResult()`<br>`ToCustomActionResult()`       |
+| `ActionResult<T>`<sup>[*](#myfootnote1)</sup> | `Task<ActionResult<T>>`<sup>[*](#myfootnote1)</sup> | `ToActionResultOfT()`<br>`ToCustomActionResultOfT()` |
 
 <sup><a name="myfootnote1">*</a></sup> <sub><sup>[ActionResult&lt;T&gt;](https://docs.microsoft.com/en-us/aspnet/core/web-api/action-return-types#actionresultt-type) type was introduced in ASP.NET Core 2.1.</sup></sub>
 
-Mapping rules are built around `IDomainResult.Status`:
+The mapping rules are built around `IDomainResult.Status`:
 
 | `IDomainResult.Status` | Returned `ActionResult`-based type                                                                               |
 | ---------------------- | ---------------------------------------------------------------------------------------------------------------- |
@@ -157,29 +158,55 @@ Mapping rules are built around `IDomainResult.Status`:
 ```cs
 // Returns `IActionResult` with HTTP code `204 NoContent` on success
 IDomainResult.ToActionResult();
-// Returns `Task<IActionResult>` with HTTP code `204 NoContent` on success
+// // The same as above, but returns `Task<IActionResult>`
 Task<IDomainResult>.ToActionResult();
 
-// Return `IActionResult` with HTTP code `200 Ok` along with the value
+// Returns `IActionResult` with HTTP code `200 Ok` along with the value
 IDomainResult<T>.ToActionResult();
 (T, IDomainResult).ToActionResult();
-// Return `Task<IActionResult>` with HTTP code `200 Ok` along with the value
+// // The same as above, but returns `Task<IActionResult>
 Task<IDomainResult<T>>.ToActionResult();
 Task<(T, IDomainResult)>.ToActionResult();
 
-// Return `ActionResult<T>` with HTTP code `200 Ok` along with the value
+// Returns `ActionResult<T>` (for ASP.NET Core 2.1 and up) with HTTP code `200 Ok` along with the value
 IDomainResult<T>.ToActionResultOfT();
 (T, IDomainResult).ToActionResultOfT();
-// Return `Task<ActionResult<T>>` with HTTP code `200 Ok` along with the value
+// The same as above, but returns `Task<ActionResult<T>>`
 Task<IDomainResult<T>>.ToActionResultOfT();
 Task<(T, IDomainResult)>.ToActionResultOfT();
 ```
-<sub><sup>[ActionResult&lt;T&gt;](https://docs.microsoft.com/en-us/aspnet/core/web-api/action-return-types#actionresultt-type) type was introduced in ASP.NET Core 2.1.</sup></sub>
 
-### Custom ActionResult type for 2xx responses:
-| Extension method                                                                                         | Returned object if successful                                                                                                                                   |
-| -------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `IDomainResult<T>.ToCustomActionResult(val => CreatedAtAction(nameof(GetById), new { id = val }, val));` | `CreatedAtActionResult` with HTTP code `201 Created` with returned value `val` and also `location` HTTP header pointing to action `GetById([FromRoute] int id)` |
+### Custom ActionResult response for 2xx HTTP codes
 
-'DomainResult' package has dependency on `Microsoft.AspNetCore.*` namespace and `DomainResult.Common` package.
+When returning a standard `200` or `204` HTTP code is not enough, there are extension methods to knock yourself out - `ToCustomActionResult()` and `ToCustomActionResultOfT`.
+
+Below is an example of returning [201 Created](https://httpstatuses.com/201) along with a location header field pointing to the created resource(s) (as per [RFC7231](https://tools.ietf.org/html/rfc7231#section-7.2)).
+
+```cs
+[HttpPost]
+[ProducesResponseType(StatusCodes.Status201Created)]
+public ActionResult<int> CreateItem(CreateItemDto dto)
+{
+	// Service method for creating an item and returning its ID.
+	// Can return any of the IDomainResult types (e.g. (int, IDomainResult), IDomainResult<int>, Task<...>, etc).
+	var result = _service.CreateItem(dto);
+	// Custom conversion of the successful response. For others, it returns a standard 4xx HTTP code
+	return result.ToCustomActionResultOfT(
+				// On success returns '201 Created' with a link to '/{id}' route in HTTP headers
+				val => CreatedAtAction(nameof(GetById), new { id = val }, val)
+			);
+}
+
+// Returns an entity by ID
+[HttpGet("{id}")]
+public IActionResult GetById([FromRoute] int id)
+{
+	...
+}
+```
+
+Possibilities here are quite broad as `Microsoft.AspNetCore.Mvc.ControllerBase` class has all possible extensions. Here are some:
+- [AcceptedAtAction](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.controllerbase.acceptedataction) and [AcceptedAtRoute](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.controllerbase.acceptedatroute) for HTTP code [202 Accepted](https://httpstatuses.com/202);
+- [File](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.controllerbase.File) or [PhysicalFile](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.controllerbase.PhysicalFile) for returning `200 OK` with the specified `Content-Type`, and the specified file name;
+- [Redirect](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.controllerbase.Redirect), [RedirectToRoute](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.controllerbase.RedirectToRoute), [RedirectToAction](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.controllerbase.RedirectToAction) for returning [302 Found](https://httpstatuses.com/302) with various details.
 
