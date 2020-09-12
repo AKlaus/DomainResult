@@ -11,6 +11,16 @@ Two tiny NuGet packages addressing challenges in the [ASP.NET Web API](https://d
 - eliminating dependency on _Microsoft.AspNetCore.Mvc_ (and [IActionResult](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.iactionresult) in particular) in the _Domain Layer_ (usually a separate project);
 - mapping various of responses from the _Domain Layer_ to appropriate [ActionResult](https://docs.microsoft.com/en-us/aspnet/core/web-api/action-return-types)-related type.
 
+### Content:
+- [Basic use-case](#basic-use-case)
+- [Quick start](#quick-start)
+- ['DomainResult.Common' package. How it works?](#domainresultcommon-package-how-it-works)
+  - [Examples:](#examples)
+- ['DomainResult' package. How it works?](#domainresult-package-how-it-works)
+  - [Basic examples:](#basic-examples)
+  - [Custom ActionResult response for 2xx HTTP codes](#custom-actionresult-response-for-2xx-http-codes)
+  - [Custom error handling](#custom-error-handling)
+
 ## Basic use-case
 
 For a _Domain Layer_ method like this:
@@ -70,10 +80,9 @@ public Task<ActionResult<InvoiceResponseDto>> GetInvoice()
 
 The above returns:
 - HTTP code `200 OK` along with an instance of `InvoiceResponseDto` on successful executions.
-- HTTP code `400 Bad Request` with a message "_Try harder_" when the invoice ID < 1 (the HTTP code can be configured to `422 Unprocessable Entity`).
-- HTTP code `404 Not Found` for incorrect invoice IDs.
-
-All non-2xx codes are wrapped in [ProblemDetails](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.problemdetails) as per [RFC 7807](https://tools.ietf.org/html/rfc7807).
+- Non-2xx codes wrapped in [ProblemDetails](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.problemdetails) (as per [RFC 7807](https://tools.ietf.org/html/rfc7807)):
+  - HTTP code `400 Bad Request` with a message "_Try harder_" when the invoice ID < 1 (the HTTP code can be configured to `422 Unprocessable Entity`).
+  - HTTP code `404 Not Found` for incorrect invoice IDs.
 
 ## Quick start
 
@@ -104,7 +113,7 @@ And `IDomainResult<T>` interface that also adds
 T Value { get; }
 ```
 
-It has more than **50 static extension methods** to return a successful or unsuccessful result from the domain method with one of the following types:
+It has **50+ static extension methods** to return a successful or unsuccessful result from the domain method with one of the following types:
 
 | Returned type        | Returned type wrapped in `Task` |
 | -------------------- | ------------------------------- |
@@ -146,6 +155,8 @@ Task<(int val, IDomainResult state)> res = IDomainResult.NotFoundTask<int>();  /
 
 <sup><a name="myfootnote1">*</a></sup> <sub><sup>[ActionResult&lt;T&gt;](https://docs.microsoft.com/en-us/aspnet/core/web-api/action-return-types#actionresultt-type) type was introduced in ASP.NET Core 2.1.</sup></sub>
 
+<sub><sup>Note: 'DomainResult' package has dependency on `Microsoft.AspNetCore.*` namespace and `DomainResult.Common` package.</sup></sub>
+
 The mapping rules are built around `IDomainResult.Status`:
 
 | `IDomainResult.Status` | Returned `ActionResult`-based type                                                                               |
@@ -158,20 +169,20 @@ The mapping rules are built around `IDomainResult.Status`:
 ```cs
 // Returns `IActionResult` with HTTP code `204 NoContent` on success
 IDomainResult.ToActionResult();
-// // The same as above, but returns `Task<IActionResult>`
+// The same as above, but returns `Task<IActionResult>` with no need in 'await'
 Task<IDomainResult>.ToActionResult();
 
 // Returns `IActionResult` with HTTP code `200 Ok` along with the value
 IDomainResult<T>.ToActionResult();
 (T, IDomainResult).ToActionResult();
-// // The same as above, but returns `Task<IActionResult>
+// As above, but returns `Task<IActionResult>` with no need in 'await'
 Task<IDomainResult<T>>.ToActionResult();
 Task<(T, IDomainResult)>.ToActionResult();
 
 // Returns `ActionResult<T>` (for ASP.NET Core 2.1 and up) with HTTP code `200 Ok` along with the value
 IDomainResult<T>.ToActionResultOfT();
 (T, IDomainResult).ToActionResultOfT();
-// The same as above, but returns `Task<ActionResult<T>>`
+// As above, but returns `Task<ActionResult<T>>` with no need in 'await'
 Task<IDomainResult<T>>.ToActionResultOfT();
 Task<(T, IDomainResult)>.ToActionResultOfT();
 ```
@@ -180,21 +191,21 @@ Task<(T, IDomainResult)>.ToActionResultOfT();
 
 When returning a standard `200` or `204` HTTP code is not enough, there are extension methods to knock yourself out - `ToCustomActionResult()` and `ToCustomActionResultOfT`.
 
-Below is an example of returning [201 Created](https://httpstatuses.com/201) along with a location header field pointing to the created resource(s) (as per [RFC7231](https://tools.ietf.org/html/rfc7231#section-7.2)).
+Example of returning [201 Created](https://httpstatuses.com/201) along with a location header field pointing to the created resource (as per [RFC7231](https://tools.ietf.org/html/rfc7231#section-7.2)):
 
 ```cs
 [HttpPost]
 [ProducesResponseType(StatusCodes.Status201Created)]
 public ActionResult<int> CreateItem(CreateItemDto dto)
 {
-	// Service method for creating an item and returning its ID.
-	// Can return any of the IDomainResult types (e.g. (int, IDomainResult), IDomainResult<int>, Task<...>, etc).
-	var result = _service.CreateItem(dto);
-	// Custom conversion of the successful response. For others, it returns a standard 4xx HTTP code
-	return result.ToCustomActionResultOfT(
-				// On success returns '201 Created' with a link to '/{id}' route in HTTP headers
-				val => CreatedAtAction(nameof(GetById), new { id = val }, val)
-			);
+  // Service method for creating an item and returning its ID.
+  // Can return any of the IDomainResult types (e.g. (int, IDomainResult), IDomainResult<int>, Task<...>, etc).
+  var result = _service.CreateItem(dto);
+  // Custom conversion of the successful response. For others, it returns a standard 4xx HTTP code
+  return result.ToCustomActionResultOfT(
+            // On success returns '201 Created' with a link to '/{id}' route in HTTP headers
+            val => CreatedAtAction(nameof(GetById), new { id = val }, val)
+        );
 }
 
 // Returns an entity by ID
@@ -205,8 +216,46 @@ public IActionResult GetById([FromRoute] int id)
 }
 ```
 
-Possibilities here are quite broad as `Microsoft.AspNetCore.Mvc.ControllerBase` class has all possible extensions. Here are some:
+It works with any of extensions in `Microsoft.AspNetCore.Mvc.ControllerBase`. Here are some:
 - [AcceptedAtAction](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.controllerbase.acceptedataction) and [AcceptedAtRoute](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.controllerbase.acceptedatroute) for HTTP code [202 Accepted](https://httpstatuses.com/202);
 - [File](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.controllerbase.File) or [PhysicalFile](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.controllerbase.PhysicalFile) for returning `200 OK` with the specified `Content-Type`, and the specified file name;
 - [Redirect](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.controllerbase.Redirect), [RedirectToRoute](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.controllerbase.RedirectToRoute), [RedirectToAction](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.controllerbase.RedirectToAction) for returning [302 Found](https://httpstatuses.com/302) with various details.
 
+### Custom error handling
+
+The default HTTP codes for statuses `Error` and `NotFound` are defined in public static properties of `ActionResultConventions` with default values:
+
+```cs
+// The HTTP code to return for client request error
+int ErrorHttpCode { get; set; }                 = 400;
+// The 'title' property of the returned JSON on HTTP code 400
+string ErrorProblemDetailsTitle { get; set; }   = "Bad Request";
+// The HTTP code to return when a record not found
+int NotFoundHttpCode { get; set; }              = 404;
+// The 'title' property of the returned JSON on HTTP code 404
+string NotFoundProblemDetailsTitle { get; set; }= "Not Found";
+```
+
+Feel free to change them (hmm... remember they're static with all the pros and cons). The reasons you may want it:
+- Localisation of the titles
+- Favour [422](https://httpstatuses.com/422) HTTP code in stead of [400](https://httpstatuses.com/400) (see opinions [here](https://stackoverflow.com/a/52098667/968003) and [here](https://stackoverflow.com/a/20215807/968003)).
+
+The extension methods also support custom response in case of the `IDomainResult.Status` being `Error` or `NotFound`:
+
+```cs
+[HttpGet("[action]")]
+[ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+public Task<ActionResult<int>> GetErrorWithCustomStatusAndMessage()
+{
+  var res = _service.GetErrorWithNoMessage();
+  return res.ToActionResultOfT(
+            (problemDetails, state) =>
+            {
+              if (state.Errors?.Any() == true)
+                return;
+              problemDetails.Status = 422;		// Replace the default 400 code
+              problemDetails.Title = "D'oh!";	// Replace the default 'Bad Request' title
+              problemDetails.Detail = "I wish devs put more efforts into it...";	// Custom message
+            });
+}
+```
