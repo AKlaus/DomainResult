@@ -90,18 +90,15 @@ A tiny package with no dependency on `Microsoft.AspNetCore.*` namespaces that pr
 - extension methods to effortlessly form the desired response.
 
 It's built around `IDomainResult` interface that has 3 properties:
+
 ```cs
-// Collection of error messages if any
-IReadOnlyCollection<string> Errors { get; }
-
-// Flag, whether the current status is successful or not
-bool IsSuccess { get; }
-
-// Current status of the domain operation: Success, Error, NotFound
-DomainOperationStatus Status { get; }
+IReadOnlyCollection<string> Errors { get; } // Collection of error messages if any
+bool IsSuccess { get; }                     // Flag, whether the current status is successful or not
+DomainOperationStatus Status { get; }       // Current status of the domain operation: Success, Error, NotFound
 ```
 
 And `IDomainResult<T>` interface that also adds
+
 ```cs
 // Value returned by the domain operation
 T Value { get; }
@@ -157,16 +154,27 @@ Mapping rules are built around `IDomainResult.Status`:
 | `Error`                | HTTP code `400` (default) or can be configured to `422`                                                          |
 
 ### Basic examples:
-| Extension method                                                                                                            | Returned object if successful                                                                    |
-| --------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| `IDomainResult.ToActionResult()`                                                                                            | `IActionResult` with HTTP code `204 NoContent`                                                   |
-| `Task<IDomainResult>.ToActionResult()`                                                                                      | `Task<IActionResult>` with HTTP code `204 NoContent`                                             |
-| `IDomainResult<T>.ToActionResult()`,<br>`(T, IDomainResult).ToActionResult()`                                               | `IActionResult` with HTTP code `200 Ok` along with the value                                     |
-| `Task<IDomainResult<T>>.ToActionResult()`,<br>`Task<(T, IDomainResult)>.ToActionResult()`                                   | `Task<IActionResult>` with HTTP code `200 Ok` along with the value                               |
-| `IDomainResult<T>.ToActionResultOfT()`,<br>`(T, IDomainResult).ToActionResultOfT()`<sup>[*](#myfootnote2)</sup>             | `ActionResult<T>`<sup>[*](#myfootnote2)</sup> with HTTP code `200 Ok` along with the value       |
-| `Task<IDomainResult<T>>.ToActionResultOfT()`,<br>`Task<(T, IDomainResult)>.ToActionResultOfT()`<sup>[*](#myfootnote2)</sup> | `Task<ActionResult<T>>`<sup>[*](#myfootnote2)</sup> with HTTP code `200 Ok` along with the value |
+```cs
+// Returns `IActionResult` with HTTP code `204 NoContent` on success
+IDomainResult.ToActionResult();
+// Returns `Task<IActionResult>` with HTTP code `204 NoContent` on success
+Task<IDomainResult>.ToActionResult();
 
-<sup><a name="myfootnote1">*</a></sup> <sub><sup>[ActionResult&lt;T&gt;](https://docs.microsoft.com/en-us/aspnet/core/web-api/action-return-types#actionresultt-type) type was introduced in ASP.NET Core 2.1.</sup></sub>
+// Return `IActionResult` with HTTP code `200 Ok` along with the value
+IDomainResult<T>.ToActionResult();
+(T, IDomainResult).ToActionResult();
+// Return `Task<IActionResult>` with HTTP code `200 Ok` along with the value
+Task<IDomainResult<T>>.ToActionResult();
+Task<(T, IDomainResult)>.ToActionResult();
+
+// Return `ActionResult<T>` with HTTP code `200 Ok` along with the value
+IDomainResult<T>.ToActionResultOfT();
+(T, IDomainResult).ToActionResultOfT();
+// Return `Task<ActionResult<T>>` with HTTP code `200 Ok` along with the value
+Task<IDomainResult<T>>.ToActionResultOfT();
+Task<(T, IDomainResult)>.ToActionResultOfT();
+```
+<sub><sup>[ActionResult&lt;T&gt;](https://docs.microsoft.com/en-us/aspnet/core/web-api/action-return-types#actionresultt-type) type was introduced in ASP.NET Core 2.1.</sup></sub>
 
 ### Custom ActionResult type for 2xx responses:
 | Extension method                                                                                         | Returned object if successful                                                                                                                                   |
