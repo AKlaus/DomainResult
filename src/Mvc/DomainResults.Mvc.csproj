@@ -2,7 +2,9 @@
 
 	<PropertyGroup>
 		<Authors>Alex Klaus</Authors>
-		<Description>Simple way for decoupling the Service Layer response from the IActionResult complexity of the WebAPI in the .NET</Description>
+		<Description>Converts a IDomainResult-based object (returned from the Domain Layer) to various ActionResult-based types providing 20+ static extension methods.
+To be used in Web API projects (usually to accompany 'DomainResult.Common' package used in the Domain Layer).
+		</Description>
 		<Copyright>Copyright Alex Klaus</Copyright>
 
 		<TargetFrameworks>netcoreapp3.0;netstandard2.0</TargetFrameworks>

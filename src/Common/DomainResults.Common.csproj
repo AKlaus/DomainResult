@@ -2,7 +2,10 @@
 
 	<PropertyGroup>
 		<Authors>Alex Klaus</Authors>
-		<Description>Simple way for decoupling the Service Layer response from the IActionResult complexity of the WebAPI in the .NET</Description>
+		<Description>Decouples domain operation results from ActionResult-based types of Web API.
+Provides:
+ - data types for returning from domain operations (wraps up the returned value and adds operation status with error messages if applicable);
+ - 50+ extension methods to effortlessly form the desired response.</Description>
 		<Copyright>Copyright Alex Klaus</Copyright>
 
 		<TargetFrameworks>netcoreapp3.0;netstandard2.0</TargetFrameworks>
