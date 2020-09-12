@@ -15,9 +15,9 @@ Two tiny NuGet packages addressing challenges in the [ASP.NET Web API](https://d
 - [Basic use-case](#basic-use-case)
 - [Quick start](#quick-start)
 - ['DomainResult.Common' package. How it works?](#domainresultcommon-package-how-it-works)
-  - [Examples:](#examples)
+  - [Examples](#examples)
 - ['DomainResult' package. How it works?](#domainresult-package-how-it-works)
-  - [Basic examples:](#basic-examples)
+  - [Basic examples](#basic-examples)
   - [Custom ActionResult response for 2xx HTTP codes](#custom-actionresult-response-for-2xx-http-codes)
   - [Custom error handling](#custom-error-handling)
 
@@ -143,6 +143,7 @@ Task<(int val, IDomainResult state)> res = IDomainResult.NotFoundTask<int>();  /
 
 - Support for extension methods on interfaces starts from `.NET Standard 2.1`. For older versions use static extensions on `DomainResult` class.
 - The `Task` suffix on the extension methods indicates that the returned type is wrapped in a `Task` (e.g. `SuccessTask()`, `ErrorTask()`, `NotFoundTask()`).
+- The `Error()` and `NotFound()` methods take as input parameters: `string`, `string[]` or [ValidationResult](https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.dataannotations.validationresult).
 
 ## 'DomainResult' package. How it works?
 
