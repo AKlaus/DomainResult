@@ -14,12 +14,13 @@ Two tiny NuGet packages addressing challenges in the [ASP.NET Web API](https://d
 ### Content:
 - [Basic use-case](#basic-use-case)
 - [Quick start](#quick-start)
-- ['DomainResult.Common' package. How it works?](#domainresultcommon-package-how-it-works)
+- ['DomainResult.Common' package. Returning result from Domain Layer method](#domainresultcommon-package-returning-result-from-domain-layer-method)
   - [Examples](#examples)
-- ['DomainResult' package. How it works?](#domainresult-package-how-it-works)
+- ['DomainResult' package. Conversion to ActionResult](#domainresult-package-conversion-to-actionresult)
   - [Basic examples](#basic-examples)
   - [Custom ActionResult response for 2xx HTTP codes](#custom-actionresult-response-for-2xx-http-codes)
   - [Custom error handling](#custom-error-handling)
+- [Why not FluentResults?](#why-not-fluentresults)
 
 ## Basic use-case
 
@@ -92,7 +93,7 @@ The above returns:
 
 The library targets `.NET Standard 2.0` ([supported .NET implementations](https://dotnet.microsoft.com/platform/dotnet-standard#versions)) and `.NET Core 3.0`.
 
-## 'DomainResult.Common' package. How it works?
+## 'DomainResult.Common' package. Returning result from Domain Layer method
 
 A tiny package with no dependency on `Microsoft.AspNetCore.*` namespaces that provides:
 - data types for returning from domain operations (wraps up the returned value and adds operation status with error messages if applicable);
@@ -145,7 +146,7 @@ Task<(int val, IDomainResult state)> res = IDomainResult.NotFoundTask<int>();  /
 - The `Task` suffix on the extension methods indicates that the returned type is wrapped in a `Task` (e.g. `SuccessTask()`, `ErrorTask()`, `NotFoundTask()`).
 - The `Error()` and `NotFound()` methods take as input parameters: `string`, `string[]` or [ValidationResult](https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.dataannotations.validationresult).
 
-## 'DomainResult' package. How it works?
+## 'DomainResult' package. Conversion to ActionResult
 
 **Converts a `IDomainResult`-based object to various `ActionResult`-based types providing 20+ static extension methods.**
 
@@ -260,3 +261,13 @@ public Task<ActionResult<int>> GetErrorWithCustomStatusAndMessage()
             });
 }
 ```
+
+## Why not FluentResults? 
+
+[FluentResults](https://github.com/altmann/FluentResults) is a great tool for indicating success or failure in the returned object. But there are differnet objectives:
+- _FluentResults_ provides a generalised container for returning results and potential errors;
+- _DomainResult_ is focused on a more specialised case when the Domain Logic is consumed by Web API. 
+
+Hence, _DomainResult_ provides out-of-the-box:
+- Specialised extension methods (like `IDomainResult.NotFound()` that in _FluentResult_ is no different to other errors)
+- Supports various ways of conversions to `ActionResult`, functionality that is not available in _FluentResults_ and quite weak in the other NuGets extending _FluentResults_.
