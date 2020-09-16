@@ -44,7 +44,7 @@ public async Task<(InvoiceResponseDto, IDomainResult)> GetInvoice(int invoiceId)
 }
 ```
 
-or if you're against [ValueTuple](https://docs.microsoft.com/en-us/dotnet/api/system.valuetuple), then a more traditional method signature:
+or if you're against [ValueTuple](https://docs.microsoft.com/en-us/dotnet/api/system.valuetuple) or static methods on interfaces (it's [new in C# 8](https://docs.microsoft.com/en-us/dotnet/csharp/tutorials/default-interface-methods-versions#provide-parameterization)), then a more traditional method signature:
 
 ```cs
 public async Task<IDomainResult<InvoiceResponseDto>> GetInvoice(int invoiceId)
@@ -52,7 +52,15 @@ public async Task<IDomainResult<InvoiceResponseDto>> GetInvoice(int invoiceId)
     if (invoiceId < 0)
         // Returns a validation error
         return DomainResult.Error<InvoiceResponseDto>("Try harder");
-    ...
+
+    var invoice = await DataContext.Invoices.FindAsync(invoiceId);
+    
+    if (invoice == null)
+        // Returns a Not Found response
+        return DomainResult.NotFound<InvoiceResponseDto>();
+
+    // Returns the invoice
+    return DomainResult.Success(invoice);
 }
 ```
 
