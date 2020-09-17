@@ -43,12 +43,18 @@ namespace DomainResults.Common
 		}
 		#endregion // Constructors [PROTECTED] --------------------------------
 
+		/// <inheritdoc/>
+		public bool TryGetValue(out TValue value)
+		{
+			value = IsSuccess ? Value : default!;
+			return IsSuccess;
+		}
+
 		/// <summary>
 		///		Implictly converts the specified <paramref name="value"/> to an <see cref="DomainResult{TValue}"/>
 		/// </summary>
 		/// <param name="value"> The parameter for conversion </param>
 		public static implicit operator DomainResult<TValue>(TValue value) => new DomainResult<TValue>(value);
-
 		// TODO: Consider to depricate the extension methods in this class (below) in favour of ones in 'DomainResult'
 
 		#region Extensions of 'IDomainResult<T>' [STATIC, PUBLIC] -------------

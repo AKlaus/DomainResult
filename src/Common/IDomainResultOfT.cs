@@ -15,6 +15,13 @@ namespace DomainResults.Common
 		/// </summary>
 		T Value { get; }
 
+		/// <summary>
+		///		Sets <paramref name="value"/> to the Value if <see cref="IDomainResultBase.Status"/> is <see cref="DomainOperationStatus.Success"/>
+		/// </summary>
+		/// <param name="value"> The value to be returned </param>
+		/// <returns> True if the value is returned. Otherwise - false </returns>
+		bool TryGetValue(out T value);
+
 #if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
 		// TODO: Consider to depricate the extension methods in this interface (below) and move them to 'IDomainResult'
 
