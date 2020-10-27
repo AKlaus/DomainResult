@@ -2,6 +2,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
+// ReSharper disable MemberCanBePrivate.Global
+
 namespace DomainResults.Common
 {
 	/// <inheritdoc/>
@@ -41,6 +43,14 @@ namespace DomainResults.Common
 			Value = value;
 			_status = errorDetails;
 		}
+		
+		/// <summary>
+		/// 	Deconstructs the instance to a (TValue, IDomainResult) pair
+		/// </summary>
+		/// <param name="value"> The result value returned by the domain operation </param>
+		/// <param name="details"> Details of the domain operation (like status) </param>
+		public void Deconstruct(out TValue value, out IDomainResult details) => (value, details) = (Value, _status);
+
 		#endregion // Constructors [PROTECTED] --------------------------------
 
 		/// <inheritdoc/>
@@ -51,11 +61,12 @@ namespace DomainResults.Common
 		}
 
 		/// <summary>
-		///		Implictly converts the specified <paramref name="value"/> to an <see cref="DomainResult{TValue}"/>
+		///		Implicitly converts the specified <paramref name="value"/> to an <see cref="DomainResult{TValue}"/>
 		/// </summary>
 		/// <param name="value"> The parameter for conversion </param>
 		public static implicit operator DomainResult<TValue>(TValue value) => new DomainResult<TValue>(value);
-		// TODO: Consider to depricate the extension methods in this class (below) in favour of ones in 'DomainResult'
+		
+		// TODO: Consider to deprecate the extension methods in this class (below) in favour of ones in 'DomainResult'
 
 		#region Extensions of 'IDomainResult<T>' [STATIC, PUBLIC] -------------
 

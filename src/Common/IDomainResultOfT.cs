@@ -23,7 +23,15 @@ namespace DomainResults.Common
 		bool TryGetValue(out T value);
 
 #if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
-		// TODO: Consider to depricate the extension methods in this interface (below) and move them to 'IDomainResult'
+		
+		/// <summary>
+		/// 	Deconstructs the instance to a (TValue, IDomainResult) pair
+		/// </summary>
+		/// <param name="value"> The result value returned by the domain operation </param>
+		/// <param name="details"> Details of the domain operation (like status) </param>
+		void Deconstruct(out T value, out IDomainResult details) => (value, details) = (Value, new DomainResult(Status, Errors));
+
+		// TODO: Consider to deprecate the extension methods in this interface (below) and move them to 'IDomainResult'
 
 		#region Extensions of 'IDomainResult<T>' [STATIC, PUBLIC] -------------
 

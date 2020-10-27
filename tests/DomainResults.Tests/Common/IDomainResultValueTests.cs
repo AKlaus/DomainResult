@@ -2,12 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
-
 using DomainResults.Common;
-
 using Xunit;
 
-namespace DomainResults.Domain.Tests
+namespace DomainResults.Tests.Common
 {
 	public class IDomainResult_Value_Tests
 	{
@@ -19,6 +17,16 @@ namespace DomainResults.Domain.Tests
 
 			Func<int, DomainResult<int>> func = (i) => i;
 			var res = func(10);
+		}
+
+		[Fact]
+		public void DomainResult_Can_Be_Deconstructed_Test()
+		{
+			var res = DomainResult.Success(10);
+			var (value, details) = res;
+			
+			Assert.Equal(10, value);
+			Assert.Equal(DomainOperationStatus.Success, details.Status);
 		}
 
 		[Theory]
