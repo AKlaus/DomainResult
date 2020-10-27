@@ -34,7 +34,7 @@ namespace DomainResults.Common
 		/// <param name="value"> The value to be returned </param>
 		protected DomainResult(TValue value)							: this(value, DomainResult.Success()) {}
 		/// <summary>
-		///		The most generic constructor. Creates a new instance with a specified status and error meesages
+		///		The most generic constructor. Creates a new instance with a specified status and error messages
 		/// </summary>
 		/// <param name="value"> The value to be returned </param>
 		/// <param name="errorDetails"> Error details described in <see cref="IDomainResult"/> </param>
@@ -103,6 +103,16 @@ namespace DomainResults.Common
 		/// <param name="validationResults"> Results of a validation request </param>
 		public static IDomainResult<TValue> Error(IEnumerable<ValidationResult> validationResults) => new DomainResult<TValue>(DomainResult.Error(validationResults));
 
+		/// <summary>
+		/// 	Initiate from a <see cref="IDomainResult"/> instance
+		/// </summary>
+		internal static IDomainResult<TValue> From(IDomainResult result) => new DomainResult<TValue>(result);
+		/// <summary>
+		/// 	Initiate from a <see cref="IDomainResult{T}"/> instance of another 'T'
+		/// </summary>
+		internal static IDomainResult<TValue> From<TOld>(IDomainResult<TOld> result) 
+			=> new DomainResult<TValue>(default, new DomainResult(result.Status, result.Errors));
+		
 		#endregion // Extensions of 'IDomainResult<T>' [STATIC, PUBLIC] -------
 
 		#region Extensions of 'Task<IDomainResult<T>>' [STATIC, PUBLIC] -------

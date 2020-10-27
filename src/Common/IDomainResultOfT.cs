@@ -68,6 +68,12 @@ namespace DomainResults.Common
 		/// <param name="validationResults"> Results of a validation request </param>
 		static IDomainResult<T> Error(IEnumerable<ValidationResult> validationResults) => DomainResult<T>.Error(validationResults);
 
+		/// <summary>
+		/// 	Convert to a <see cref="IDomainResult{T}" /> with a new value type <typeparamref name="TNew"/>
+		/// </summary>
+		/// <typeparam name="TNew"> The new value type (converting to) </typeparam>
+		IDomainResult<TNew> To<TNew>() => DomainResult<TNew>.From(this);
+
 		#endregion // Extensions of 'IDomainResult<T>' [STATIC, PUBLIC] -------
 
 		#region Extensions of 'Task<IDomainResult<T>>' [STATIC, PUBLIC] -------

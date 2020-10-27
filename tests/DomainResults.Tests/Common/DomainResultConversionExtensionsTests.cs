@@ -1,0 +1,102 @@
+﻿using System.Linq;
+using System.Threading.Tasks;
+
+using DomainResults.Common;
+
+using Xunit;
+
+namespace DomainResults.Tests.Common
+{
+	public class DomainResultConversionExtensionsTests
+	{
+		#region Tests of converting IDomainResult to IDomainResult<T>
+		
+		[Fact]
+		public void Successful_IDomainResult_Converts_To_IDomainResultOfT()
+		{
+			var domainResult = DomainResult.Success();
+			var domainResultOfT = domainResult.To<int>();
+			
+			Assert.True(domainResultOfT.IsSuccess);
+			Assert.Equal(0, domainResultOfT.Value);
+		}
+		
+		[Fact]
+		public void Errored_IDomainResult_Converts_To_IDomainResultOfT()
+		{
+			var domainResult = DomainResult.Error("Bla");
+			var domainResultOfT = domainResult.To<int>();
+			
+			Assert.False(domainResultOfT.IsSuccess);
+			Assert.Equal(0, domainResultOfT.Value);
+			Assert.Equal("Bla", domainResultOfT.Errors.Single());
+		}
+		
+		[Fact]
+		public async Task Successful_IDomainResult_Task_Converts_To_IDomainResultOfT_Task()
+		{
+			var domainResult = DomainResult.SuccessTask();
+			var domainResultOfT = await domainResult.To<int>();
+			
+			Assert.True(domainResultOfT.IsSuccess);
+			Assert.Equal(0, domainResultOfT.Value);
+		}
+		
+		[Fact]
+		public async Task Errored_IDomainResult_Task_Converts_To_IDomainResultOfT_Task()
+		{
+			var domainResult = DomainResult.ErrorTask("Bla");
+			var domainResultOfT = await domainResult.To<int>();
+			
+			Assert.False(domainResultOfT.IsSuccess);
+			Assert.Equal(0, domainResultOfT.Value);
+			Assert.Equal("Bla", domainResultOfT.Errors.Single());
+		}
+		#endregion
+		
+		#region Tests of converting IDomainResult<T> to IDomainResult<V>
+		
+		[Fact]
+		public void Successful_IDomainResultOfT_Converts_To_IDomainResultOfV()
+		{
+			var domainResult = DomainResult.Success(10);
+			var domainResultOfT = domainResult.To<char>();
+			
+			Assert.True(domainResultOfT.IsSuccess);
+			Assert.Equal(default(char), domainResultOfT.Value);
+		}
+		
+		[Fact]
+		public void Errored_IDomainResultOfT_Converts_To_IDomainResultOfV()
+		{
+			var domainResult = DomainResult.Error<int>("Bla");
+			var domainResultOfT = domainResult.To<char>();
+			
+			Assert.False(domainResultOfT.IsSuccess);
+			Assert.Equal(default(char), domainResultOfT.Value);
+			Assert.Equal("Bla", domainResultOfT.Errors.Single());
+		}
+		
+		[Fact]
+		public async Task Successful_IDomainResultOfT_Task_Converts_To_IDomainResultOfV_Task()
+		{
+			var domainResult = DomainResult.SuccessTask(10);
+			var domainResultOfT = await domainResult.To<int, char>();
+			
+			Assert.True(domainResultOfT.IsSuccess);
+			Assert.Equal(default(char), domainResultOfT.Value);
+		}
+		
+		[Fact]
+		public async Task Errored_IDomainResultOfT_Task_Converts_To_IDomainResultOfV_Task()
+		{
+			var domainResult = DomainResult.ErrorTask<int>("Bla");
+			var domainResultOfT = await domainResult.To<int,char>();
+			
+			Assert.False(domainResultOfT.IsSuccess);
+			Assert.Equal(default(char), domainResultOfT.Value);
+			Assert.Equal("Bla", domainResultOfT.Errors.Single());
+		}
+		#endregion
+	}
+}
