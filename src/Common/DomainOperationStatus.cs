@@ -1,7 +1,7 @@
 ﻿namespace DomainResults.Common
 {
 	/// <summary>
-	///		Status of domaion operation
+	///		Status of the domain operation
 	/// </summary>
 	public enum DomainOperationStatus
 	{

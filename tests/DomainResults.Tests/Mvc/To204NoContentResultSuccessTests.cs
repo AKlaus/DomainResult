@@ -1,12 +1,10 @@
 using System.Threading.Tasks;
-
 using DomainResults.Common;
-
+using DomainResults.Mvc;
 using Microsoft.AspNetCore.Mvc;
-
 using Xunit;
 
-namespace DomainResults.Mvc.Tests
+namespace DomainResults.Tests.Mvc
 {
 	public class To_204_NoContentResult_Success_Tests
 	{

@@ -3,6 +3,8 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
+// ReSharper disable MemberCanBePrivate.Global
+
 namespace DomainResults.Common
 {
 	/// <inheritdoc/>
@@ -20,27 +22,27 @@ namespace DomainResults.Common
 		/// <summary>
 		///		Creates a new instance with 'success' status
 		/// </summary>
-		protected DomainResult()														: this(DomainOperationStatus.Success, string.Empty) { }
+		protected DomainResult()											: this(DomainOperationStatus.Success, string.Empty) { }
 		/// <summary>
-		///		Creates a new instance with a specified status and error meesages
+		///		Creates a new instance with a specified status and error messages
 		/// </summary>
 		/// <param name="status"> The state </param>
-		/// <param name="error"> Optional cutom error messages </param>
-		protected DomainResult(DomainOperationStatus status, string? error)				: this(status, (!string.IsNullOrEmpty(error) ? new[] { error } : new string[0])!) { }
+		/// <param name="error"> Optional custom error messages </param>
+		protected DomainResult(DomainOperationStatus status, string? error)	: this(status, (!string.IsNullOrEmpty(error) ? new[] { error } : new string[0])!) { }
 		/// <summary>
-		///		Creates a new instance with a 'error'/'not found' status and error meesages
+		///		Creates a new instance with a 'error'/'not found' status and error messages
 		/// </summary>
 		/// <param name="status"> The state </param>
-		/// <param name="errors"> Cutom error messages </param>
+		/// <param name="errors"> Custom error messages </param>
 		public DomainResult(DomainOperationStatus status, IEnumerable<string> errors)
 		{
 			Status = status;
 			Errors = errors.ToArray();
 		}
 		/// <summary>
-		///		Creates a new instance with 'error' status and validation error meesages
+		///		Creates a new instance with 'error' status and validation error messages
 		/// </summary>
-		/// <param name="validationResults"> Validation error meesages </param>
+		/// <param name="validationResults"> Validation error messages </param>
 		protected DomainResult(IEnumerable<ValidationResult> validationResults)
 		{
 			Status = DomainOperationStatus.Error;

@@ -2,12 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
-
 using DomainResults.Common;
-
 using Xunit;
 
-namespace DomainResults.Domain.Tests
+namespace DomainResults.Tests.Common
 {
 	public class IDomainResult_Tests
 	{

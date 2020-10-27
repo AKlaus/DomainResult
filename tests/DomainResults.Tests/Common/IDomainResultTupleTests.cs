@@ -2,12 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
-
 using DomainResults.Common;
-
 using Xunit;
 
-namespace DomainResults.Domain.Tests
+namespace DomainResults.Tests.Common
 {
 	public class IDomainResult_Tuple_Tests
 	{
@@ -32,7 +30,8 @@ namespace DomainResults.Domain.Tests
 		public static IEnumerable<object[]> TestCases
 		{
 			get
-			{	foreach (var t in testCases)
+			{	// ReSharper disable once LoopCanBeConvertedToQuery as the 'yield return' is vital to do the trick
+				foreach (var t in testCases)
 					yield return t;
 			}
 		}
@@ -71,7 +70,7 @@ namespace DomainResults.Domain.Tests
 		public static IEnumerable<object[]> TestCasesWrappedInTask
 		{
 			get
-			{
+			{	// ReSharper disable once LoopCanBeConvertedToQuery as the 'yield return' is vital to do the trick
 				foreach (var t in testCasesWrappedInTask)
 					yield return t;
 			}

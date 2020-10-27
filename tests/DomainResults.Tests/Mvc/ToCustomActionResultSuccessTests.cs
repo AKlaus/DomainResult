@@ -1,14 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
 using DomainResults.Common;
-
+using DomainResults.Mvc;
 using Microsoft.AspNetCore.Mvc;
-
 using Xunit;
 
-namespace DomainResults.Mvc.Tests
+namespace DomainResults.Tests.Mvc
 {
 	public class To_Custom_ActionResult_Success_Tests
 	{
