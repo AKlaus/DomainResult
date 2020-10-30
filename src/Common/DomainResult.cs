@@ -69,6 +69,11 @@ namespace DomainResults.Common
 		/// <param name="messages"> Custom messages </param>
 		public static IDomainResult NotFound(IEnumerable<string> messages)=> new DomainResult(DomainOperationStatus.NotFound, messages);
 		/// <summary>
+		///		Get 'Unauthorized' status. Gets converted to HTTP code 403 (Forbidden) at the API level
+		/// </summary>
+		/// <param name="message"> Optional message </param>
+		public static IDomainResult Unauthorized(string? message = null)	 => new DomainResult(DomainOperationStatus.Unauthorized, message);
+		/// <summary>
 		///		Get 'error' status. Gets converted to HTTP code 400/422
 		/// </summary>
 		/// <param name="error"> Optional message </param>
@@ -102,6 +107,11 @@ namespace DomainResults.Common
 		/// </summary>
 		/// <param name="messages"> Custom messages </param>
 		public static Task<IDomainResult> NotFoundTask(IEnumerable<string> messages)=> Task.FromResult(NotFound(messages));
+		/// <summary>
+		///		Get 'not found' status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 404 (NotFound)
+		/// </summary>
+		/// <param name="message"> Optional message </param>
+		public static Task<IDomainResult> UnauthorizedTask(string? message = null)	=> Task.FromResult(Unauthorized(message));
 		/// <summary>
 		///		Get 'error' status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 400/422
 		/// </summary>

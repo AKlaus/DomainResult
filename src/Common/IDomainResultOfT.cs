@@ -36,37 +36,45 @@ namespace DomainResults.Common
 		#region Extensions of 'IDomainResult<T>' [STATIC, PUBLIC] -------------
 
 		/// <summary>
-		///		Get 'success' status with a value. Later it can be converted to HTTP code 200 (Ok)
+		///		Get 'success' status with a value. Gets converted to HTTP code 200 (Ok)
 		/// </summary>
 		/// <param name="value"> The value to be returned </param>
 		static IDomainResult<T> Success(T value)						=> DomainResult<T>.Success(value);
 
 		/// <summary>
-		///		Get 'not found' status. Later it can be converted to HTTP code 404 (NotFound)
+		///		Get 'not found' status. Gets converted to HTTP code 404 (NotFound)
 		/// </summary>
 		/// <param name="message"> Optional message </param>
 		static IDomainResult<T> NotFound(string? message = null)		=> DomainResult<T>.NotFound(message);
 		/// <summary>
-		///		Get 'not found' status. Later it can be converted to HTTP code 404 (NotFound)
+		///		Get 'not found' status. Gets converted to HTTP code 404 (NotFound)
 		/// </summary>
 		/// <param name="messages"> Custom messages </param>
 		static IDomainResult<T> NotFound(IEnumerable<string> messages)	=> DomainResult<T>.NotFound(messages);
 
 		/// <summary>
-		///		Get 'error' status. Later it can be converted to HTTP code 400/422
+		///		Get 'Unauthorized' status. Gets converted to HTTP code 403 (Forbidden)
+		/// </summary>
+		/// <param name="message"> Optional message </param>
+		static IDomainResult<T> Unauthorized(string? message = null)	=> DomainResult<T>.Unauthorized(message);
+
+		/// <summary>
+		///		Get 'failed' status. Gets converted to HTTP code 400/422
 		/// </summary>
 		/// <param name="error"> Optional message </param>
-		static IDomainResult<T> Error(string? error = null)				=> DomainResult<T>.Error(error);
+		static IDomainResult<T> Failed(string? error = null)			=> DomainResult<T>.Failed(error);
 		/// <summary>
-		///		Get 'error' status. Later it can be converted to HTTP code 400/422
+		///		Get 'failed' status. Gets converted to HTTP code 400/422
 		/// </summary>
 		/// <param name="errors"> Custom messages </param>
-		static IDomainResult<T> Error(IEnumerable<string> errors)		=> DomainResult<T>.Error(errors);
+		static IDomainResult<T> Failed(IEnumerable<string> errors)		=> DomainResult<T>.Failed(errors);
 		/// <summary>
-		///		Get 'error' status with validation errors. Later it can be converted to HTTP code 400/422
+		///		Get 'failed' status with validation errors. Gets converted to HTTP code 400/422
 		/// </summary>
 		/// <param name="validationResults"> Results of a validation request </param>
-		static IDomainResult<T> Error(IEnumerable<ValidationResult> validationResults) => DomainResult<T>.Error(validationResults);
+		static IDomainResult<T> Failed(IEnumerable<ValidationResult> validationResults) => DomainResult<T>.Failed(validationResults);
+
+		#endregion // Extensions of 'IDomainResult<T>' [STATIC, PUBLIC] -------
 
 		/// <summary>
 		/// 	Convert to a <see cref="IDomainResult{T}" /> with a new value type <typeparamref name="TNew"/>
@@ -74,43 +82,47 @@ namespace DomainResults.Common
 		/// <typeparam name="TNew"> The new value type (converting to) </typeparam>
 		IDomainResult<TNew> To<TNew>() => DomainResult<TNew>.From(this);
 
-		#endregion // Extensions of 'IDomainResult<T>' [STATIC, PUBLIC] -------
-
 		#region Extensions of 'Task<IDomainResult<T>>' [STATIC, PUBLIC] -------
 
 		/// <summary>
 		///		Get 'success' status with a value (all wrapped in <see cref="Task{T}"/>).
-		///		Later it can be converted to HTTP code 200 (Ok)
+		///		Gets converted to HTTP code 200 (Ok)
 		/// </summary>
 		/// <param name="value"> The value to be returned </param>
 		static Task<IDomainResult<T>> SuccessTask(T value)						=> DomainResult<T>.SuccessTask(value);
 
 		/// <summary>
-		///		Get 'not found' status wrapped in a <see cref="Task{T}"/>. Later it can be converted to HTTP code 404 (NotFound)
+		///		Get 'not found' status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 404 (NotFound)
 		/// </summary>
 		/// <param name="message"> Optional message </param>
 		static Task<IDomainResult<T>> NotFoundTask(string? message = null)		=> DomainResult<T>.NotFoundTask(message);
 		/// <summary>
-		///		Get 'not found' status wrapped in a <see cref="Task{T}"/>. Later it can be converted to HTTP code 404 (NotFound)
+		///		Get 'not found' status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 404 (NotFound)
 		/// </summary>
 		/// <param name="messages"> Custom messages </param>
 		static Task<IDomainResult<T>> NotFoundTask(IEnumerable<string> messages)=> DomainResult<T>.NotFoundTask(messages);
 
 		/// <summary>
-		///		Get 'error' status wrapped in a <see cref="Task{T}"/>. Later it can be converted to HTTP code 400/422
+		///		Get 'unauthorized' status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 403 (Forbidden)
+		/// </summary>
+		/// <param name="message"> Optional message </param>
+		static Task<IDomainResult<T>> UnauthorizedTask(string? message = null)	=> DomainResult<T>.UnauthorizedTask(message);
+
+		/// <summary>
+		///		Get 'failed' status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 400/422
 		/// </summary>
 		/// <param name="error"> Optional message </param>
-		static Task<IDomainResult<T>> ErrorTask(string? error = null)			=> DomainResult<T>.ErrorTask(error);
+		static Task<IDomainResult<T>> FailedTask(string? error = null)			=> DomainResult<T>.FailedTask(error);
 		/// <summary>
-		///		Get 'error' status wrapped in a <see cref="Task{T}"/>. Later it can be converted to HTTP code 400/422
+		///		Get 'failed' status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 400/422
 		/// </summary>
 		/// <param name="errors"> Custom messages </param>
-		static Task<IDomainResult<T>> ErrorTask(IEnumerable<string> errors)		=> DomainResult<T>.ErrorTask(errors);
+		static Task<IDomainResult<T>> FailedTask(IEnumerable<string> errors)	=> DomainResult<T>.FailedTask(errors);
 		/// <summary>
-		///		Get 'error' status wrapped in a <see cref="Task{T}"/>. Later it can be converted to HTTP code 400/422
+		///		Get 'failed' status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 400/422
 		/// </summary>
 		/// <param name="validationResults"> Results of a validation request </param>
-		static Task<IDomainResult<T>> ErrorTask(IEnumerable<ValidationResult> validationResults) => DomainResult<T>.ErrorTask(validationResults);
+		static Task<IDomainResult<T>> FailedTask(IEnumerable<ValidationResult> validationResults) => DomainResult<T>.FailedTask(validationResults);
 		
 		#endregion // Extensions of 'Task<IDomainResult<T>>' [STATIC, PUBLIC] -
 #endif

@@ -69,9 +69,9 @@ namespace DomainResults.Tests.Common
 			new object[] { (Func<IDomainResult<int>>)(() => DomainResult<int>.NotFound("1")), DomainOperationStatus.NotFound, new [] { "1" } },
 			new object[] { (Func<IDomainResult<int>>)(() => DomainResult<int>.NotFound(new[] { "1", "2" })), DomainOperationStatus.NotFound, new [] { "1", "2" } },
 
-			new object[] { (Func<IDomainResult<int>>)(() => DomainResult<int>.Error("1")), DomainOperationStatus.Failed, new[] { "1" } },
-			new object[] { (Func<IDomainResult<int>>)(() => DomainResult<int>.Error(new[] { "1", "2" })), DomainOperationStatus.Failed, new[] { "1", "2" } },
-			new object[] { (Func<IDomainResult<int>>)(() => DomainResult<int>.Error(new[] { new ValidationResult("1") })), DomainOperationStatus.Failed, new[] { "1" } }
+			new object[] { (Func<IDomainResult<int>>)(() => DomainResult<int>.Failed("1")), DomainOperationStatus.Failed, new[] { "1" } },
+			new object[] { (Func<IDomainResult<int>>)(() => DomainResult<int>.Failed(new[] { "1", "2" })), DomainOperationStatus.Failed, new[] { "1", "2" } },
+			new object[] { (Func<IDomainResult<int>>)(() => DomainResult<int>.Failed(new[] { new ValidationResult("1") })), DomainOperationStatus.Failed, new[] { "1" } }
 		};
 		#endregion // Test of 'IDomainResult<TValue>' responses ---------------
 
@@ -118,9 +118,9 @@ namespace DomainResults.Tests.Common
 			new object[] { (Func<Task<IDomainResult<int>>>)(() => DomainResult<int>.NotFoundTask("1")), DomainOperationStatus.NotFound, new [] { "1" } },
 			new object[] { (Func<Task<IDomainResult<int>>>)(() => DomainResult<int>.NotFoundTask(new [] { "1", "2" })), DomainOperationStatus.NotFound, new [] { "1", "2" } },
 
-			new object[] { (Func<Task<IDomainResult<int>>>)(() => DomainResult<int>.ErrorTask("1")), DomainOperationStatus.Failed, new [] { "1" } },
-			new object[] { (Func<Task<IDomainResult<int>>>)(() => DomainResult<int>.ErrorTask(new [] { "1", "2" })), DomainOperationStatus.Failed, new [] { "1", "2" } },
-			new object[] { (Func<Task<IDomainResult<int>>>)(() => DomainResult<int>.ErrorTask(new[] { new ValidationResult("1") })), DomainOperationStatus.Failed, new [] { "1" } }
+			new object[] { (Func<Task<IDomainResult<int>>>)(() => DomainResult<int>.FailedTask("1")), DomainOperationStatus.Failed, new [] { "1" } },
+			new object[] { (Func<Task<IDomainResult<int>>>)(() => DomainResult<int>.FailedTask(new [] { "1", "2" })), DomainOperationStatus.Failed, new [] { "1", "2" } },
+			new object[] { (Func<Task<IDomainResult<int>>>)(() => DomainResult<int>.FailedTask(new[] { new ValidationResult("1") })), DomainOperationStatus.Failed, new [] { "1" } }
 		};
 		#endregion // Test of 'Task<IDomainResult<TValue>>' responses ---------
 	}
