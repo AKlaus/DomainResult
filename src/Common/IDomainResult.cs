@@ -31,17 +31,17 @@ namespace DomainResults.Common
 		///		Get 'error' status. Later it can be converted to HTTP code 400/422
 		/// </summary>
 		/// <param name="error"> Optional message </param>
-		static IDomainResult Error(string? error = null)			=> DomainResult.Error(error);
+		static IDomainResult Failed(string? error = null)			=> DomainResult.Failed(error);
 		/// <summary>
 		///		Get 'error' status. Later it can be converted to HTTP code 400/422
 		/// </summary>
 		/// <param name="errors"> Custom messages </param>
-		static IDomainResult Error(IEnumerable<string> errors)		=> DomainResult.Error(errors);
+		static IDomainResult Failed(IEnumerable<string> errors)		=> DomainResult.Failed(errors);
 		/// <summary>
 		///		Get 'error' status with validation errors. Later it can be converted to HTTP code 400/422
 		/// </summary>
 		/// <param name="validationResults"> Results of a validation request </param>
-		static IDomainResult Error(IEnumerable<ValidationResult> validationResults) => DomainResult.Error(validationResults);
+		static IDomainResult Failed(IEnumerable<ValidationResult> validationResults) => DomainResult.Failed(validationResults);
 
 		/// <summary>
 		///		Get 'success' status wrapped in a <see cref="Task{T}"/>. Later it can be converted to HTTP code 204 (NoContent)
@@ -61,17 +61,17 @@ namespace DomainResults.Common
 		///		Get 'error' status wrapped in a <see cref="Task{T}"/>. Later it can be converted to HTTP code 400/422
 		/// </summary>
 		/// <param name="error"> Optional message </param>
-		static Task<IDomainResult> ErrorTask(string? error = null)				=> DomainResult.ErrorTask(error);
+		static Task<IDomainResult> FailedTask(string? error = null)				=> DomainResult.FailedTask(error);
 		/// <summary>
 		///		Get 'error' status wrapped in a <see cref="Task{T}"/>. Later it can be converted to HTTP code 400/422
 		/// </summary>
 		/// <param name="errors"> Custom messages </param>
-		static Task<IDomainResult> ErrorTask(IEnumerable<string> errors)		=> DomainResult.ErrorTask(errors);
+		static Task<IDomainResult> FailedTask(IEnumerable<string> errors)		=> DomainResult.FailedTask(errors);
 		/// <summary>
 		///		Get 'error' status wrapped in a <see cref="Task{T}"/>. Later it can be converted to HTTP code 400/422
 		/// </summary>
 		/// <param name="validationResults"> Results of a validation request </param>
-		static Task<IDomainResult> ErrorTask(IEnumerable<ValidationResult> validationResults) => DomainResult.ErrorTask(validationResults);
+		static Task<IDomainResult> FailedTask(IEnumerable<ValidationResult> validationResults) => DomainResult.FailedTask(validationResults);
 
 		#endregion // Extensions of 'IDomainResult' [STATIC] ------------------
 
@@ -95,18 +95,18 @@ namespace DomainResults.Common
 		///		Get 'error' status. Later it can be converted to HTTP code 400/422
 		/// </summary>
 		/// <param name="error"> Optional message </param>
-		static (TValue, IDomainResult) Error<TValue>(string? error = null)			 => (default, DomainResult.Error(error));
+		static (TValue, IDomainResult) Failed<TValue>(string? error = null)			 => (default, DomainResult.Failed(error));
 		/// <summary>
 		///		Get 'error' status. Later it can be converted to HTTP code 400/422
 		/// </summary>
 		/// <param name="errors"> Custom messages </param>
-		static (TValue, IDomainResult) Error<TValue>(IEnumerable<string> errors)	 => (default, DomainResult.Error(errors));
+		static (TValue, IDomainResult) Failed<TValue>(IEnumerable<string> errors)	 => (default, DomainResult.Failed(errors));
 		/// <summary>
 		///		Get 'error' status with validation errors. Later it can be converted to HTTP code 400/422
 		/// </summary>
 		/// <param name="validationResults"> Results of a validation request </param>
-		static (TValue, IDomainResult) Error<TValue>(IEnumerable<ValidationResult> validationResults) 
-																					 => (default, DomainResult.Error(validationResults));
+		static (TValue, IDomainResult) Failed<TValue>(IEnumerable<ValidationResult> validationResults) 
+																					 => (default, DomainResult.Failed(validationResults));
 
 		/// <summary>
 		///		Get 'success' status wrapped in a <see cref="Task{T}"/>. Later it can be converted to HTTP code 200 (Ok)
@@ -126,18 +126,18 @@ namespace DomainResults.Common
 		///		Get 'error' status wrapped in a <see cref="Task{T}"/>. Later it can be converted to HTTP code 400/422
 		/// </summary>
 		/// <param name="error"> Optional message </param>
-		static Task<(TValue, IDomainResult)> ErrorTask<TValue>(string? error = null)		   => Task.FromResult(Error<TValue>(error));
+		static Task<(TValue, IDomainResult)> FailedTask<TValue>(string? error = null)		   => Task.FromResult(Failed<TValue>(error));
 		/// <summary>
 		///		Get 'error' status wrapped in a <see cref="Task{T}"/>. Later it can be converted to HTTP code 400/422
 		/// </summary>
 		/// <param name="errors"> Custom messages </param>
-		static Task<(TValue, IDomainResult)> ErrorTask<TValue>(IEnumerable<string> errors)	   => Task.FromResult(Error<TValue>(errors));
+		static Task<(TValue, IDomainResult)> FailedTask<TValue>(IEnumerable<string> errors)	   => Task.FromResult(Failed<TValue>(errors));
 		/// <summary>
 		///		Get 'error' status wrapped in a <see cref="Task{T}"/>. Later it can be converted to HTTP code 400/422
 		/// </summary>
 		/// <param name="validationResults"> Results of a validation request </param>
-		static Task<(TValue, IDomainResult)> ErrorTask<TValue>(IEnumerable<ValidationResult> validationResults) 
-																								=> Task.FromResult(Error<TValue>(validationResults));
+		static Task<(TValue, IDomainResult)> FailedTask<TValue>(IEnumerable<ValidationResult> validationResults) 
+																								=> Task.FromResult(Failed<TValue>(validationResults));
 
 		#endregion // Extensions of '(TValue, IDomainResult)' [STATIC] --------
 #endif

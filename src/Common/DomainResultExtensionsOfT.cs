@@ -35,19 +35,19 @@ namespace DomainResults.Common
 		/// </summary>
 		/// <typeparam name="TValue"> The expected value type if the operation was successful </typeparam>
 		/// <param name="error"> Optional message </param>
-		public static IDomainResult<TValue> Error<TValue>(string? error = null)				=> DomainResult<TValue>.Error(error);
+		public static IDomainResult<TValue> Failed<TValue>(string? error = null)				=> DomainResult<TValue>.Error(error);
 		/// <summary>
 		///		Get 'error' status. Later it can be converted to HTTP code 400/422
 		/// </summary>
 		/// <typeparam name="TValue"> The expected value type if the operation was successful </typeparam>
 		/// <param name="errors"> Custom messages </param>
-		public static IDomainResult<TValue> Error<TValue>(IEnumerable<string> errors)		=> DomainResult<TValue>.Error(errors);
+		public static IDomainResult<TValue> Failed<TValue>(IEnumerable<string> errors)		=> DomainResult<TValue>.Error(errors);
 		/// <summary>
 		///		Get 'error' status with validation errors. Later it can be converted to HTTP code 400/422
 		/// </summary>
 		/// <typeparam name="TValue"> The expected value type if the operation was successful </typeparam>
 		/// <param name="validationResults"> Results of a validation request </param>
-		public static IDomainResult<TValue> Error<TValue>(IEnumerable<ValidationResult> validationResults) => DomainResult<TValue>.Error(validationResults);
+		public static IDomainResult<TValue> Failed<TValue>(IEnumerable<ValidationResult> validationResults) => DomainResult<TValue>.Error(validationResults);
 
 		#endregion // Extensions of 'IDomainResult<T>' [STATIC, PUBLIC] -------
 
@@ -79,19 +79,19 @@ namespace DomainResults.Common
 		/// </summary>
 		/// <typeparam name="TValue"> The expected value type if the operation was successful </typeparam>
 		/// <param name="error"> Optional message </param>
-		public static Task<IDomainResult<TValue>> ErrorTask<TValue>(string? error = null)			=> DomainResult<TValue>.ErrorTask(error);
+		public static Task<IDomainResult<TValue>> FailedTask<TValue>(string? error = null)			=> DomainResult<TValue>.ErrorTask(error);
 		/// <summary>
 		///		Get 'error' status wrapped in a <see cref="Task{T}"/>. Later it can be converted to HTTP code 400/422
 		/// </summary>
 		/// <typeparam name="TValue"> The expected value type if the operation was successful </typeparam>
 		/// <param name="errors"> Custom messages </param>
-		public static Task<IDomainResult<TValue>> ErrorTask<TValue>(IEnumerable<string> errors)		=> DomainResult<TValue>.ErrorTask(errors);
+		public static Task<IDomainResult<TValue>> FailedTask<TValue>(IEnumerable<string> errors)		=> DomainResult<TValue>.ErrorTask(errors);
 		/// <summary>
 		///		Get 'error' status wrapped in a <see cref="Task{T}"/>. Later it can be converted to HTTP code 400/422
 		/// </summary>
 		/// <typeparam name="TValue"> The expected value type if the operation was successful </typeparam>
 		/// <param name="validationResults"> Results of a validation request </param>
-		public static Task<IDomainResult<TValue>> ErrorTask<TValue>(IEnumerable<ValidationResult> validationResults) => DomainResult<TValue>.ErrorTask(validationResults);
+		public static Task<IDomainResult<TValue>> FailedTask<TValue>(IEnumerable<ValidationResult> validationResults) => DomainResult<TValue>.ErrorTask(validationResults);
 
 		#endregion // Extensions of 'Task<IDomainResult<T>>' [STATIC, PUBLIC] -
 	}

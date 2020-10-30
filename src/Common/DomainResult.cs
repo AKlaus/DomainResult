@@ -45,7 +45,7 @@ namespace DomainResults.Common
 		/// <param name="validationResults"> Validation error messages </param>
 		protected DomainResult(IEnumerable<ValidationResult> validationResults)
 		{
-			Status = DomainOperationStatus.Error;
+			Status = DomainOperationStatus.Failed;
 			Errors = (from message in validationResults
 					  select $"{message.ErrorMessage}{(message.MemberNames?.Any() == true ? " (" + string.Join(", ", message.MemberNames) + ")" : "")}"
 					 ).ToArray();
@@ -55,68 +55,68 @@ namespace DomainResults.Common
 		#region Extensions of 'IDomainResult' [STATIC, PUBLIC] ----------------
 
 		/// <summary>
-		///		Get 'success' status. Later it can be converted to HTTP code 204 (NoContent)
+		///		Get 'success' status. Gets converted to HTTP code 204 (NoContent)
 		/// </summary>
 		public static IDomainResult Success()							 => new DomainResult();
 		/// <summary>
-		///		Get 'not found' status. Later it can be converted to HTTP code 404 (NotFound)
+		///		Get 'not found' status. Gets converted to HTTP code 404 (NotFound) at the API level
 		/// </summary>
 		/// <param name="message"> Optional message </param>
 		public static IDomainResult NotFound(string? message = null)	 => new DomainResult(DomainOperationStatus.NotFound, message);
 		/// <summary>
-		///		Get 'not found' status. Later it can be converted to HTTP code 404 (NotFound)
+		///		Get 'not found' status. Gets converted to HTTP code 404 (NotFound)
 		/// </summary>
 		/// <param name="messages"> Custom messages </param>
 		public static IDomainResult NotFound(IEnumerable<string> messages)=> new DomainResult(DomainOperationStatus.NotFound, messages);
 		/// <summary>
-		///		Get 'error' status. Later it can be converted to HTTP code 400/422
+		///		Get 'error' status. Gets converted to HTTP code 400/422
 		/// </summary>
 		/// <param name="error"> Optional message </param>
-		public static IDomainResult Error(string? error = null)			 => new DomainResult(DomainOperationStatus.Error, error);
+		public static IDomainResult Failed(string? error = null)			 => new DomainResult(DomainOperationStatus.Failed, error);
 		/// <summary>
-		///		Get 'error' status. Later it can be converted to HTTP code 400/422
+		///		Get 'error' status. Gets converted to HTTP code 400/422
 		/// </summary>
 		/// <param name="errors"> Custom messages </param>
-		public static IDomainResult Error(IEnumerable<string> errors)	 => new DomainResult(DomainOperationStatus.Error, errors);
+		public static IDomainResult Failed(IEnumerable<string> errors)	 => new DomainResult(DomainOperationStatus.Failed, errors);
 		/// <summary>
-		///		Get 'error' status with validation errors. Later it can be converted to HTTP code 400/422
+		///		Get 'error' status with validation errors. Gets converted to HTTP code 400/422
 		/// </summary>
 		/// <param name="validationResults"> Results of a validation request </param>
-		public static IDomainResult Error(IEnumerable<ValidationResult> validationResults) => new DomainResult(validationResults);
+		public static IDomainResult Failed(IEnumerable<ValidationResult> validationResults) => new DomainResult(validationResults);
 
 		#endregion // Extensions of 'IDomainResult' [STATIC, PUBLIC] ----------
 
 		#region Extensions of 'Task<IDomainResult>' [STATIC, PUBLIC] ----------
 
 		/// <summary>
-		///		Get 'success' status wrapped in a <see cref="Task{T}"/>. Later it can be converted to HTTP code 204 (NoContent)
+		///		Get 'success' status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 204 (NoContent)
 		/// </summary>
 		public static Task<IDomainResult> SuccessTask()								=> Task.FromResult(Success());
 		/// <summary>
-		///		Get 'not found' status wrapped in a <see cref="Task{T}"/>. Later it can be converted to HTTP code 404 (NotFound)
+		///		Get 'not found' status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 404 (NotFound)
 		/// </summary>
 		/// <param name="message"> Optional message </param>
 		public static Task<IDomainResult> NotFoundTask(string? message = null)		=> Task.FromResult(NotFound(message));
 		/// <summary>
-		///		Get 'not found' status wrapped in a <see cref="Task{T}"/>. Later it can be converted to HTTP code 404 (NotFound)
+		///		Get 'not found' status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 404 (NotFound)
 		/// </summary>
 		/// <param name="messages"> Custom messages </param>
 		public static Task<IDomainResult> NotFoundTask(IEnumerable<string> messages)=> Task.FromResult(NotFound(messages));
 		/// <summary>
-		///		Get 'error' status wrapped in a <see cref="Task{T}"/>. Later it can be converted to HTTP code 400/422
+		///		Get 'error' status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 400/422
 		/// </summary>
 		/// <param name="error"> Optional message </param>
-		public static Task<IDomainResult> ErrorTask(string? error = null)			=> Task.FromResult(Error(error));
+		public static Task<IDomainResult> FailedTask(string? error = null)			=> Task.FromResult(Failed(error));
 		/// <summary>
-		///		Get 'error' status wrapped in a <see cref="Task{T}"/>. Later it can be converted to HTTP code 400/422
+		///		Get 'error' status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 400/422
 		/// </summary>
 		/// <param name="errors"> Custom messages </param>
-		public static Task<IDomainResult> ErrorTask(IEnumerable<string> errors)		=> Task.FromResult(Error(errors));
+		public static Task<IDomainResult> FailedTask(IEnumerable<string> errors)		=> Task.FromResult(Failed(errors));
 		/// <summary>
-		///		Get 'error' status wrapped in a <see cref="Task{T}"/>. Later it can be converted to HTTP code 400/422
+		///		Get 'error' status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 400/422
 		/// </summary>
 		/// <param name="validationResults"> Results of a validation request </param>
-		public static Task<IDomainResult> ErrorTask(IEnumerable<ValidationResult> validationResults) => Task.FromResult(Error(validationResults));
+		public static Task<IDomainResult> FailedTask(IEnumerable<ValidationResult> validationResults) => Task.FromResult(Failed(validationResults));
 
 		#endregion // Extensions of 'Task<IDomainResult>' [STATIC, PUBLIC] ----
 	}

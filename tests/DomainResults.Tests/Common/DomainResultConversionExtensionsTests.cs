@@ -24,7 +24,7 @@ namespace DomainResults.Tests.Common
 		[Fact]
 		public void Errored_IDomainResult_Converts_To_IDomainResultOfT()
 		{
-			var domainResult = DomainResult.Error("Bla");
+			var domainResult = DomainResult.Failed("Bla");
 			var domainResultOfT = domainResult.To<int>();
 			
 			Assert.False(domainResultOfT.IsSuccess);
@@ -45,7 +45,7 @@ namespace DomainResults.Tests.Common
 		[Fact]
 		public async Task Errored_IDomainResult_Task_Converts_To_IDomainResultOfT_Task()
 		{
-			var domainResult = DomainResult.ErrorTask("Bla");
+			var domainResult = DomainResult.FailedTask("Bla");
 			var domainResultOfT = await domainResult.To<int>();
 			
 			Assert.False(domainResultOfT.IsSuccess);
@@ -69,7 +69,7 @@ namespace DomainResults.Tests.Common
 		[Fact]
 		public void Errored_IDomainResultOfT_Converts_To_IDomainResultOfV()
 		{
-			var domainResult = DomainResult.Error<int>("Bla");
+			var domainResult = DomainResult.Failed<int>("Bla");
 			var domainResultOfT = domainResult.To<char>();
 			
 			Assert.False(domainResultOfT.IsSuccess);
@@ -90,7 +90,7 @@ namespace DomainResults.Tests.Common
 		[Fact]
 		public async Task Errored_IDomainResultOfT_Task_Converts_To_IDomainResultOfV_Task()
 		{
-			var domainResult = DomainResult.ErrorTask<int>("Bla");
+			var domainResult = DomainResult.FailedTask<int>("Bla");
 			var domainResultOfT = await domainResult.To<int,char>();
 			
 			Assert.False(domainResultOfT.IsSuccess);

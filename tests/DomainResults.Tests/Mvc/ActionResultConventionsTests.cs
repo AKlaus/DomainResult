@@ -21,11 +21,11 @@ namespace DomainResults.Tests.Mvc
 				ActionResultConventions.ErrorHttpCode = errorHttpCode.Value;
 
 			// WHEN a IDomainResult with Status 'Error' gets converted to ActionResult
-			var domainResult = IDomainResult.Error();
+			var domainResult = IDomainResult.Failed();
 			var actionRes = domainResult.ToActionResult() as ObjectResult;
 
 			// THEN the HTTP code is expected
-			Assert.Equal(expectedErrorHttpCode, actionRes.StatusCode);
+			Assert.Equal(expectedErrorHttpCode, actionRes!.StatusCode);
 
 			ActionResultConventions.ErrorHttpCode = defaultValue;
 		}
@@ -42,12 +42,12 @@ namespace DomainResults.Tests.Mvc
 				ActionResultConventions.ErrorProblemDetailsTitle = errorTitle;
 
 			// WHEN a IDomainResult with Status 'Error' gets converted to ActionResult
-			var domainResult = IDomainResult.Error();
+			var domainResult = IDomainResult.Failed();
 			var actionRes = domainResult.ToActionResult() as ObjectResult;
-			var problemDetails = actionRes.Value as ProblemDetails;
+			var problemDetails = actionRes!.Value as ProblemDetails;
 
 			// THEN the ProblemDetails Title is expected
-			Assert.Equal(expectedErrorTitle, problemDetails.Title);
+			Assert.Equal(expectedErrorTitle, problemDetails!.Title);
 
 			ActionResultConventions.ErrorProblemDetailsTitle = defaultValue;
 		}
@@ -68,7 +68,7 @@ namespace DomainResults.Tests.Mvc
 			var actionRes = domainResult.ToActionResult() as ObjectResult;
 
 			// THEN the HTTP code is expected
-			Assert.Equal(expectedNotFoundHttpCode, actionRes.StatusCode);
+			Assert.Equal(expectedNotFoundHttpCode, actionRes!.StatusCode);
 
 			ActionResultConventions.NotFoundHttpCode = defaultValue;
 		}
@@ -87,10 +87,10 @@ namespace DomainResults.Tests.Mvc
 			// WHEN a IDomainResult with Status 'Not Found' gets converted to ActionResult
 			var domainResult = IDomainResult.NotFound();
 			var actionRes = domainResult.ToActionResult() as ObjectResult;
-			var problemDetails = actionRes.Value as ProblemDetails;
+			var problemDetails = actionRes!.Value as ProblemDetails;
 
 			// THEN the ProblemDetails Title is expected
-			Assert.Equal(expectedNotFoundTitle, problemDetails.Title);
+			Assert.Equal(expectedNotFoundTitle, problemDetails!.Title);
 
 			ActionResultConventions.NotFoundProblemDetailsTitle = defaultValue;
 		}

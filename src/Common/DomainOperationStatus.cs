@@ -16,6 +16,6 @@
 		/// <summary>
 		///		Failed operation (can be converted to HTTP code 4xx on the API)
 		/// </summary>
-		Error
+		Failed
 	}
 }

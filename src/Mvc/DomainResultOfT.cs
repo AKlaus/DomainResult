@@ -21,7 +21,7 @@ namespace DomainResults.Mvc
 			=> errorDetails.Status switch
 			{
 				DomainOperationStatus.NotFound	=> SadResponse(ActionResultConventions.NotFoundHttpCode, ActionResultConventions.NotFoundProblemDetailsTitle, errorDetails, errorAction),
-				DomainOperationStatus.Error		=> SadResponse(ActionResultConventions.ErrorHttpCode,	 ActionResultConventions.ErrorProblemDetailsTitle,	  errorDetails, errorAction),
+				DomainOperationStatus.Failed	=> SadResponse(ActionResultConventions.ErrorHttpCode,	 ActionResultConventions.ErrorProblemDetailsTitle,	  errorDetails, errorAction),
 				DomainOperationStatus.Success	=> EqualityComparer<V>.Default.Equals(value!, default!)
 																		? new NoContentResult() as ActionResult // No value, means returning HTTP status 204
 																		: valueToActionResultFunc(value),

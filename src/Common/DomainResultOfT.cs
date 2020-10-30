@@ -91,17 +91,17 @@ namespace DomainResults.Common
 		///		Get 'error' status. Later it can be converted to HTTP code 400/422
 		/// </summary>
 		/// <param name="error"> Optional message </param>
-		public static IDomainResult<TValue> Error(string? error = null)				=> new DomainResult<TValue>(DomainResult.Error(error));
+		public static IDomainResult<TValue> Error(string? error = null)				=> new DomainResult<TValue>(DomainResult.Failed(error));
 		/// <summary>
 		///		Get 'error' status. Later it can be converted to HTTP code 400/422
 		/// </summary>
 		/// <param name="errors"> Custom messages </param>
-		public static IDomainResult<TValue> Error(IEnumerable<string> errors)		=> new DomainResult<TValue>(DomainResult.Error(errors));
+		public static IDomainResult<TValue> Error(IEnumerable<string> errors)		=> new DomainResult<TValue>(DomainResult.Failed(errors));
 		/// <summary>
 		///		Get 'error' status with validation errors. Later it can be converted to HTTP code 400/422
 		/// </summary>
 		/// <param name="validationResults"> Results of a validation request </param>
-		public static IDomainResult<TValue> Error(IEnumerable<ValidationResult> validationResults) => new DomainResult<TValue>(DomainResult.Error(validationResults));
+		public static IDomainResult<TValue> Error(IEnumerable<ValidationResult> validationResults) => new DomainResult<TValue>(DomainResult.Failed(validationResults));
 
 		/// <summary>
 		/// 	Initiate from a <see cref="IDomainResult"/> instance

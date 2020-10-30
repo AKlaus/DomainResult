@@ -18,7 +18,7 @@ namespace DomainResults.Tests.Mvc
 
 			Then_ResponseType_Correct_And_ProblemDetails_StatusAndText_Correct(actionRes, expectedCode, expectedTitle, expectedErrorMsg);
 		}		
-		public static readonly IEnumerable<object[]> FailedResultWithValueCases = TestCases(DomainResult.Error<int>, DomainResult.NotFound<int>);
+		public static readonly IEnumerable<object[]> FailedResultWithValueCases = TestCases(DomainResult.Failed<int>, DomainResult.NotFound<int>);
 
 		[Theory]
 		[MemberData(nameof(FailedResultWithValueTaskCases))]
@@ -28,7 +28,7 @@ namespace DomainResults.Tests.Mvc
 
 			Then_ResponseType_Correct_And_ProblemDetails_StatusAndText_Correct(actionRes, expectedCode, expectedTitle, expectedErrorMsg);
 		}
-		public static readonly IEnumerable<object[]> FailedResultWithValueTaskCases = TestCases(DomainResult.ErrorTask<int>, DomainResult.NotFoundTask<int>);
+		public static readonly IEnumerable<object[]> FailedResultWithValueTaskCases = TestCases(DomainResult.FailedTask<int>, DomainResult.NotFoundTask<int>);
 
 		[Theory]
 		[MemberData(nameof(FailedResultCases))]
@@ -38,7 +38,7 @@ namespace DomainResults.Tests.Mvc
 
 			Then_ResponseType_Correct_And_ProblemDetails_StatusAndText_Correct(actionRes, expectedCode, expectedTitle, expectedErrorMsg);
 		}
-		public static readonly IEnumerable<object[]> FailedResultCases = TestCases(DomainResult.Error, DomainResult.NotFound);
+		public static readonly IEnumerable<object[]> FailedResultCases = TestCases(DomainResult.Failed, DomainResult.NotFound);
 
 		[Theory]
 		[MemberData(nameof(FailedResultTaskCases))]
@@ -48,7 +48,7 @@ namespace DomainResults.Tests.Mvc
 
 			Then_ResponseType_Correct_And_ProblemDetails_StatusAndText_Correct(actionRes, expectedCode, expectedTitle, expectedErrorMsg);
 		}
-		public static readonly IEnumerable<object[]> FailedResultTaskCases = TestCases(DomainResult.ErrorTask, DomainResult.NotFoundTask);
+		public static readonly IEnumerable<object[]> FailedResultTaskCases = TestCases(DomainResult.FailedTask, DomainResult.NotFoundTask);
 
 		[Theory]
 		[MemberData(nameof(FailedValueTestCases))]
@@ -58,7 +58,7 @@ namespace DomainResults.Tests.Mvc
 
 			Then_ResponseType_Correct_And_ProblemDetails_StatusAndText_Correct(actionRes, expectedCode, expectedTitle, expectedErrorMsg);
 		}
-		public static readonly IEnumerable<object[]> FailedValueTestCases = TestCases(DomainResult.Error, DomainResult.NotFound, v => (10, v));
+		public static readonly IEnumerable<object[]> FailedValueTestCases = TestCases(DomainResult.Failed, DomainResult.NotFound, v => (10, v));
 
 		[Theory]
 		[MemberData(nameof(FailedValueTaskTestCases))]
@@ -68,7 +68,7 @@ namespace DomainResults.Tests.Mvc
 
 			Then_ResponseType_Correct_And_ProblemDetails_StatusAndText_Correct(actionRes, expectedCode, expectedTitle, expectedErrorMsg);
 		}
-		public static readonly IEnumerable<object[]> FailedValueTaskTestCases = TestCases(DomainResult.Error, DomainResult.NotFound, v => Task.FromResult((10, v)));
+		public static readonly IEnumerable<object[]> FailedValueTaskTestCases = TestCases(DomainResult.Failed, DomainResult.NotFound, v => Task.FromResult((10, v)));
 
 		#region Auxiliary methods [PRIVATE] -----------------------------------
 
