@@ -14,7 +14,7 @@ namespace DomainResults.Mvc
 		//
 
 		/// <summary>
-		///		Custom convertion of successful and unsuccesful domain results to specified <see cref="ActionResult"/> types
+		///		Custom conversion of successful and unsuccessful domain results to specified <see cref="ActionResult"/> types
 		/// </summary>
 		/// <typeparam name="V"> The value type returned in a successful response </typeparam>
 		/// <typeparam name="R"> The type derived from <see cref="IDomainResult"/>, e.g. <see cref="DomainResult"/> </typeparam>
@@ -30,7 +30,7 @@ namespace DomainResults.Mvc
 			=> ToActionResult(domainResult.Item1, domainResult.Item2, errorAction, valueToActionResultFunc);
 
 		/// <summary>
-		///		Custom convertion of successful and unsuccesful domain results to specified <see cref="ActionResult"/> types
+		///		Custom conversion of successful and unsuccessful domain results to specified <see cref="ActionResult"/> types
 		/// </summary>
 		/// <typeparam name="V"> The value type returned in a successful response </typeparam>
 		/// <typeparam name="R"> The type derived from <see cref="IDomainResult"/>, e.g. <see cref="DomainResult"/> </typeparam>
@@ -49,7 +49,7 @@ namespace DomainResults.Mvc
 		}
 
 		/// <summary>
-		///		Custom convertion of successful and unsuccesful domain results to specified <see cref="ActionResult"/> types
+		///		Custom conversion of successful and unsuccessful domain results to specified <see cref="ActionResult"/> types
 		/// </summary>
 		/// <typeparam name="V"> The value type returned in a successful response </typeparam>
 		/// <typeparam name="TResult"> The result type returned in <paramref name="valueToActionResultFunc"/> if the domain operation was successful </typeparam>
@@ -63,7 +63,7 @@ namespace DomainResults.Mvc
 			=> ToActionResult(domainResult.Value, domainResult, errorAction, valueToActionResultFunc);
 
 		/// <summary>
-		///		Custom convertion of successful and unsuccesful domain results to specified <see cref="ActionResult"/> types
+		///		Custom conversion of successful and unsuccessful domain results to specified <see cref="ActionResult"/> types
 		/// </summary>
 		/// <typeparam name="V"> The value type returned in a successful response </typeparam>
 		/// <typeparam name="TResult"> The result type returned in <paramref name="valueToActionResultFunc"/> if the domain operation was successful </typeparam>

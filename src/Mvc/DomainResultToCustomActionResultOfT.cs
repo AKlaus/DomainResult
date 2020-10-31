@@ -18,7 +18,7 @@ namespace DomainResults.Mvc
 		//
 
 		/// <summary>
-		///		Custom convertion of successful and unsuccesful domain results to specified <see cref="ActionResult"/> types
+		///		Custom conversion of successful and unsuccessful domain results to specified <see cref="ActionResult"/> types
 		/// </summary>
 		/// <typeparam name="V"> The value type returned in a successful response </typeparam>
 		/// <typeparam name="R"> The type derived from <see cref="IDomainResult"/>, e.g. <see cref="DomainResult"/> </typeparam>
@@ -32,7 +32,7 @@ namespace DomainResults.Mvc
 			=> ToActionResultOfT(domainResult.Item1, domainResult.Item2, errorAction, valueToActionResultFunc);
 
 		/// <summary>
-		///		Custom convertion of successful and unsuccesful domain results to specified <see cref="ActionResult"/> types
+		///		Custom conversion of successful and unsuccessful domain results to specified <see cref="ActionResult"/> types
 		/// </summary>
 		/// <typeparam name="V"> The value type returned in a successful response </typeparam>
 		/// <typeparam name="R"> The type derived from <see cref="IDomainResult"/>, e.g. <see cref="DomainResult"/> </typeparam>
@@ -49,7 +49,7 @@ namespace DomainResults.Mvc
 		}
 
 		/// <summary>
-		///		Custom convertion of successful and unsuccesful domain results to specified <see cref="ActionResult"/> types
+		///		Custom conversion of successful and unsuccessful domain results to specified <see cref="ActionResult"/> types
 		/// </summary>
 		/// <typeparam name="V"> The value type returned in a successful response </typeparam>
 		/// <param name="domainResult"> Returned value and details of the operation results (e.g. error messages) </param>
@@ -61,7 +61,7 @@ namespace DomainResults.Mvc
 			=> ToActionResultOfT(domainResult.Value, domainResult, errorAction, valueToActionResultFunc);
 
 		/// <summary>
-		///		Custom convertion of successful and unsuccesful domain results to specified <see cref="ActionResult"/> types
+		///		Custom conversion of successful and unsuccessful domain results to specified <see cref="ActionResult"/> types
 		/// </summary>
 		/// <typeparam name="V"> The value type returned in a successful response </typeparam>
 		/// <param name="domainResultTask"> Returned value and details of the operation results (e.g. error messages) </param>
