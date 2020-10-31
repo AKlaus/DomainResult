@@ -31,7 +31,7 @@ public async Task<(InvoiceResponseDto, IDomainResult)> GetInvoice(int invoiceId)
 {
     if (invoiceId < 0)
         // Returns a validation error
-        return IDomainResult.Error<InvoiceResponseDto>("Try harder");
+        return IDomainResult.Failed<InvoiceResponseDto>("Try harder");
 
     var invoice = await DataContext.Invoices.FindAsync(invoiceId);
     
@@ -51,7 +51,7 @@ public async Task<IDomainResult<InvoiceResponseDto>> GetInvoice(int invoiceId)
 {
     if (invoiceId < 0)
         // Returns a validation error
-        return DomainResult.Error<InvoiceResponseDto>("Try harder");
+        return DomainResult.Failed<InvoiceResponseDto>("Try harder");
 
     var invoice = await DataContext.Invoices.FindAsync(invoiceId);
     
@@ -112,7 +112,7 @@ It's built around `IDomainResult` interface that has 3 properties:
 ```cs
 IReadOnlyCollection<string> Errors { get; } // Collection of error messages if any
 bool IsSuccess { get; }                     // Flag, whether the current status is successful or not
-DomainOperationStatus Status { get; }       // Current status of the domain operation: Success, Error, NotFound
+DomainOperationStatus Status { get; }       // Current status of the domain operation: Success, Failed, NotFound, Unauthorized
 ```
 
 And `IDomainResult<T>` interface that also adds
@@ -140,19 +140,22 @@ IDomainResult res = IDomainResult.Success();        // res.Status is 'Success'
 var res = IDomainResult.SuccessTask(10);            // res is Task<(int, IDomainResult)>
 
 // Error message
-IDomainResult res = IDomainResult.Error("Ahh!");    // res.Status is 'Error' and res.Errors = new []{ "Ahh!" }
+IDomainResult res = IDomainResult.Failed("Ahh!");   // res.Status is 'Failed' and res.Errors = new []{ "Ahh!" }
 // Error when expected an int
-(value, state) = IDomainResult.Error<int>("Ahh!");  // value = 0, state.Status is 'Error' and state.Errors = new []{ "Ahh!" }
+(value, state) = IDomainResult.Failed<int>("Ahh!"); // value = 0, state.Status is 'Failed' and state.Errors = new []{ "Ahh!" }
 
 // 'Not Found' acts like the errors
 (value, state) = IDomainResult.NotFound<int>();     // value = 0, state.Status is 'NotFound'
 Task<(int val, IDomainResult state)> res = IDomainResult.NotFoundTask<int>();  // value = 0, state.Status is 'NotFound'
+
+// 'Unauthorized' response
+(value, state) = IDomainResult.Unauthorized<int>(); // value = 0, state.Status is 'Unauthorized'
 ```
 *Notes*:
 
 - Support for extension methods on interfaces starts from `.NET Standard 2.1`. For older versions use static extensions on `DomainResult` class.
-- The `Task` suffix on the extension methods indicates that the returned type is wrapped in a `Task` (e.g. `SuccessTask()`, `ErrorTask()`, `NotFoundTask()`).
-- The `Error()` and `NotFound()` methods take as input parameters: `string`, `string[]` or [ValidationResult](https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.dataannotations.validationresult).
+- The `Task` suffix on the extension methods indicates that the returned type is wrapped in a `Task` (e.g. `SuccessTask()`, `FailedTask()`, `NotFoundTask()`, `UnauthorizedTask()`).
+- The `Failed()` and `NotFound()` methods take as input parameters: `string`, `string[]`. `Failed()` can also take [ValidationResult](https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.dataannotations.validationresult).
 
 ## 'DomainResult' package. Conversion to ActionResult
 
@@ -172,8 +175,9 @@ The mapping rules are built around `IDomainResult.Status`:
 | `IDomainResult.Status` | Returned `ActionResult`-based type                                                                               |
 | ---------------------- | ---------------------------------------------------------------------------------------------------------------- |
 | `Success`              | If no value is returned then `204 NoContent`, otherwise - `200 OK`<br>Supports custom codes (e.g. `201 Created`) |
-| `NotFound`             | HTTP code `404 NotFound`                                                                                         |
-| `Error`                | HTTP code `400` (default) or can be configured to `422`                                                          |
+| `NotFound`             | HTTP code `404 NotFound` (default)                                                                               |
+| `Failed`               | HTTP code `400` (default) or can be configured to `422` or any other code                                        |
+| `Unauthorized`         | HTTP code `403 Forbidden` (default)                                                                              |
 
 ### Basic examples:
 ```cs
@@ -233,7 +237,7 @@ It works with any of extensions in `Microsoft.AspNetCore.Mvc.ControllerBase`. He
 
 ### Custom error handling
 
-The default HTTP codes for statuses `Error` and `NotFound` are defined in public static properties of `ActionResultConventions` with default values:
+The default HTTP codes for statuses `Failed`, `NotFound` and `Unauthorized` are defined in public static properties of `ActionResultConventions` with default values:
 
 ```cs
 // The HTTP code to return for client request error
@@ -244,20 +248,24 @@ string ErrorProblemDetailsTitle { get; set; }   = "Bad Request";
 int NotFoundHttpCode { get; set; }              = 404;
 // The 'title' property of the returned JSON on HTTP code 404
 string NotFoundProblemDetailsTitle { get; set; }= "Not Found";
+// The HTTP code to return when access to a record is forbidden
+int UnauthorizedHttpCode { get; set; }          = 403;
+// The 'title' property of the returned JSON on HTTP code 403
+string UnauthorizedProblemDetailsTitle { get; set; }= "Unauthorized access";
 ```
 
 Feel free to change them (hmm... remember they're static with all the pros and cons). The reasons you may want it:
 - Localisation of the titles
 - Favour [422](https://httpstatuses.com/422) HTTP code in stead of [400](https://httpstatuses.com/400) (see opinions [here](https://stackoverflow.com/a/52098667/968003) and [here](https://stackoverflow.com/a/20215807/968003)).
 
-The extension methods also support custom response in case of the `IDomainResult.Status` being `Error` or `NotFound`:
+The extension methods also support custom response in case of the `IDomainResult.Status` being `Failed`, `NotFound` or `Unauthorized`:
 
 ```cs
 [HttpGet("[action]")]
 [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-public Task<ActionResult<int>> GetErrorWithCustomStatusAndMessage()
+public Task<ActionResult<int>> GetFailedWithCustomStatusAndMessage()
 {
-  var res = _service.GetErrorWithNoMessage();
+  var res = _service.GetFailedWithNoMessage();
   return res.ToActionResultOfT(
             (problemDetails, state) =>
             {
