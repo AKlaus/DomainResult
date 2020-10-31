@@ -52,7 +52,7 @@ To be used in Web API projects (usually to accompany 'DomainResult.Common' packa
 	<ItemGroup>
 		<!-- SourceLink settings (source debugging experiences) -->
 		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-		<PackageReference Include="MinVer" Version="2.3.0" PrivateAssets="All" />
+		<PackageReference Include="MinVer" Version="2.3.1" PrivateAssets="All" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0'">
