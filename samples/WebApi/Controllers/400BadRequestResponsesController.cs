@@ -14,36 +14,36 @@ namespace DomainResults.Examples.WebApi.Controllers
 	[Route("[controller]")]
 	public class BadRequestResponsesController : ControllerBase
 	{
-		private readonly DomainErrorService _service = new DomainErrorService();
+		private readonly DomainFailedService _service = new DomainFailedService();
 
 		[HttpGet("[action]")]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public IActionResult GetErrorWithNoMessage()=> _service.GetErrorWithNoMessage().ToActionResult();
+		public IActionResult GetErrorWithNoMessage()=> _service.GetFailedWithNoMessage().ToActionResult();
 		[HttpGet("[action]")]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public IActionResult GetErrorWithMessage()	=> _service.GetErrorWithMessage().ToActionResult();
+		public IActionResult GetErrorWithMessage()	=> _service.GetFailedWithMessage().ToActionResult();
 		[HttpGet("[action]")]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public IActionResult GetErrorWithMessages()	=> _service.GetErrorWithMessages().ToActionResult();
+		public IActionResult GetErrorWithMessages()	=> _service.GetFailedWithMessages().ToActionResult();
 
 		[HttpGet("[action]")]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public IActionResult GetErrorWithNoMessageWhenExpectedNumber()	=> _service.GetErrorWithNoMessageWhenExpectedNumber().ToActionResult();
+		public IActionResult GetErrorWithNoMessageWhenExpectedNumber()	=> _service.GetFailedWithNoMessageWhenExpectedNumber().ToActionResult();
 		[HttpGet("[action]")]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public IActionResult GetErrorWithMessageWhenExpectedNumber()	=> _service.GetErrorWithMessageWhenExpectedNumber().ToActionResult();
+		public IActionResult GetErrorWithMessageWhenExpectedNumber()	=> _service.GetFailedWithMessageWhenExpectedNumber().ToActionResult();
 		[HttpGet("[action]")]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public IActionResult GetErrorWithMessagesWhenExpectedNumber()	=> _service.GetErrorWithMessagesWhenExpectedNumber().ToActionResult();
+		public IActionResult GetErrorWithMessagesWhenExpectedNumber()	=> _service.GetFailedWithMessagesWhenExpectedNumber().ToActionResult();
 
 		[HttpGet("[action]")]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public IActionResult GetErrorWithNoMessageWhenExpectedNumberTuple()	=> _service.GetErrorWithNoMessageWhenExpectedNumberTuple().ToActionResult();
+		public IActionResult GetErrorWithNoMessageWhenExpectedNumberTuple()	=> _service.GetFailedWithNoMessageWhenExpectedNumberTuple().ToActionResult();
 		[HttpGet("[action]")]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public IActionResult GetErrorWithMessageWhenExpectedNumberTuple()	=> _service.GetErrorWithMessageWhenExpectedNumberTuple().ToActionResult();
+		public IActionResult GetErrorWithMessageWhenExpectedNumberTuple()	=> _service.GetFailedWithMessageWhenExpectedNumberTuple().ToActionResult();
 		[HttpGet("[action]")]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public IActionResult GetErrorWithMessagesWhenExpectedNumberTuple()	=> _service.GetErrorWithMessagesWhenExpectedNumberTuple().ToActionResult();
+		public IActionResult GetErrorWithMessagesWhenExpectedNumberTuple()	=> _service.GetFailedWithMessagesWhenExpectedNumberTuple().ToActionResult();
 	}
 }

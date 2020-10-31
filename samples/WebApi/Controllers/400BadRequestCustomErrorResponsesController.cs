@@ -17,12 +17,12 @@ namespace DomainResults.Examples.WebApi.Controllers
 	[Route("[controller]")]
 	public class BadRequestCustomErrorResponsesController : ControllerBase
 	{
-		private readonly DomainErrorService _service = new DomainErrorService();
+		private readonly DomainFailedService _service = new DomainFailedService();
 
 		[HttpGet("[action]")]
 		[ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
 		public IActionResult GetErrorWithCustomStatusAndMessage()
-									 => _service.GetErrorWithNoMessage()
+									 => _service.GetFailedWithNoMessage()
 												.ToActionResult((problemDetails, state) =>
 												{
 													if (state.Errors?.Any() == true)
@@ -34,7 +34,7 @@ namespace DomainResults.Examples.WebApi.Controllers
 		[HttpGet("[action]")]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		public Task<IActionResult> GetErrorWithCustomTitleAndOriginalMessage()
-									 => _service.GetErrorWithMessageTask()
+									 => _service.GetFailedWithMessageTask()
 												.ToActionResult((problemDetails, state) =>
 												{
 													problemDetails.Title = "D'oh!";
@@ -43,7 +43,7 @@ namespace DomainResults.Examples.WebApi.Controllers
 		[HttpGet("[action]")]
 		[ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
 		public IActionResult GetErrorWithCustomStatusAndMessageWhenExpectedNumber()
-									 => _service.GetErrorWithNoMessageWhenExpectedNumber()
+									 => _service.GetFailedWithNoMessageWhenExpectedNumber()
 												.ToActionResult((problemDetails, state) =>
 												{
 													if (state.Errors?.Any() == true)
@@ -54,8 +54,8 @@ namespace DomainResults.Examples.WebApi.Controllers
 												});
 		[HttpGet("[action]")]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public Task<IActionResult> GetErrorWithCustomTitleAndOriginalMessageeWhenExpectedNumber()
-									 => _service.GetErrorWithMessageWhenExpectedNumberTask()
+		public Task<IActionResult> GetErrorWithCustomTitleAndOriginalMessageWhenExpectedNumber()
+									 => _service.GetFailedWithMessageWhenExpectedNumberTask()
 												.ToActionResult((problemDetails, state) =>
 												{
 													problemDetails.Title = "D'oh!";
@@ -64,7 +64,7 @@ namespace DomainResults.Examples.WebApi.Controllers
 		[HttpGet("[action]")]
 		[ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
 		public IActionResult GetErrorWithCustomStatusAndMessageWhenExpectedNumberAsTuple()
-									 => _service.GetErrorWithNoMessageWhenExpectedNumberTuple()
+									 => _service.GetFailedWithNoMessageWhenExpectedNumberTuple()
 												.ToActionResult((problemDetails, state) =>
 												{
 													if (state.Errors?.Any() == true)
@@ -75,8 +75,8 @@ namespace DomainResults.Examples.WebApi.Controllers
 												});
 		[HttpGet("[action]")]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public Task<IActionResult> GetErrorWithCustomTitleAndOriginalMessageeWhenExpectedNumberAsTuple()
-									 => _service.GetErrorWithMessageWhenExpectedNumberTupleTask()
+		public Task<IActionResult> GetErrorWithCustomTitleAndOriginalMessageWhenExpectedNumberAsTuple()
+									 => _service.GetFailedWithMessageWhenExpectedNumberTupleTask()
 												.ToActionResult((problemDetails, state) =>
 												{
 													problemDetails.Title = "D'oh!";
@@ -84,8 +84,8 @@ namespace DomainResults.Examples.WebApi.Controllers
 
 		[HttpGet("[action]")]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public Task<ActionResult<int>> GetErrorOfTWithCustomTitleAndOriginalMessageeWhenExpectedNumberAsTuple()
-									 => _service.GetErrorWithMessageWhenExpectedNumberTupleTask()
+		public Task<ActionResult<int>> GetErrorOfTWithCustomTitleAndOriginalMessageWhenExpectedNumberAsTuple()
+									 => _service.GetFailedWithMessageWhenExpectedNumberTupleTask()
 												.ToActionResultOfT((problemDetails, state) =>
 												{
 													problemDetails.Title = "D'oh!";
