@@ -1,4 +1,4 @@
-﻿namespace DomainResults.Mvc.Tests
+﻿namespace DomainResults.Tests.Mvc
 {
 	internal class TestDto
 	{

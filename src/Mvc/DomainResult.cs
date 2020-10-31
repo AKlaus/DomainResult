@@ -15,7 +15,7 @@ namespace DomainResults.Mvc
 	public static partial class DomainResultExtensions
 	{
 		/// <summary>
-		///		Delegeate for a function to convert a value to <see cref="IActionResult"/>.
+		///		Delegate for a function to convert a value to <see cref="IActionResult"/>.
 		/// </summary>
 		/// <remarks>
 		///		It could have been replaced with 'Func{V, ActionResult}', but there is no way to enforce [AllowNull] on the generic Func declaration
@@ -34,9 +34,10 @@ namespace DomainResults.Mvc
 																	where TResult : ActionResult
 			=> errorDetails.Status switch
 			{
-				DomainOperationStatus.NotFound	=> SadResponse(ActionResultConventions.NotFoundHttpCode, ActionResultConventions.NotFoundProblemDetailsTitle, errorDetails, errorAction),
-				DomainOperationStatus.Error		=> SadResponse(ActionResultConventions.ErrorHttpCode,	 ActionResultConventions.ErrorProblemDetailsTitle,	  errorDetails, errorAction),
-				DomainOperationStatus.Success	=> EqualityComparer<V>.Default.Equals(value!, default!)
+				DomainOperationStatus.NotFound		=> SadResponse(ActionResultConventions.NotFoundHttpCode,	 ActionResultConventions.NotFoundProblemDetailsTitle,		errorDetails, errorAction),
+				DomainOperationStatus.Unauthorized	=> SadResponse(ActionResultConventions.UnauthorizedHttpCode, ActionResultConventions.UnauthorizedProblemDetailsTitle,	errorDetails, errorAction),
+				DomainOperationStatus.Failed		=> SadResponse(ActionResultConventions.ErrorHttpCode,	 	 ActionResultConventions.ErrorProblemDetailsTitle,			errorDetails, errorAction),
+				DomainOperationStatus.Success		=> EqualityComparer<V>.Default.Equals(value!, default!)
 																		? new NoContentResult() as ActionResult // No value, means returning HTTP status 204
 																		: valueToActionResultFunc(value),
 				_ => throw new ArgumentOutOfRangeException(),

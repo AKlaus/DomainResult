@@ -19,7 +19,7 @@
 		public static string ErrorProblemDetailsTitle { get; set; } = "Bad Request";
 
 		/// <summary>
-		///		The HTTP code to return when a record not found. The defult value: 404
+		///		The HTTP code to return when a record not found. The default value: 404
 		/// </summary>
 		public static int NotFoundHttpCode { get; set; } = 404;
 		/// <summary>
@@ -27,5 +27,15 @@
 		///		The default value: "Not Found"
 		/// </summary>
 		public static string NotFoundProblemDetailsTitle { get; set; } = "Not Found";
+
+		/// <summary>
+		///		The HTTP code to return when a access is forbidden and returned 'unauthorized' status. The default value: 403
+		/// </summary>
+		public static int UnauthorizedHttpCode { get; set; } = 403;
+		/// <summary>
+		///		The title in the returned JSON accompanying the <see cref="UnauthorizedHttpCode"/> response (Forbidden)
+		///		The default value: "Unauthorized access"
+		/// </summary>
+		public static string UnauthorizedProblemDetailsTitle { get; set; } = "Unauthorized access";
 	}
 }

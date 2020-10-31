@@ -7,7 +7,7 @@ using DomainResults.Common;
 
 using Xunit;
 
-namespace DomainResults.Domain.Tests
+namespace DomainResults.Tests.Common
 {
 	public class IDomainResult_Tuple_Tests
 	{
@@ -32,7 +32,8 @@ namespace DomainResults.Domain.Tests
 		public static IEnumerable<object[]> TestCases
 		{
 			get
-			{	foreach (var t in testCases)
+			{	// ReSharper disable once LoopCanBeConvertedToQuery as the 'yield return' is vital to do the trick
+				foreach (var t in testCases)
 					yield return t;
 			}
 		}
@@ -44,9 +45,12 @@ namespace DomainResults.Domain.Tests
 			new object[] { (Func<(int, IDomainResult)>)(() => IDomainResult.NotFound<int>("1")), DomainOperationStatus.NotFound, new [] { "1" } },
 			new object[] { (Func<(int, IDomainResult)>)(() => IDomainResult.NotFound<int>(new[] { "1", "2" })), DomainOperationStatus.NotFound, new [] { "1", "2" } },
 
-			new object[] { (Func<(int, IDomainResult)>)(() => IDomainResult.Error<int>("1")), DomainOperationStatus.Error, new[] { "1" } },
-			new object[] { (Func<(int, IDomainResult)>)(() => IDomainResult.Error<int>(new[] { "1", "2" })), DomainOperationStatus.Error, new[] { "1", "2" } },
-			new object[] { (Func<(int, IDomainResult)>)(() => IDomainResult.Error<int>(new[] { new ValidationResult("1") })), DomainOperationStatus.Error, new[] { "1" } }
+			new object[] { (Func<(int, IDomainResult)>)(() => IDomainResult.Unauthorized<int>()), DomainOperationStatus.Unauthorized, new string[0] },
+			new object[] { (Func<(int, IDomainResult)>)(() => IDomainResult.Unauthorized<int>("1")), DomainOperationStatus.Unauthorized, new [] { "1" } },
+
+			new object[] { (Func<(int, IDomainResult)>)(() => IDomainResult.Failed<int>("1")), DomainOperationStatus.Failed, new[] { "1" } },
+			new object[] { (Func<(int, IDomainResult)>)(() => IDomainResult.Failed<int>(new[] { "1", "2" })), DomainOperationStatus.Failed, new[] { "1", "2" } },
+			new object[] { (Func<(int, IDomainResult)>)(() => IDomainResult.Failed<int>(new[] { new ValidationResult("1") })), DomainOperationStatus.Failed, new[] { "1" } }
 		};
 		#endregion // Test of '(TValue, IDomainResult)' responses -------------
 
@@ -71,7 +75,7 @@ namespace DomainResults.Domain.Tests
 		public static IEnumerable<object[]> TestCasesWrappedInTask
 		{
 			get
-			{
+			{	// ReSharper disable once LoopCanBeConvertedToQuery as the 'yield return' is vital to do the trick
 				foreach (var t in testCasesWrappedInTask)
 					yield return t;
 			}
@@ -84,9 +88,12 @@ namespace DomainResults.Domain.Tests
 			new object[] { (Func<Task<(int, IDomainResult)>>)(() => IDomainResult.NotFoundTask<int>("1")), DomainOperationStatus.NotFound, new [] { "1" } },
 			new object[] { (Func<Task<(int, IDomainResult)>>)(() => IDomainResult.NotFoundTask<int>(new [] { "1", "2" })), DomainOperationStatus.NotFound, new [] { "1", "2" } },
 
-			new object[] { (Func<Task<(int, IDomainResult)>>)(() => IDomainResult.ErrorTask<int>("1")), DomainOperationStatus.Error, new [] { "1" } },
-			new object[] { (Func<Task<(int, IDomainResult)>>)(() => IDomainResult.ErrorTask<int>(new [] { "1", "2" })), DomainOperationStatus.Error, new [] { "1", "2" } },
-			new object[] { (Func<Task<(int, IDomainResult)>>)(() => IDomainResult.ErrorTask<int>(new[] { new ValidationResult("1") })), DomainOperationStatus.Error, new [] { "1" } }
+			new object[] { (Func<Task<(int, IDomainResult)>>)(() => IDomainResult.UnauthorizedTask<int>()), DomainOperationStatus.Unauthorized, new string[0] },
+			new object[] { (Func<Task<(int, IDomainResult)>>)(() => IDomainResult.UnauthorizedTask<int>("1")), DomainOperationStatus.Unauthorized, new [] { "1" } },
+
+			new object[] { (Func<Task<(int, IDomainResult)>>)(() => IDomainResult.FailedTask<int>("1")), DomainOperationStatus.Failed, new [] { "1" } },
+			new object[] { (Func<Task<(int, IDomainResult)>>)(() => IDomainResult.FailedTask<int>(new [] { "1", "2" })), DomainOperationStatus.Failed, new [] { "1", "2" } },
+			new object[] { (Func<Task<(int, IDomainResult)>>)(() => IDomainResult.FailedTask<int>(new[] { new ValidationResult("1") })), DomainOperationStatus.Failed, new [] { "1" } }
 		};
 		#endregion // Test of 'Task<(TValue, IDomainResult)>' responses -------
 	}

@@ -1,14 +1,11 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
 using DomainResults.Common;
-
+using DomainResults.Mvc;
 using Microsoft.AspNetCore.Mvc;
-
 using Xunit;
 
-namespace DomainResults.Mvc.Tests
+namespace DomainResults.Tests.Mvc
 {
 	public class To_200_OkResult_DomainResult_Tests
 	{
