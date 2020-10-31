@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+
 using DomainResults.Common;
+
 using Xunit;
 
 namespace DomainResults.Tests.Common
@@ -43,6 +45,9 @@ namespace DomainResults.Tests.Common
 			new object[] { (Func<(int, IDomainResult)>)(() => IDomainResult.NotFound<int>("1")), DomainOperationStatus.NotFound, new [] { "1" } },
 			new object[] { (Func<(int, IDomainResult)>)(() => IDomainResult.NotFound<int>(new[] { "1", "2" })), DomainOperationStatus.NotFound, new [] { "1", "2" } },
 
+			new object[] { (Func<(int, IDomainResult)>)(() => IDomainResult.Unauthorized<int>()), DomainOperationStatus.Unauthorized, new string[0] },
+			new object[] { (Func<(int, IDomainResult)>)(() => IDomainResult.Unauthorized<int>("1")), DomainOperationStatus.Unauthorized, new [] { "1" } },
+
 			new object[] { (Func<(int, IDomainResult)>)(() => IDomainResult.Failed<int>("1")), DomainOperationStatus.Failed, new[] { "1" } },
 			new object[] { (Func<(int, IDomainResult)>)(() => IDomainResult.Failed<int>(new[] { "1", "2" })), DomainOperationStatus.Failed, new[] { "1", "2" } },
 			new object[] { (Func<(int, IDomainResult)>)(() => IDomainResult.Failed<int>(new[] { new ValidationResult("1") })), DomainOperationStatus.Failed, new[] { "1" } }
@@ -82,6 +87,9 @@ namespace DomainResults.Tests.Common
 
 			new object[] { (Func<Task<(int, IDomainResult)>>)(() => IDomainResult.NotFoundTask<int>("1")), DomainOperationStatus.NotFound, new [] { "1" } },
 			new object[] { (Func<Task<(int, IDomainResult)>>)(() => IDomainResult.NotFoundTask<int>(new [] { "1", "2" })), DomainOperationStatus.NotFound, new [] { "1", "2" } },
+
+			new object[] { (Func<Task<(int, IDomainResult)>>)(() => IDomainResult.UnauthorizedTask<int>()), DomainOperationStatus.Unauthorized, new string[0] },
+			new object[] { (Func<Task<(int, IDomainResult)>>)(() => IDomainResult.UnauthorizedTask<int>("1")), DomainOperationStatus.Unauthorized, new [] { "1" } },
 
 			new object[] { (Func<Task<(int, IDomainResult)>>)(() => IDomainResult.FailedTask<int>("1")), DomainOperationStatus.Failed, new [] { "1" } },
 			new object[] { (Func<Task<(int, IDomainResult)>>)(() => IDomainResult.FailedTask<int>(new [] { "1", "2" })), DomainOperationStatus.Failed, new [] { "1", "2" } },

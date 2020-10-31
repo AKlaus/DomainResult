@@ -60,6 +60,8 @@ namespace DomainResults.Tests.Common
 			new object[] { (Func<IDomainResult<int>>)(() => DomainResult.NotFound<int>("1")), DomainOperationStatus.NotFound, new [] { "1" } },
 			new object[] { (Func<IDomainResult<int>>)(() => DomainResult.NotFound<int>(new[] { "1", "2" })), DomainOperationStatus.NotFound, new [] { "1", "2" } },
 
+			new object[] { (Func<IDomainResult<int>>)(() => DomainResult.Unauthorized<int>("1")), DomainOperationStatus.Unauthorized, new [] { "1" } },
+
 			new object[] { (Func<IDomainResult<int>>)(() => DomainResult.Failed<int>("1")), DomainOperationStatus.Failed, new[] { "1" } },
 			new object[] { (Func<IDomainResult<int>>)(() => DomainResult.Failed<int>(new[] { "1", "2" })), DomainOperationStatus.Failed, new[] { "1", "2" } },
 			new object[] { (Func<IDomainResult<int>>)(() => DomainResult.Failed<int>(new[] { new ValidationResult("1") })), DomainOperationStatus.Failed, new[] { "1" } },
@@ -68,6 +70,8 @@ namespace DomainResults.Tests.Common
 
 			new object[] { (Func<IDomainResult<int>>)(() => DomainResult<int>.NotFound("1")), DomainOperationStatus.NotFound, new [] { "1" } },
 			new object[] { (Func<IDomainResult<int>>)(() => DomainResult<int>.NotFound(new[] { "1", "2" })), DomainOperationStatus.NotFound, new [] { "1", "2" } },
+
+			new object[] { (Func<IDomainResult<int>>)(() => DomainResult<int>.Unauthorized("1")), DomainOperationStatus.Unauthorized, new [] { "1" } },
 
 			new object[] { (Func<IDomainResult<int>>)(() => DomainResult<int>.Failed("1")), DomainOperationStatus.Failed, new[] { "1" } },
 			new object[] { (Func<IDomainResult<int>>)(() => DomainResult<int>.Failed(new[] { "1", "2" })), DomainOperationStatus.Failed, new[] { "1", "2" } },
@@ -109,6 +113,8 @@ namespace DomainResults.Tests.Common
 			new object[] { (Func<Task<IDomainResult<int>>>)(() => DomainResult.NotFoundTask<int>("1")), DomainOperationStatus.NotFound, new [] { "1" } },
 			new object[] { (Func<Task<IDomainResult<int>>>)(() => DomainResult.NotFoundTask<int>(new [] { "1", "2" })), DomainOperationStatus.NotFound, new [] { "1", "2" } },
 
+			new object[] { (Func<Task<IDomainResult<int>>>)(() => DomainResult.UnauthorizedTask<int>("1")), DomainOperationStatus.Unauthorized, new [] { "1" } },
+
 			new object[] { (Func<Task<IDomainResult<int>>>)(() => DomainResult.FailedTask<int>("1")), DomainOperationStatus.Failed, new [] { "1" } },
 			new object[] { (Func<Task<IDomainResult<int>>>)(() => DomainResult.FailedTask<int>(new [] { "1", "2" })), DomainOperationStatus.Failed, new [] { "1", "2" } },
 			new object[] { (Func<Task<IDomainResult<int>>>)(() => DomainResult.FailedTask<int>(new[] { new ValidationResult("1") })), DomainOperationStatus.Failed, new [] { "1" } },
@@ -117,6 +123,8 @@ namespace DomainResults.Tests.Common
 
 			new object[] { (Func<Task<IDomainResult<int>>>)(() => DomainResult<int>.NotFoundTask("1")), DomainOperationStatus.NotFound, new [] { "1" } },
 			new object[] { (Func<Task<IDomainResult<int>>>)(() => DomainResult<int>.NotFoundTask(new [] { "1", "2" })), DomainOperationStatus.NotFound, new [] { "1", "2" } },
+
+			new object[] { (Func<Task<IDomainResult<int>>>)(() => DomainResult<int>.UnauthorizedTask("1")), DomainOperationStatus.Unauthorized, new [] { "1" } },
 
 			new object[] { (Func<Task<IDomainResult<int>>>)(() => DomainResult<int>.FailedTask("1")), DomainOperationStatus.Failed, new [] { "1" } },
 			new object[] { (Func<Task<IDomainResult<int>>>)(() => DomainResult<int>.FailedTask(new [] { "1", "2" })), DomainOperationStatus.Failed, new [] { "1", "2" } },

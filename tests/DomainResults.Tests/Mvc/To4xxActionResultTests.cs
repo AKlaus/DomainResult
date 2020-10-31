@@ -18,7 +18,7 @@ namespace DomainResults.Tests.Mvc
 
 			Then_ResponseType_Correct_And_ProblemDetails_StatusAndText_Correct(actionRes, expectedCode, expectedTitle, expectedErrorMsg);
 		}		
-		public static readonly IEnumerable<object[]> FailedResultWithValueCases = TestCases(DomainResult.Failed<int>, DomainResult.NotFound<int>);
+		public static readonly IEnumerable<object[]> FailedResultWithValueCases = TestCases(DomainResult.Failed<int>, DomainResult.NotFound<int>, DomainResult.Unauthorized<int>);
 
 		[Theory]
 		[MemberData(nameof(FailedResultWithValueTaskCases))]
@@ -28,7 +28,7 @@ namespace DomainResults.Tests.Mvc
 
 			Then_ResponseType_Correct_And_ProblemDetails_StatusAndText_Correct(actionRes, expectedCode, expectedTitle, expectedErrorMsg);
 		}
-		public static readonly IEnumerable<object[]> FailedResultWithValueTaskCases = TestCases(DomainResult.FailedTask<int>, DomainResult.NotFoundTask<int>);
+		public static readonly IEnumerable<object[]> FailedResultWithValueTaskCases = TestCases(DomainResult.FailedTask<int>, DomainResult.NotFoundTask<int>, DomainResult.UnauthorizedTask<int>);
 
 		[Theory]
 		[MemberData(nameof(FailedResultCases))]
@@ -38,7 +38,7 @@ namespace DomainResults.Tests.Mvc
 
 			Then_ResponseType_Correct_And_ProblemDetails_StatusAndText_Correct(actionRes, expectedCode, expectedTitle, expectedErrorMsg);
 		}
-		public static readonly IEnumerable<object[]> FailedResultCases = TestCases(DomainResult.Failed, DomainResult.NotFound);
+		public static readonly IEnumerable<object[]> FailedResultCases = TestCases(DomainResult.Failed, DomainResult.NotFound, DomainResult.Unauthorized);
 
 		[Theory]
 		[MemberData(nameof(FailedResultTaskCases))]
@@ -48,7 +48,7 @@ namespace DomainResults.Tests.Mvc
 
 			Then_ResponseType_Correct_And_ProblemDetails_StatusAndText_Correct(actionRes, expectedCode, expectedTitle, expectedErrorMsg);
 		}
-		public static readonly IEnumerable<object[]> FailedResultTaskCases = TestCases(DomainResult.FailedTask, DomainResult.NotFoundTask);
+		public static readonly IEnumerable<object[]> FailedResultTaskCases = TestCases(DomainResult.FailedTask, DomainResult.NotFoundTask, DomainResult.UnauthorizedTask);
 
 		[Theory]
 		[MemberData(nameof(FailedValueTestCases))]
@@ -58,7 +58,7 @@ namespace DomainResults.Tests.Mvc
 
 			Then_ResponseType_Correct_And_ProblemDetails_StatusAndText_Correct(actionRes, expectedCode, expectedTitle, expectedErrorMsg);
 		}
-		public static readonly IEnumerable<object[]> FailedValueTestCases = TestCases(DomainResult.Failed, DomainResult.NotFound, v => (10, v));
+		public static readonly IEnumerable<object[]> FailedValueTestCases = TestCases(DomainResult.Failed, DomainResult.NotFound, DomainResult.Unauthorized, v => (10, v));
 
 		[Theory]
 		[MemberData(nameof(FailedValueTaskTestCases))]
@@ -68,7 +68,7 @@ namespace DomainResults.Tests.Mvc
 
 			Then_ResponseType_Correct_And_ProblemDetails_StatusAndText_Correct(actionRes, expectedCode, expectedTitle, expectedErrorMsg);
 		}
-		public static readonly IEnumerable<object[]> FailedValueTaskTestCases = TestCases(DomainResult.Failed, DomainResult.NotFound, v => Task.FromResult((10, v)));
+		public static readonly IEnumerable<object[]> FailedValueTaskTestCases = TestCases(DomainResult.Failed, DomainResult.NotFound, DomainResult.Unauthorized, v => Task.FromResult((10, v)));
 
 		#region Auxiliary methods [PRIVATE] -----------------------------------
 
@@ -78,7 +78,7 @@ namespace DomainResults.Tests.Mvc
 		/// <param name="actionResult"> The <see cref="IActionResult"/> in question </param>
 		/// <param name="expectedCode"> The expected HTTP code </param>
 		/// <param name="expectedTitle"> The expected title in the <see cref="ProblemDetails"/> </param>
-		/// <param name="expectedErrorMsg"> The expected description messsages in the <see cref="ProblemDetails"/> </param>
+		/// <param name="expectedErrorMsg"> The expected description messages in the <see cref="ProblemDetails"/> </param>
 		private void Then_ResponseType_Correct_And_ProblemDetails_StatusAndText_Correct(IActionResult actionResult, int expectedCode, string expectedTitle, string expectedErrorMsg)
 		{
 			// THEN the response type is correct
@@ -98,18 +98,20 @@ namespace DomainResults.Tests.Mvc
 		/// </summary>
 		/// <param name="domainErrorFunc"> The 'Error' function </param>
 		/// <param name="domainNotFoundFunc"> The 'NotFound' function </param>
-		/// <param name="wrapInFunc"> Optional wrapper <see cref="TupleValue"/> of the Domain result method </param>
+		/// <param name="domainUnauthFunc"> The 'Unauthorized' function </param>
+		/// <param name="wrapInFunc"> Optional wrapper <see cref="ValueTuple"/> of the Domain result method </param>
 		/// <returns> Input test parameters </returns>
-		private static IEnumerable<object[]> TestCases<T>(Func<IEnumerable<string>,T> domainErrorFunc, Func<IEnumerable<string>, T> domainNotFoundFunc, Func<T, object> wrapInFunc = null)
+		private static IEnumerable<object[]> TestCases<T>(Func<IEnumerable<string>,T> domainErrorFunc, Func<IEnumerable<string>, T> domainNotFoundFunc, Func<string, T> domainUnauthFunc, Func<T, object> wrapInFunc = null)
 		{
-			object optionalWrapper (T value) => wrapInFunc != null ? wrapInFunc(value) : value as object;
+			object OptionalWrapper (T value) => wrapInFunc != null ? wrapInFunc(value) : value as object;
 
 			var returnValues = new List<object[]>
 				{
-					new object[] { optionalWrapper(domainErrorFunc(new[] { "1" })),			ActionResultConventions.ErrorHttpCode,	 "Bad Request", "1" },
-					new object[] { optionalWrapper(domainErrorFunc(new[] { "1", "2" })),	ActionResultConventions.ErrorHttpCode,	 "Bad Request", "1, 2" },
-					new object[] { optionalWrapper(domainNotFoundFunc(new[] { "1" })),		ActionResultConventions.NotFoundHttpCode, "Not Found",   "1" },
-					new object[] { optionalWrapper(domainNotFoundFunc(new[] { "1", "2" })), ActionResultConventions.NotFoundHttpCode, "Not Found",   "1, 2" },
+					new[] { OptionalWrapper(domainErrorFunc(new[] { "1" })),		ActionResultConventions.ErrorHttpCode,	 "Bad Request", "1" },
+					new[] { OptionalWrapper(domainErrorFunc(new[] { "1", "2" })),	ActionResultConventions.ErrorHttpCode,	 "Bad Request", "1, 2" },
+					new[] { OptionalWrapper(domainNotFoundFunc(new[] { "1" })),		ActionResultConventions.NotFoundHttpCode, "Not Found",   "1" },
+					new[] { OptionalWrapper(domainNotFoundFunc(new[] { "1", "2" })),ActionResultConventions.NotFoundHttpCode, "Not Found",   "1, 2" },
+					new[] { OptionalWrapper(domainUnauthFunc("1")),					ActionResultConventions.UnauthorizedHttpCode, "Unauthorized access",   "1" },
 				};
 			foreach (var val in returnValues)
 				yield return val;
