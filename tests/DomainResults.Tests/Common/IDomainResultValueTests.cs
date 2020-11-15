@@ -26,6 +26,7 @@ namespace DomainResults.Tests.Common
 			var (value, details) = res;
 			
 			Assert.Equal(10, value);
+			Assert.IsAssignableFrom<IDomainResult>(details);
 			Assert.Equal(DomainOperationStatus.Success, details.Status);
 		}
 
