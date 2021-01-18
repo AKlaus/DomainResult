@@ -50,6 +50,6 @@ Provides:
 		<!-- SourceLink settings (source debugging experiences) -->
 		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
 		<PackageReference Include="MinVer" Version="2.4.0" PrivateAssets="All" />
-		<PackageReference Include="System.ComponentModel.Annotations" Version="4.7.0" />
+		<PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
 	</ItemGroup>
 </Project>
