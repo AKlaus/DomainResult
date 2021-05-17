@@ -1,4 +1,5 @@
 # DomainResult
+
 **NuGet for decoupling domain operation results from ActionResult-based types of ASP.NET Web API**
 
 ![CI](https://github.com/AKlaus/DomainResult/workflows/CI/badge.svg)
@@ -8,19 +9,24 @@
 <br/>
 
 Two tiny NuGet packages addressing challenges in the [ASP.NET Web API](https://dotnet.microsoft.com/apps/aspnet/apis) realm posed by separation of the _Domain Layer_ (aka _Business Layer_) from the _Application Layer_:
+
 - eliminating dependency on _Microsoft.AspNetCore.Mvc_ (and [IActionResult](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.iactionresult) in particular) in the _Domain Layer_ (usually a separate project);
 - mapping various of responses from the _Domain Layer_ to appropriate [ActionResult](https://docs.microsoft.com/en-us/aspnet/core/web-api/action-return-types)-related type.
 
 ### Content:
+
 - [Basic use-case](#basic-use-case)
 - [Quick start](#quick-start)
 - ['DomainResult.Common' package. Returning result from Domain Layer method](#domainresultcommon-package-returning-result-from-domain-layer-method)
   - [Examples](#examples)
 - ['DomainResult' package. Conversion to ActionResult](#domainresult-package-conversion-to-actionresult)
-  - [Basic examples](#basic-examples)
+  - [Examples](#basic-examples)
+- [Custom Problem Details output](#custom-problem-details-output)
   - [Custom ActionResult response for 2xx HTTP codes](#custom-actionresult-response-for-2xx-http-codes)
   - [Custom error handling](#custom-error-handling)
-- [Why not FluentResults?](#why-not-fluentresults)
+- [Alternative solutions](#alternative-solutions)
+  - [Why not FluentResults?](#why-not-fluentresults)
+  - [Why not Hellang's ProblemDetails?](#why-not-fluentresults)
 
 ## Basic use-case
 
@@ -34,7 +40,7 @@ public async Task<(InvoiceResponseDto, IDomainResult)> GetInvoice(int invoiceId)
         return IDomainResult.Failed<InvoiceResponseDto>("Try harder");
 
     var invoice = await DataContext.Invoices.FindAsync(invoiceId);
-    
+
     if (invoice == null)
         // Returns a Not Found response
         return IDomainResult.NotFound<InvoiceResponseDto>();
@@ -54,7 +60,7 @@ public async Task<IDomainResult<InvoiceResponseDto>> GetInvoice(int invoiceId)
         return DomainResult.Failed<InvoiceResponseDto>("Try harder");
 
     var invoice = await DataContext.Invoices.FindAsync(invoiceId);
-    
+
     if (invoice == null)
         // Returns a Not Found response
         return DomainResult.NotFound<InvoiceResponseDto>();
@@ -75,6 +81,7 @@ public Task<IActionResult> GetInvoice()
     return _service.GetInvoice().ToActionResult();
 }
 ```
+
 or for ASP.NET Core 2.1+ we can leverage [ActionResult&lt;T&gt;](https://docs.microsoft.com/en-us/aspnet/core/web-api/action-return-types#actionresultt-type)
 
 ```cs
@@ -88,6 +95,7 @@ public Task<ActionResult<InvoiceResponseDto>> GetInvoice()
 ```
 
 The above returns:
+
 - HTTP code `200 OK` along with an instance of `InvoiceResponseDto` on successful executions.
 - Non-2xx codes wrapped in [ProblemDetails](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.problemdetails) (as per [RFC 7807](https://tools.ietf.org/html/rfc7807)):
   - HTTP code `400 Bad Request` with a message "_Try harder_" when the invoice ID < 1 (the HTTP code can be configured to `422 Unprocessable Entity`).
@@ -104,6 +112,7 @@ The library targets `.NET Standard 2.0` ([supported .NET implementations](https:
 ## 'DomainResult.Common' package. Returning result from Domain Layer method
 
 A tiny package with no dependency on `Microsoft.AspNetCore.*` namespaces that provides:
+
 - data types for returning from domain operations (wraps up the returned value and adds operation status with error messages if applicable);
 - extension methods to effortlessly form the desired response.
 
@@ -131,6 +140,7 @@ It has **50+ static extension methods** to return a successful or unsuccessful r
 | `(T, IDomainResult)` | `Task<(T, IDomainResult)>`      |
 
 ### Examples:
+
 ```cs
 // Successful result with no value
 IDomainResult res = IDomainResult.Success();        // res.Status is 'Success'
@@ -151,7 +161,8 @@ Task<(int val, IDomainResult state)> res = IDomainResult.NotFoundTask<int>();  /
 // 'Unauthorized' response
 (value, state) = IDomainResult.Unauthorized<int>(); // value = 0, state.Status is 'Unauthorized'
 ```
-*Notes*:
+
+_Notes_:
 
 - Support for extension methods on interfaces starts from `.NET Standard 2.1`. For older versions use static extensions on `DomainResult` class.
 - The `Task` suffix on the extension methods indicates that the returned type is wrapped in a `Task` (e.g. `SuccessTask()`, `FailedTask()`, `NotFoundTask()`, `UnauthorizedTask()`).
@@ -161,12 +172,12 @@ Task<(int val, IDomainResult state)> res = IDomainResult.NotFoundTask<int>();  /
 
 **Converts a `IDomainResult`-based object to various `ActionResult`-based types providing 20+ static extension methods.**
 
-| Returned type                                 | Returned type wrapped in `Task`                     | Extension methods                                    |
-| --------------------------------------------- | --------------------------------------------------- | ---------------------------------------------------- |
-| `IActionResult`                               | `Task<IActionResult>`                               | `ToActionResult()`<br>`ToCustomActionResult()`       |
-| `ActionResult<T>`<sup>[*](#myfootnote1)</sup> | `Task<ActionResult<T>>`<sup>[*](#myfootnote1)</sup> | `ToActionResultOfT()`<br>`ToCustomActionResultOfT()` |
+| Returned type                                  | Returned type wrapped in `Task`                      | Extension methods                                    |
+| ---------------------------------------------- | ---------------------------------------------------- | ---------------------------------------------------- |
+| `IActionResult`                                | `Task<IActionResult>`                                | `ToActionResult()`<br>`ToCustomActionResult()`       |
+| `ActionResult<T>`<sup>[\*](#myfootnote1)</sup> | `Task<ActionResult<T>>`<sup>[\*](#myfootnote1)</sup> | `ToActionResultOfT()`<br>`ToCustomActionResultOfT()` |
 
-<sup><a name="myfootnote1">*</a></sup> <sub><sup>[ActionResult&lt;T&gt;](https://docs.microsoft.com/en-us/aspnet/core/web-api/action-return-types#actionresultt-type) type was introduced in ASP.NET Core 2.1.</sup></sub>
+<sup><a name="myfootnote1">\*</a></sup> <sub><sup>[ActionResult&lt;T&gt;](https://docs.microsoft.com/en-us/aspnet/core/web-api/action-return-types#actionresultt-type) type was introduced in ASP.NET Core 2.1.</sup></sub>
 
 <sub><sup>Note: 'DomainResult' package has dependency on `Microsoft.AspNetCore.*` namespace and `DomainResult.Common` package.</sup></sub>
 
@@ -179,7 +190,8 @@ The mapping rules are built around `IDomainResult.Status`:
 | `Failed`               | HTTP code `400` (default) or can be configured to `422` or any other code                                        |
 | `Unauthorized`         | HTTP code `403 Forbidden` (default)                                                                              |
 
-### Basic examples:
+### Examples:
+
 ```cs
 // Returns `IActionResult` with HTTP code `204 NoContent` on success
 IDomainResult.ToActionResult();
@@ -200,6 +212,10 @@ IDomainResult<T>.ToActionResultOfT();
 Task<IDomainResult<T>>.ToActionResultOfT();
 Task<(T, IDomainResult)>.ToActionResultOfT();
 ```
+
+## Custom Problem Details output
+
+There is a way to tune the Problem Details output case-by-case.
 
 ### Custom ActionResult response for 2xx HTTP codes
 
@@ -231,6 +247,7 @@ public IActionResult GetById([FromRoute] int id)
 ```
 
 It works with any of extensions in `Microsoft.AspNetCore.Mvc.ControllerBase`. Here are some:
+
 - [AcceptedAtAction](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.controllerbase.acceptedataction) and [AcceptedAtRoute](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.controllerbase.acceptedatroute) for HTTP code [202 Accepted](https://httpstatuses.com/202);
 - [File](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.controllerbase.File) or [PhysicalFile](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.controllerbase.PhysicalFile) for returning `200 OK` with the specified `Content-Type`, and the specified file name;
 - [Redirect](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.controllerbase.Redirect), [RedirectToRoute](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.controllerbase.RedirectToRoute), [RedirectToAction](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.controllerbase.RedirectToAction) for returning [302 Found](https://httpstatuses.com/302) with various details.
@@ -254,7 +271,8 @@ int UnauthorizedHttpCode { get; set; }          = 403;
 string UnauthorizedProblemDetailsTitle { get; set; }= "Unauthorized access";
 ```
 
-Feel free to change them (hmm... remember they're static with all the pros and cons). The reasons you may want it:
+Feel free to change them (hmm... remember they're static, with all the pros and cons). The reasons you may want it:
+
 - Localisation of the titles
 - Favour [422](https://httpstatuses.com/422) HTTP code in stead of [400](https://httpstatuses.com/400) (see opinions [here](https://stackoverflow.com/a/52098667/968003) and [here](https://stackoverflow.com/a/20215807/968003)).
 
@@ -278,12 +296,30 @@ public Task<ActionResult<int>> GetFailedWithCustomStatusAndMessage()
 }
 ```
 
-## Why not FluentResults? 
+## Alternative solutions
 
-[FluentResults](https://github.com/altmann/FluentResults) is a great tool for indicating success or failure in the returned object. But there are differnet objectives:
+The problem solved here is not unique, so how does _DomainResult_ stand out?
+
+### Why not FluentResults?
+
+[FluentResults](https://github.com/altmann/FluentResults) is a great tool for indicating success or failure in the returned object. But there are different objectives:
+
 - _FluentResults_ provides a generalised container for returning results and potential errors;
-- _DomainResult_ is focused on a more specialised case when the Domain Logic is consumed by Web API. 
+- _DomainResult_ is focused on a more specialised case when the Domain Logic is consumed by Web API.
 
 Hence, _DomainResult_ provides out-of-the-box:
-- Specialised extension methods (like `IDomainResult.NotFound()` that in _FluentResult_ is no different to other errors)
-- Supports various ways of conversions to `ActionResult`, functionality that is not available in _FluentResults_ and quite weak in the other NuGets extending _FluentResults_.
+
+- Specialised extension methods (like `IDomainResult.NotFound()` that in _FluentResult_ would be indistinctive from other errors)
+- Supports various ways of conversions to `ActionResult` (returning _Problem Details_ in case of error), functionality that is not available in _FluentResults_ and quite weak in the other NuGets extending _FluentResults_.
+
+### Why not Hellang's ProblemDetails?
+
+[Hellang.Middleware.ProblemDetails](https://github.com/khellang/Middleware) is another good one, where you can map exceptions to problem details.
+
+In this case, the difference is ideological - "_throwing exception_" vs "_returning a faulty status_" for the sad path of execution in the business logic.
+
+In addition to avoiding exceptions for each sneeze, other distinctive features of _DomainResult_ are
+
+- Allows simpler nested calls of the domain logic (no exceptions handlers when severity of their "sad" path is not exception-worthy).
+- Provides a predefined set of responses for main execution paths ("_bad request_", "_not found_", etc.). Works out-of-the-box.
+- Has an option to tune each output independently.
