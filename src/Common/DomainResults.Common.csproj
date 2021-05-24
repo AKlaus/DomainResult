@@ -1,55 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<Authors>Alex Klaus</Authors>
 		<Description>Decouples domain operation results from ActionResult-based types of Web API.
 Provides:
  - data types for returning from domain operations (wraps up the returned value and adds operation status with error messages if applicable);
  - 50+ extension methods to effortlessly form the desired response.</Description>
-		<Copyright>Copyright Alex Klaus</Copyright>
 
-		<TargetFrameworks>netcoreapp3.0;netstandard2.0</TargetFrameworks>
-		<LangVersion>latest</LangVersion>
-		<Nullable>enable</Nullable>
-		<Features>strict</Features>
+		<TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
 		
 		<AssemblyName>DomainResults.Common</AssemblyName>
 		<RootNamespace>DomainResults.Common</RootNamespace>
 		<PackageId>DomainResult.Common</PackageId>
-		<PackageTags>actionresult;domainresult;webapi;service</PackageTags>
-		
-		<SignAssembly>true</SignAssembly>
-    	<AssemblyOriginatorKeyFile>..\..\DomainResult.snk</AssemblyOriginatorKeyFile>
-
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    	<GenerateDocumentationFile>true</GenerateDocumentationFile>
-		<Deterministic>true</Deterministic>
-		
-		<!-- Generate XML docs for all targets https://stackoverflow.com/a/47118584/968003 -->
-		<GenerateDocumentationFile>true</GenerateDocumentationFile>
-
-		<!-- Below is commented out till https://github.com/coverlet-coverage/coverlet/issues/900 is fixed -->
-		<!-- <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>  -->
-
-		<!-- SourceLink settings (source debugging experiences) -->
-		<!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
-		<PublishRepositoryUrl>true</PublishRepositoryUrl>
-		<!-- Optional: Embed source files that are not tracked by the source control manager in the PDB -->
-		<EmbedUntrackedSources>true</EmbedUntrackedSources>
-		<!-- Optional: Build symbol package (.snupkg) to distribute the PDB containing Source Link -->
-		<IncludeSymbols>true</IncludeSymbols>
-		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-
-		<!-- Prefix for tag names MinVer -->
-		<MinVerTagPrefix>v</MinVerTagPrefix>
-
-		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<!-- SourceLink settings (source debugging experiences) -->
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-		<PackageReference Include="MinVer" Version="2.4.0" PrivateAssets="All" />
 		<PackageReference Include="System.ComponentModel.Annotations" Version="4.7.0" />
 	</ItemGroup>
 </Project>

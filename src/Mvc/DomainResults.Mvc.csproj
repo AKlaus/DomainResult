@@ -1,66 +1,28 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<Authors>Alex Klaus</Authors>
 		<Description>Converts a IDomainResult-based object (returned from the Domain Layer) to various ActionResult-based types providing 20+ static extension methods.
 To be used in Web API projects (usually to accompany 'DomainResult.Common' package used in the Domain Layer).
 		</Description>
-		<Copyright>Copyright Alex Klaus</Copyright>
 
-		<TargetFrameworks>netcoreapp3.0;netstandard2.0</TargetFrameworks>
-		<LangVersion>latest</LangVersion>
-		<Nullable>enable</Nullable>
-		<Features>strict</Features>
+		<TargetFrameworks>net5.0;netcoreapp3.0;netstandard2.0</TargetFrameworks>
 		
 		<AssemblyName>DomainResults.Mvc</AssemblyName>
 		<RootNamespace>DomainResults.Mvc</RootNamespace>
 		<PackageId>DomainResult</PackageId>
-		<PackageTags>actionresult;domainresult;webapi;service</PackageTags>
-		
-		<SignAssembly>true</SignAssembly>
-    	<AssemblyOriginatorKeyFile>..\..\DomainResult.snk</AssemblyOriginatorKeyFile>
-
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<Deterministic>true</Deterministic>
-
-		<!-- Generate XML docs for all targets https://stackoverflow.com/a/47118584/968003 -->
-		<GenerateDocumentationFile>true</GenerateDocumentationFile>
-
-		<!-- Below is commented out till https://github.com/coverlet-coverage/coverlet/issues/900 is fixed -->
-		<!-- <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>  -->
-
-		<!-- SourceLink settings (source debugging experiences) -->
-		<!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
-		<PublishRepositoryUrl>true</PublishRepositoryUrl>
-		<!-- Optional: Embed source files that are not tracked by the source control manager in the PDB -->
-		<EmbedUntrackedSources>true</EmbedUntrackedSources>
-		<!-- Optional: Build symbol package (.snupkg) to distribute the PDB containing Source Link -->
-		<IncludeSymbols>true</IncludeSymbols>
-		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-
-		<!-- Prefix for tag names MinVer -->
-		<MinVerTagPrefix>v</MinVerTagPrefix>
-
-		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 	</PropertyGroup>
 
-	<ItemGroup>
-	  <Compile Remove="Helpers\GenericUrlActionHelper.cs" />
-	  <Compile Remove="Helpers\InternalExpressionHelper.cs" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<!-- SourceLink settings (source debugging experiences) -->
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-		<PackageReference Include="MinVer" Version="2.4.0" PrivateAssets="All" />
-	</ItemGroup>
-
-	<ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0'">
+	<ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0' OR '$(TargetFramework)' == 'net5.0'">
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
 		<PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
+	</ItemGroup>
+	
+	<ItemGroup>
+		<Compile Remove="Helpers\GenericUrlActionHelper.cs" />
+		<Compile Remove="Helpers\InternalExpressionHelper.cs" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -1,18 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-	<LangVersion>latest</LangVersion>
-	<Nullable>enable</Nullable>
-	<Features>strict</Features>
-	<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+  <PropertyGroup>      
 	<AssemblyName>Examples.WebApi</AssemblyName>
 	<RootNamespace>DomainResults.Examples.WebApi</RootNamespace>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Folder Include="Configuration\" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
@@ -22,6 +13,5 @@
     <ProjectReference Include="..\..\src\Mvc\DomainResults.Mvc.csproj" />
     <ProjectReference Include="..\Domain\Examples.Domain.csproj" />
   </ItemGroup>
-
 
 </Project>
