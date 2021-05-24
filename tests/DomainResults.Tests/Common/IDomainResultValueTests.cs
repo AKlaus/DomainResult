@@ -7,6 +7,7 @@ using Xunit;
 
 namespace DomainResults.Tests.Common
 {
+	// ReSharper disable once InconsistentNaming
 	public class IDomainResult_Value_Tests
 	{
 		#region Test of 'IDomainResult<TValue>' responses ---------------------
