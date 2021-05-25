@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using DomainResults.Common;
 using DomainResults.Mvc;
@@ -7,6 +8,7 @@ using Xunit;
 
 namespace DomainResults.Tests.Mvc
 {
+	[SuppressMessage("ReSharper", "InconsistentNaming")]
 	public class To_200_OkResult_TupleValue_Tests
 	{
 		#region Test of successful '(TValue, IDomainResult)' response conversion ------------------
@@ -32,9 +34,9 @@ namespace DomainResults.Tests.Mvc
 
 		public static readonly IEnumerable<object[]> SuccessfulTestCases = new List<object[]>
 		{
-			new object[] { (10,  IDomainResult.Success()) },
-			new object[] { ("1", IDomainResult.Success()) },
-			new object[] { (new TestDto { Prop = "1" }, IDomainResult.Success()) }
+			new object[] { (10,  GetSuccess()) },
+			new object[] { ("1", GetSuccess()) },
+			new object[] { (new TestDto { Prop = "1" }, GetSuccess()) }
 		};
 		#endregion // Test of successful '(TValue, IDomainResult)' response conversion ------------
 
@@ -61,10 +63,17 @@ namespace DomainResults.Tests.Mvc
 
 		public static readonly IEnumerable<object[]> SuccessfulTaskTestCases = new List<object[]>
 		{
-			new object[] { Task.FromResult((10,  IDomainResult.Success())) },
-			new object[] { Task.FromResult(("1", IDomainResult.Success())) },
-			new object[] { Task.FromResult((new TestDto { Prop = "1" }, IDomainResult.Success())) }
+			new object[] { Task.FromResult((10,  GetSuccess())) },
+			new object[] { Task.FromResult(("1", GetSuccess())) },
+			new object[] { Task.FromResult((new TestDto { Prop = "1" }, GetSuccess())) }
 		};
 		#endregion // Test of successful 'Task<(TValue, IDomainResult)>' response conversion ------
+
+		private static IDomainResult GetSuccess() =>
+#if NETCOREAPP2_0 || NETCOREAPP2_1
+			DomainResult.Success();
+#else			
+			IDomainResult.Success();
+#endif
 	}
 }

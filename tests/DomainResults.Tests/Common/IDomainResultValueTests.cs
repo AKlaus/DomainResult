@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using DomainResults.Common;
 using Xunit;
 
 namespace DomainResults.Tests.Common
 {
-	// ReSharper disable once InconsistentNaming
+	[SuppressMessage("ReSharper", "InconsistentNaming")]
 	public class IDomainResult_Value_Tests
 	{
 		#region Test of 'IDomainResult<TValue>' responses ---------------------
@@ -24,7 +25,12 @@ namespace DomainResults.Tests.Common
 		public void DomainResult_Can_Be_Deconstructed_Test()
 		{
 			var res = DomainResult.Success(10);
-			var (value, details) = res;
+#if NETCOREAPP2_0 || NETCOREAPP2_1
+			var value = res.Value;
+			var details = res; 
+#else			
+			var (value, details) = res; 
+#endif
 			
 			Assert.Equal(10, value);
 			Assert.IsAssignableFrom<IDomainResult>(details);

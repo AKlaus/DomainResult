@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using DomainResults.Common;
 using DomainResults.Mvc;
@@ -8,6 +9,8 @@ using Xunit;
 
 namespace DomainResults.Tests.Mvc
 {
+	[SuppressMessage("ReSharper", "InconsistentNaming")]
+	[Collection("Sequential")]
 	public class To_4xx_ActionResult_Tests
 	{
 		[Theory]

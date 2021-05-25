@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Threading.Tasks;
 
 using DomainResults.Common;
@@ -7,7 +8,8 @@ using Xunit;
 
 namespace DomainResults.Tests.Common
 {
-	public class DomainResultConversionExtensionsTests
+	[SuppressMessage("ReSharper", "InconsistentNaming")]
+	public class DomainResult_Conversion_Extensions_Tests
 	{
 		#region Tests of converting IDomainResult to IDomainResult<T>
 		
@@ -60,7 +62,11 @@ namespace DomainResults.Tests.Common
 		public void Successful_IDomainResultOfT_Converts_To_IDomainResultOfV()
 		{
 			var domainResult = DomainResult.Success(10);
+#if NETCOREAPP2_0 || NETCOREAPP2_1
+			var domainResultOfT = DomainResult<char>.From(domainResult);
+#else			
 			var domainResultOfT = domainResult.To<char>();
+#endif
 			
 			Assert.True(domainResultOfT.IsSuccess);
 			Assert.Equal(default(char), domainResultOfT.Value);
@@ -70,7 +76,11 @@ namespace DomainResults.Tests.Common
 		public void Errored_IDomainResultOfT_Converts_To_IDomainResultOfV()
 		{
 			var domainResult = DomainResult.Failed<int>("Bla");
+#if NETCOREAPP2_0 || NETCOREAPP2_1
+			var domainResultOfT = DomainResult<char>.From(domainResult);
+#else			
 			var domainResultOfT = domainResult.To<char>();
+#endif
 			
 			Assert.False(domainResultOfT.IsSuccess);
 			Assert.Equal(default(char), domainResultOfT.Value);

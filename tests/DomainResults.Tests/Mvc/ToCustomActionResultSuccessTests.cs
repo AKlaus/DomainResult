@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using DomainResults.Common;
 using DomainResults.Mvc;
@@ -8,6 +9,7 @@ using Xunit;
 
 namespace DomainResults.Tests.Mvc
 {
+	[SuppressMessage("ReSharper", "InconsistentNaming")]
 	public class To_Custom_ActionResult_Success_Tests
 	{
 		[Theory]
@@ -92,7 +94,7 @@ namespace DomainResults.Tests.Mvc
 
 		#region Auxiliary methods [PRIVATE] -----------------------------------
 
-		private const string expectedUrl = "http://localhost/";
+		private const string ExpectedUrl = "http://localhost/";
 
 		/// <summary>
 		///		The 'THEN' section of the tests, checking the Response type, HTTP code, location URL and the returned value
@@ -102,7 +104,7 @@ namespace DomainResults.Tests.Mvc
 		private void Then_ResponseType_And_Value_And_Url_Are_Correct<TValue, TAction>(TAction actionResult, TValue expectedValue)
 		{
 			// THEN the response type is correct
-			CreatedResult createdResult = null;
+			CreatedResult? createdResult;
 			if (typeof(TAction).IsAssignableFrom(typeof(IActionResult)))
 				createdResult = actionResult as CreatedResult;
 			else
@@ -110,13 +112,13 @@ namespace DomainResults.Tests.Mvc
 				createdResult = (actionResult as ActionResult<TValue>)?.Result as CreatedResult;
 #endif
 			Assert.NotNull(createdResult);
-			Assert.Equal(201, createdResult.StatusCode);
+			Assert.Equal(201, createdResult?.StatusCode);
 
 			// and value remains there
-			Assert.Equal(expectedValue, createdResult.Value);
+			Assert.Equal(expectedValue, createdResult?.Value);
 
 			// and the location URL is correct
-			Assert.Equal(expectedUrl, createdResult.Location);
+			Assert.Equal(ExpectedUrl, createdResult?.Location);
 		}
 
 		private static IEnumerable<object[]> GetDomainResultTestCases(bool wrapInTask)
@@ -136,23 +138,30 @@ namespace DomainResults.Tests.Mvc
 				};
 
 		private static object[] GetDomainResultTestCase<T>(T domainValue, bool wrapInTask = false)
-			=> new object[] {
+			=> new [] {
 				wrapInTask
 					? DomainResult.SuccessTask(domainValue) as object
 					: DomainResult.Success(domainValue),
 				wrapInTask
 					? (Func<Task<IDomainResult<T>>, T>)(res => res.Result.Value) as object
 					: (Func<IDomainResult<T>, T>)(res => res.Value),
-				new Uri(expectedUrl)
+				new Uri(ExpectedUrl)
 			};
 
 		private static object[] GetValueResultTestCase<T>(T domainValue, bool wrapInTask = false)
-			=> new object[] 
+			=> new [] 
 			{
-				wrapInTask  ? Task.FromResult((domainValue, IDomainResult.Success())) as object
-							: (domainValue, IDomainResult.Success()),
-				new Uri(expectedUrl)
+				wrapInTask  ? Task.FromResult((domainValue, GetSuccess())) as object
+							: (domainValue, GetSuccess()),
+				new Uri(ExpectedUrl)
 			};
+
+		private static IDomainResult GetSuccess() =>
+#if NETCOREAPP2_0 || NETCOREAPP2_1
+			DomainResult.Success();
+#else			
+			IDomainResult.Success();
+#endif
 		#endregion // Auxiliary methods [PRIVATE] -----------------------------*/
 	}
 }

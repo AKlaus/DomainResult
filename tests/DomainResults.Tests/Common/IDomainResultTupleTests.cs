@@ -1,6 +1,8 @@
+#if !NETCOREAPP2_0 && !NETCOREAPP2_1
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
 using DomainResults.Common;
@@ -9,6 +11,7 @@ using Xunit;
 
 namespace DomainResults.Tests.Common
 {
+	[SuppressMessage("ReSharper", "InconsistentNaming")]
 	public class IDomainResult_Tuple_Tests
 	{
 		#region Test of '(TValue, IDomainResult)' responses -------------------
@@ -98,3 +101,4 @@ namespace DomainResults.Tests.Common
 		#endregion // Test of 'Task<(TValue, IDomainResult)>' responses -------
 	}
 }
+#endif
