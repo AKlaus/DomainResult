@@ -21,21 +21,18 @@ namespace DomainResults.Tests.Common
 			var res = func(10);
 		}
 
+#if !NETCOREAPP2_0 && !NETCOREAPP2_1
 		[Fact]
 		public void DomainResult_Can_Be_Deconstructed_Test()
 		{
 			var res = DomainResult.Success(10);
-#if NETCOREAPP2_0 || NETCOREAPP2_1
-			var value = res.Value;
-			var details = res; 
-#else			
-			var (value, details) = res; 
-#endif
+			var (value, details) = res;
 			
 			Assert.Equal(10, value);
 			Assert.IsAssignableFrom<IDomainResult>(details);
 			Assert.Equal(DomainOperationStatus.Success, details.Status);
 		}
+#endif
 
 		[Theory]
 		[MemberData(nameof(TestCasesWithValue))]
