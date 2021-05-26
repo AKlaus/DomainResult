@@ -36,8 +36,12 @@ jobs:
     - name: Build
       run: dotnet build --configuration Release --no-restore
 
-    - name: Test
-      run: dotnet test --no-restore --verbosity normal /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
+    - name: Test on .NET Core 2.1
+      run: dotnet test --no-restore --verbosity normal --framework netcoreapp2.1
+    - name: Test on .NET Core 3.1
+      run: dotnet test --no-restore --verbosity normal --framework netcoreapp3.1
+    - name: Test on .NET 5
+      run: dotnet test --no-restore --verbosity normal --framework net5.0 /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
 
     - name: Publish coverage report to coveralls.io
       uses: coverallsapp/github-action@master
