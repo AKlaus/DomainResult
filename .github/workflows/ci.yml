@@ -36,15 +36,17 @@ jobs:
     - name: Build
       run: dotnet build --configuration Release --no-restore
 
-    - name: Test on .NET Core 2.1
-      run: dotnet test --no-restore --verbosity normal --framework netcoreapp2.1
-    - name: Test on .NET Core 3.1
-      run: dotnet test --no-restore --verbosity normal --framework netcoreapp3.1
+    # Test each targeted framework independently to spot errors faster
+    # Generate coverage report for the latest framework only, as coverage on multiple is not supported   
     - name: Test on .NET 5
       run: dotnet test --no-restore --verbosity normal --framework net5.0 /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
+    - name: Test on .NET Core 3.1
+      run: dotnet test --no-restore --verbosity normal --framework netcoreapp3.1
+    - name: Test on .NET Core 2.1
+      run: dotnet test --no-restore --verbosity normal --framework netcoreapp2.1
 
     - name: Publish coverage report to coveralls.io
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
-        path-to-lcov: ./tests/DomainResults.Tests/TestResults/coverage.info 
+        path-to-lcov: ./tests/DomainResults.Tests/TestResults/coverage.net5.0.info 
