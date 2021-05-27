@@ -1,4 +1,7 @@
 <Project>
+	<!-- Import common poperties from a folder up (see https://github.com/dotnet/msbuild/issues/2456) -->
+	<Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
 	<PropertyGroup>    
 		<TargetFramework>net5.0</TargetFramework>
 	</PropertyGroup>
