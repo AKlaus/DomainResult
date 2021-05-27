@@ -71,6 +71,14 @@ namespace DomainResults.Tests.Mvc
 
 			Then_ResponseType_Correct_And_ProblemDetails_StatusAndText_Correct(actionRes, expectedCode, expectedTitle, expectedErrorMsg);
 		}
+		[Theory]
+		[MemberData(nameof(FailedValueTaskTestCases))]
+		public void Failed_ValueResult_Task_ActionOfT(Task<(int, IDomainResult)> domainValueTask, int expectedCode, string expectedTitle, string expectedErrorMsg)
+		{
+			var actionResTask = domainValueTask.ToActionResult();
+
+			Then_ResponseType_Correct_And_ProblemDetails_StatusAndText_Correct(actionResTask.Result, expectedCode, expectedTitle, expectedErrorMsg);
+		}
 		public static readonly IEnumerable<object[]> FailedValueTaskTestCases = TestCases(DomainResult.Failed, DomainResult.NotFound, DomainResult.Unauthorized, v => Task.FromResult((10, v)));
 
 		#region Auxiliary methods [PRIVATE] -----------------------------------
