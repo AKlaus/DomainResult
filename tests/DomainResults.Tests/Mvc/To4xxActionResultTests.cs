@@ -87,13 +87,13 @@ namespace DomainResults.Tests.Mvc
 			// THEN the response type is correct
 			var objResult = actionResult as ObjectResult;
 			Assert.NotNull(objResult);
-			var problemDetails = objResult.Value as ProblemDetails;
+			var problemDetails = objResult!.Value as ProblemDetails;
 			Assert.NotNull(problemDetails);
 
 			// and the ProblemDetails properties are as expected
-			Assert.Equal(expectedCode, problemDetails.Status);
-			Assert.Equal(expectedTitle, problemDetails.Title);
-			Assert.Equal(expectedErrorMsg, problemDetails.Detail);
+			Assert.Equal(expectedCode, problemDetails!.Status);
+			Assert.Equal(expectedTitle, problemDetails!.Title);
+			Assert.Equal(expectedErrorMsg, problemDetails!.Detail);
 		}
 
 		/// <summary>
@@ -104,9 +104,9 @@ namespace DomainResults.Tests.Mvc
 		/// <param name="domainUnauthFunc"> The 'Unauthorized' function </param>
 		/// <param name="wrapInFunc"> Optional wrapper <see cref="ValueTuple"/> of the Domain result method </param>
 		/// <returns> Input test parameters </returns>
-		private static IEnumerable<object[]> TestCases<T>(Func<IEnumerable<string>,T> domainErrorFunc, Func<IEnumerable<string>, T> domainNotFoundFunc, Func<string, T> domainUnauthFunc, Func<T, object> wrapInFunc = null)
+		private static IEnumerable<object[]> TestCases<T>(Func<IEnumerable<string>,T> domainErrorFunc, Func<IEnumerable<string>, T> domainNotFoundFunc, Func<string, T> domainUnauthFunc, Func<T, object>? wrapInFunc = null)
 		{
-			object OptionalWrapper (T value) => wrapInFunc != null ? wrapInFunc(value) : value as object;
+			object OptionalWrapper (T value) => wrapInFunc?.Invoke(value) ?? value!;
 
 			var returnValues = new List<object[]>
 				{
