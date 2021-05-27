@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using DomainResults.Common;
 using DomainResults.Mvc;
@@ -7,6 +8,7 @@ using Xunit;
 
 namespace DomainResults.Tests.Mvc
 {
+	[SuppressMessage("ReSharper", "InconsistentNaming")]
 	public class To_200_OkResult_DomainResult_Tests
 	{
 		[Theory]

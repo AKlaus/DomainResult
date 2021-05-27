@@ -16,10 +16,19 @@ jobs:
         # Fix for MinVer
         fetch-depth: 100
 
-    - name: Setup .NET Core
+    # Install all SDK versions targeted in the Test project
+    - name: Setup .NET Core 2.1
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.301
+        dotnet-version: 2.1.x
+    - name: Setup .NET Core 3.1
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.x
+    - name: Setup .NET 5
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
 
     - name: Install dependencies
       run: dotnet restore
@@ -27,11 +36,17 @@ jobs:
     - name: Build
       run: dotnet build --configuration Release --no-restore
 
-    - name: Test
-      run: dotnet test --no-restore --verbosity normal /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
+    # Test each targeted framework independently to spot errors faster
+    # Generate coverage report for the latest framework only, as coverage on multiple is not supported   
+    - name: Test on .NET 5
+      run: dotnet test --no-restore --verbosity normal --framework net5.0 /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
+    - name: Test on .NET Core 3.1
+      run: dotnet test --no-restore --verbosity normal --framework netcoreapp3.1
+    - name: Test on .NET Core 2.1
+      run: dotnet test --no-restore --verbosity normal --framework netcoreapp2.1
 
     - name: Publish coverage report to coveralls.io
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
-        path-to-lcov: ./tests/DomainResults.Tests/TestResults/coverage.info 
+        path-to-lcov: ./tests/DomainResults.Tests/TestResults/coverage.net5.0.info 

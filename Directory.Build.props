@@ -1,0 +1,12 @@
+<Project>
+	 <PropertyGroup>
+		<LangVersion>latest</LangVersion>
+		<Nullable>enable</Nullable>
+		<Features>strict</Features>
+
+		<Authors>Alex Klaus</Authors>
+		<Copyright>Copyright Alex Klaus</Copyright>
+
+    	<NoWarn>$(NoWarn);CS1591</NoWarn>
+	</PropertyGroup>
+</Project>

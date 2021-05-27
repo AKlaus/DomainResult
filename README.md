@@ -107,7 +107,7 @@ The above returns:
 - Install [DomainResult.Common](https://www.nuget.org/packages/DomainResult.Common) NuGet package to the _Domain Layer_ (aka _Business Layer_) projects. If the _Domain Layer_ is inside the _Web API_ project, then skip this step.
 - Follow the documentation below, `samples` in the repo and common sense.
 
-The library targets `.NET Standard 2.0` ([supported .NET implementations](https://dotnet.microsoft.com/platform/dotnet-standard#versions)) and `.NET Core 3.0`.
+The library targets `.NET Core 2.1`, `.NET Core 3.1` and `.NET 5.0`.
 
 ## 'DomainResult.Common' package. Returning result from Domain Layer method
 

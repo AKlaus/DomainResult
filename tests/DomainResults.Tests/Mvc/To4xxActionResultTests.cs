@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using DomainResults.Common;
 using DomainResults.Mvc;
@@ -8,6 +9,8 @@ using Xunit;
 
 namespace DomainResults.Tests.Mvc
 {
+	[SuppressMessage("ReSharper", "InconsistentNaming")]
+	[Collection("Sequential")]
 	public class To_4xx_ActionResult_Tests
 	{
 		[Theory]
@@ -68,6 +71,14 @@ namespace DomainResults.Tests.Mvc
 
 			Then_ResponseType_Correct_And_ProblemDetails_StatusAndText_Correct(actionRes, expectedCode, expectedTitle, expectedErrorMsg);
 		}
+		[Theory]
+		[MemberData(nameof(FailedValueTaskTestCases))]
+		public void Failed_ValueResult_Task_ActionOfT(Task<(int, IDomainResult)> domainValueTask, int expectedCode, string expectedTitle, string expectedErrorMsg)
+		{
+			var actionResTask = domainValueTask.ToActionResult();
+
+			Then_ResponseType_Correct_And_ProblemDetails_StatusAndText_Correct(actionResTask.Result, expectedCode, expectedTitle, expectedErrorMsg);
+		}
 		public static readonly IEnumerable<object[]> FailedValueTaskTestCases = TestCases(DomainResult.Failed, DomainResult.NotFound, DomainResult.Unauthorized, v => Task.FromResult((10, v)));
 
 		#region Auxiliary methods [PRIVATE] -----------------------------------
@@ -84,13 +95,13 @@ namespace DomainResults.Tests.Mvc
 			// THEN the response type is correct
 			var objResult = actionResult as ObjectResult;
 			Assert.NotNull(objResult);
-			var problemDetails = objResult.Value as ProblemDetails;
+			var problemDetails = objResult!.Value as ProblemDetails;
 			Assert.NotNull(problemDetails);
 
 			// and the ProblemDetails properties are as expected
-			Assert.Equal(expectedCode, problemDetails.Status);
-			Assert.Equal(expectedTitle, problemDetails.Title);
-			Assert.Equal(expectedErrorMsg, problemDetails.Detail);
+			Assert.Equal(expectedCode, problemDetails!.Status);
+			Assert.Equal(expectedTitle, problemDetails!.Title);
+			Assert.Equal(expectedErrorMsg, problemDetails!.Detail);
 		}
 
 		/// <summary>
@@ -101,9 +112,9 @@ namespace DomainResults.Tests.Mvc
 		/// <param name="domainUnauthFunc"> The 'Unauthorized' function </param>
 		/// <param name="wrapInFunc"> Optional wrapper <see cref="ValueTuple"/> of the Domain result method </param>
 		/// <returns> Input test parameters </returns>
-		private static IEnumerable<object[]> TestCases<T>(Func<IEnumerable<string>,T> domainErrorFunc, Func<IEnumerable<string>, T> domainNotFoundFunc, Func<string, T> domainUnauthFunc, Func<T, object> wrapInFunc = null)
+		private static IEnumerable<object[]> TestCases<T>(Func<IEnumerable<string>,T> domainErrorFunc, Func<IEnumerable<string>, T> domainNotFoundFunc, Func<string, T> domainUnauthFunc, Func<T, object>? wrapInFunc = null)
 		{
-			object OptionalWrapper (T value) => wrapInFunc != null ? wrapInFunc(value) : value as object;
+			object OptionalWrapper (T value) => wrapInFunc?.Invoke(value) ?? value!;
 
 			var returnValues = new List<object[]>
 				{

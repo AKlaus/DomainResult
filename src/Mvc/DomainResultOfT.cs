@@ -9,7 +9,7 @@ namespace DomainResults.Mvc
 {
 #if !NETCOREAPP2_0
 	//
-	// Conversion to ActionResult<T> (the type exists starting from .NET Core 2.1 and not present in .NET Standard 2.0)
+	// Conversion to ActionResult<T> (the type exists starting from .NET Core 2.1 and not present in earlier versions)
 	//
 	public static partial class DomainResultExtensions
 	{

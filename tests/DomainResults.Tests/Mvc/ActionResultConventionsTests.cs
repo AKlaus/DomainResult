@@ -1,4 +1,6 @@
-﻿using DomainResults.Common;
+﻿using System.Diagnostics.CodeAnalysis;
+
+using DomainResults.Common;
 using DomainResults.Mvc;
 
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +9,9 @@ using Xunit;
 
 namespace DomainResults.Tests.Mvc
 {
-	public class ActionResultConventionsTests
+	[SuppressMessage("ReSharper", "InconsistentNaming")]
+	[Collection("Sequential")]
+	public class ActionResult_Conventions_Tests
 	{
 		[Theory]
 		[InlineData(null, 400)]
@@ -21,7 +25,7 @@ namespace DomainResults.Tests.Mvc
 				ActionResultConventions.ErrorHttpCode = errorHttpCode.Value;
 
 			// WHEN a IDomainResult with Status 'Error' gets converted to ActionResult
-			var domainResult = IDomainResult.Failed();
+			var domainResult = GetFailed();
 			var actionRes = domainResult.ToActionResult() as ObjectResult;
 
 			// THEN the HTTP code is expected
@@ -42,7 +46,7 @@ namespace DomainResults.Tests.Mvc
 				ActionResultConventions.ErrorProblemDetailsTitle = errorTitle;
 
 			// WHEN a IDomainResult with Status 'Error' gets converted to ActionResult
-			var domainResult = IDomainResult.Failed();
+			var domainResult = GetFailed();
 			var actionRes = domainResult.ToActionResult() as ObjectResult;
 			var problemDetails = actionRes!.Value as ProblemDetails;
 
@@ -64,7 +68,7 @@ namespace DomainResults.Tests.Mvc
 				ActionResultConventions.NotFoundHttpCode = notFoundHttpCode.Value;
 
 			// WHEN a IDomainResult with Status 'Not Found' gets converted to ActionResult
-			var domainResult = IDomainResult.NotFound();
+			var domainResult = GetNotFound();
 			var actionRes = domainResult.ToActionResult() as ObjectResult;
 
 			// THEN the HTTP code is expected
@@ -85,7 +89,7 @@ namespace DomainResults.Tests.Mvc
 				ActionResultConventions.NotFoundProblemDetailsTitle = notFoundTitle;
 
 			// WHEN a IDomainResult with Status 'Not Found' gets converted to ActionResult
-			var domainResult = IDomainResult.NotFound();
+			var domainResult = GetNotFound();
 			var actionRes = domainResult.ToActionResult() as ObjectResult;
 			var problemDetails = actionRes!.Value as ProblemDetails;
 
@@ -94,5 +98,19 @@ namespace DomainResults.Tests.Mvc
 
 			ActionResultConventions.NotFoundProblemDetailsTitle = defaultValue;
 		}
+
+		private static IDomainResult GetFailed() =>
+#if NETCOREAPP2_0 || NETCOREAPP2_1
+			DomainResult.Failed();
+#else			
+			IDomainResult.Failed();
+#endif
+
+		private static IDomainResult GetNotFound() =>
+#if NETCOREAPP2_0 || NETCOREAPP2_1
+			DomainResult.NotFound();
+#else			
+			IDomainResult.NotFound();
+#endif
 	}
 }

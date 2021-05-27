@@ -22,7 +22,7 @@ namespace DomainResults.Common
 		/// <returns> True if the value is returned. Otherwise - false </returns>
 		bool TryGetValue(out T value);
 
-#if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
+#if !NETSTANDARD2_0 && !NETCOREAPP2_0 && !NETCOREAPP2_1
 		
 		/// <summary>
 		/// 	Deconstructs the instance to a (TValue, IDomainResult) pair

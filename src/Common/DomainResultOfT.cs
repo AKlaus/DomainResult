@@ -112,11 +112,11 @@ namespace DomainResults.Common
 		/// <summary>
 		/// 	Initiate from a <see cref="IDomainResult"/> instance
 		/// </summary>
-		internal static IDomainResult<TValue> From(IDomainResult result) => new DomainResult<TValue>(result);
+		public static IDomainResult<TValue> From(IDomainResult result) => new DomainResult<TValue>(result);
 		/// <summary>
 		/// 	Initiate from a <see cref="IDomainResult{T}"/> instance of another 'T'
 		/// </summary>
-		internal static IDomainResult<TValue> From<TOld>(IDomainResult<TOld> result) 
+		public static IDomainResult<TValue> From<TOld>(IDomainResult<TOld> result) 
 			=> new DomainResult<TValue>(default, new DomainResult(result.Status, result.Errors));
 		
 		#endregion // Extensions of 'IDomainResult<T>' [STATIC, PUBLIC] -------

@@ -1,11 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-	<LangVersion>latest</LangVersion>
-	<Nullable>enable</Nullable>
-	<Features>strict</Features>
-	<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <RootNamespace>DomainResults.Examples.Domain</RootNamespace>
   </PropertyGroup>
 

@@ -9,7 +9,7 @@ namespace DomainResults.Common
 	/// </summary>
 	public interface IDomainResult: IDomainResultBase
 	{
-#if NETSTANDARD2_1 || NETCOREAPP3_0 || NETCOREAPP3_1
+#if !NETSTANDARD2_0 && !NETCOREAPP2_0 && !NETCOREAPP2_1
 
 		#region Extensions of 'IDomainResult' [STATIC] ------------------------
 
