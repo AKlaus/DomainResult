@@ -103,8 +103,8 @@ The above returns:
 
 ## Quick start
 
-- Install [DomainResult](https://www.nuget.org/packages/DomainResult) NuGet package to the _Web API_ project.
-- Install [DomainResult.Common](https://www.nuget.org/packages/DomainResult.Common) NuGet package to the _Domain Layer_ (aka _Business Layer_) projects. If the _Domain Layer_ is inside the _Web API_ project, then skip this step.
+- Install [DomainResult](https://www.nuget.org/packages/DomainResult) NuGet package for the _Web API_ project.
+- Install [DomainResult.Common](https://www.nuget.org/packages/DomainResult.Common) NuGet package for the _Domain Layer_ (aka _Business Layer_) projects. If the _Domain Layer_ is inside the _Web API_ project, then skip this step.
 - Follow the documentation below, `samples` in the repo and common sense.
 
 The library targets `.NET Core 2.1`, `.NET Core 3.1` and `.NET 5.0`.
@@ -121,7 +121,7 @@ It's built around `IDomainResult` interface that has 3 properties:
 ```cs
 IReadOnlyCollection<string> Errors { get; } // Collection of error messages if any
 bool IsSuccess { get; }                     // Flag, whether the current status is successful or not
-DomainOperationStatus Status { get; }       // Current status of the domain operation: Success, Failed, NotFound, Unauthorized
+DomainOperationStatus Status { get; }       // Current status of the domain operation: Success, Failed, NotFound, Unauthorized, etc.
 ```
 
 And `IDomainResult<T>` interface that also adds
@@ -164,9 +164,9 @@ Task<(int val, IDomainResult state)> res = IDomainResult.NotFoundTask<int>();  /
 
 _Notes_:
 
-- Support for extension methods on interfaces starts from `.NET Standard 2.1`. For older versions use static extensions on `DomainResult` class.
 - The `Task` suffix on the extension methods indicates that the returned type is wrapped in a `Task` (e.g. `SuccessTask()`, `FailedTask()`, `NotFoundTask()`, `UnauthorizedTask()`).
 - The `Failed()` and `NotFound()` methods take as input parameters: `string`, `string[]`. `Failed()` can also take [ValidationResult](https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.dataannotations.validationresult).
+- Support for extension methods on interfaces starts from `.NET Standard 2.1`.
 
 ## 'DomainResult' package. Conversion to ActionResult
 
@@ -205,7 +205,7 @@ IDomainResult<T>.ToActionResult();
 Task<IDomainResult<T>>.ToActionResult();
 Task<(T, IDomainResult)>.ToActionResult();
 
-// Returns `ActionResult<T>` (for ASP.NET Core 2.1 and up) with HTTP code `200 Ok` along with the value
+// Returns `ActionResult<T>` with HTTP code `200 Ok` along with the value
 IDomainResult<T>.ToActionResultOfT();
 (T, IDomainResult).ToActionResultOfT();
 // As above, but returns `Task<ActionResult<T>>` with no need in 'await'
@@ -229,9 +229,9 @@ Example of returning [201 Created](https://httpstatuses.com/201) along with a lo
 public ActionResult<int> CreateItem(CreateItemDto dto)
 {
   // Service method for creating an item and returning its ID.
-  // Can return any of the IDomainResult types (e.g. (int, IDomainResult), IDomainResult<int>, Task<...>, etc).
+  // Can return any of the IDomainResult types (e.g. (int, IDomainResult, IDomainResult<int>, Task<...>, etc).
   var result = _service.CreateItem(dto);
-  // Custom conversion of the successful response. For others, it returns a standard 4xx HTTP code
+  // Custom conversion of the successful response only. For others, it returns standard 4xx HTTP codes
   return result.ToCustomActionResultOfT(
             // On success returns '201 Created' with a link to '/{id}' route in HTTP headers
             val => CreatedAtAction(nameof(GetById), new { id = val }, val)
@@ -261,10 +261,12 @@ The default HTTP codes for statuses `Failed`, `NotFound` and `Unauthorized` are 
 int ErrorHttpCode { get; set; }                 = 400;
 // The 'title' property of the returned JSON on HTTP code 400
 string ErrorProblemDetailsTitle { get; set; }   = "Bad Request";
+
 // The HTTP code to return when a record not found
 int NotFoundHttpCode { get; set; }              = 404;
 // The 'title' property of the returned JSON on HTTP code 404
 string NotFoundProblemDetailsTitle { get; set; }= "Not Found";
+
 // The HTTP code to return when access to a record is forbidden
 int UnauthorizedHttpCode { get; set; }          = 403;
 // The 'title' property of the returned JSON on HTTP code 403
@@ -289,9 +291,9 @@ public Task<ActionResult<int>> GetFailedWithCustomStatusAndMessage()
             {
               if (state.Errors?.Any() == true)
                 return;
-              problemDetails.Status = 422;		// Replace the default 400 code
-              problemDetails.Title = "D'oh!";	// Replace the default 'Bad Request' title
-              problemDetails.Detail = "I wish devs put more efforts into it...";	// Custom message
+              problemDetails.Status = 422;      // Replace the default 400 code
+              problemDetails.Title = "D'oh!";   // Replace the default 'Bad Request' title
+              problemDetails.Detail = "I wish devs put more efforts into it...";   // Custom message
             });
 }
 ```
@@ -318,7 +320,7 @@ Hence, _DomainResult_ provides out-of-the-box:
 
 In this case, the difference is ideological - "_throwing exception_" vs "_returning a faulty status_" for the sad path of execution in the business logic.
 
-In addition to avoiding exceptions for each sneeze, other distinctive features of _DomainResult_ are
+Main distinctive features of _DomainResult_ are
 
 - Allows simpler nested calls of the domain logic (no exceptions handlers when severity of their "sad" path is not exception-worthy).
 - Provides a predefined set of responses for main execution paths ("_bad request_", "_not found_", etc.). Works out-of-the-box.
