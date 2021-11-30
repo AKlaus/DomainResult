@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
@@ -28,7 +29,7 @@ namespace DomainResults.Common
 		/// </summary>
 		/// <param name="status"> The state </param>
 		/// <param name="error"> Optional custom error messages </param>
-		protected DomainResult(DomainOperationStatus status, string? error)	: this(status, (!string.IsNullOrEmpty(error) ? new[] { error } : new string[0])!) { }
+		protected DomainResult(DomainOperationStatus status, string? error)	: this(status, !string.IsNullOrEmpty(error) ? new[] { error! } : Array.Empty<string>()) { }
 		/// <summary>
 		///		Creates a new instance with a 'error'/'not found' status and error messages
 		/// </summary>

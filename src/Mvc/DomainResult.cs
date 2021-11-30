@@ -24,9 +24,9 @@ namespace DomainResults.Mvc
 		/// <typeparam name="T"> The returned action result type of <see cref="IActionResult"/> </typeparam>
 		/// <param name="value"> The value to be returned </param>
 		/// <returns> Action result </returns>
-		public delegate T ValueToActionResultFunc<V, T>([AllowNull] V value) where T : IActionResult;
+		public delegate T ValueToActionResultFunc<V, out T>(V? value) where T : IActionResult;
 
-		private static ActionResult ToActionResult<V, R, TResult>([AllowNull] V value,
+		private static ActionResult ToActionResult<V, R, TResult>(V? value,
 																	R errorDetails,
 																	Action<ProblemDetails, R>? errorAction,
 																	ValueToActionResultFunc<V, TResult> valueToActionResultFunc)

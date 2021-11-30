@@ -13,14 +13,14 @@ namespace DomainResults.Common
 		/// <summary>
 		///		Value returned by the domain operation
 		/// </summary>
-		T Value { get; }
+		T? Value { get; }
 
 		/// <summary>
 		///		Sets <paramref name="value"/> to the Value if <see cref="IDomainResultBase.Status"/> is <see cref="DomainOperationStatus.Success"/>
 		/// </summary>
 		/// <param name="value"> The value to be returned </param>
 		/// <returns> True if the value is returned. Otherwise - false </returns>
-		bool TryGetValue(out T value);
+		bool TryGetValue(out T? value);
 
 #if !NETSTANDARD2_0 && !NETCOREAPP2_0 && !NETCOREAPP2_1
 		
@@ -29,7 +29,7 @@ namespace DomainResults.Common
 		/// </summary>
 		/// <param name="value"> The result value returned by the domain operation </param>
 		/// <param name="details"> Details of the domain operation (like status) </param>
-		void Deconstruct(out T value, out IDomainResult details) => (value, details) = (Value, new DomainResult(Status, Errors));
+		void Deconstruct(out T? value, out IDomainResult details) => (value, details) = (Value, new DomainResult(Status, Errors));
 
 		// TODO: Consider to deprecate the extension methods in this interface (below) and move them to 'IDomainResult'
 

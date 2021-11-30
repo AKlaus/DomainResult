@@ -19,7 +19,7 @@ namespace DomainResults.Common
 		public bool IsSuccess						=> _status.IsSuccess;
 
 		/// <inheritdoc/>
-		public TValue Value { get; }
+		public TValue? Value { get; }
 
 		#region Constructors [PROTECTED] --------------------------------------
 
@@ -27,7 +27,7 @@ namespace DomainResults.Common
 		///		Creates a new instance with a 'error'/'not found' status
 		/// </summary>
 		/// <param name="errorDetails"> Error details described in <see cref="IDomainResult"/> </param>
-		protected DomainResult(IDomainResult errorDetails)				: this(default!, errorDetails) { }
+		protected DomainResult(IDomainResult errorDetails)				: this(default, errorDetails) { }
 		/// <summary>
 		///		Creates a new instance with 'success' status and a value
 		/// </summary>
@@ -38,7 +38,7 @@ namespace DomainResults.Common
 		/// </summary>
 		/// <param name="value"> The value to be returned </param>
 		/// <param name="errorDetails"> Error details described in <see cref="IDomainResult"/> </param>
-		protected DomainResult(TValue value, IDomainResult errorDetails)
+		protected DomainResult(TValue? value, IDomainResult errorDetails)
 		{
 			Value = value;
 			_status = errorDetails;
@@ -49,14 +49,14 @@ namespace DomainResults.Common
 		/// </summary>
 		/// <param name="value"> The result value returned by the domain operation </param>
 		/// <param name="details"> Details of the domain operation (like status) </param>
-		public void Deconstruct(out TValue value, out IDomainResult details) => (value, details) = (Value, _status);
+		public void Deconstruct(out TValue? value, out IDomainResult details) => (value, details) = (Value, _status);
 
 		#endregion // Constructors [PROTECTED] --------------------------------
 
 		/// <inheritdoc/>
-		public bool TryGetValue(out TValue value)
+		public bool TryGetValue(out TValue? value)
 		{
-			value = IsSuccess ? Value : default!;
+			value = IsSuccess ? Value : default;
 			return IsSuccess;
 		}
 
