@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
 // ReSharper disable MemberCanBePrivate.Global
@@ -19,7 +20,7 @@ namespace DomainResults.Common
 		public bool IsSuccess						=> _status.IsSuccess;
 
 		/// <inheritdoc/>
-		public TValue? Value { get; }
+		public TValue Value { get; }
 
 		#region Constructors [PROTECTED] --------------------------------------
 
@@ -38,7 +39,7 @@ namespace DomainResults.Common
 		/// </summary>
 		/// <param name="value"> The value to be returned </param>
 		/// <param name="errorDetails"> Error details described in <see cref="IDomainResult"/> </param>
-		protected DomainResult(TValue? value, IDomainResult errorDetails)
+		protected DomainResult(TValue value, IDomainResult errorDetails)
 		{
 			Value = value;
 			_status = errorDetails;
@@ -49,17 +50,17 @@ namespace DomainResults.Common
 		/// </summary>
 		/// <param name="value"> The result value returned by the domain operation </param>
 		/// <param name="details"> Details of the domain operation (like status) </param>
-		public void Deconstruct(out TValue? value, out IDomainResult details) => (value, details) = (Value, _status);
+		public void Deconstruct(out TValue value, out IDomainResult details) => (value, details) = (Value, _status);
 
 		#endregion // Constructors [PROTECTED] --------------------------------
 
 		/// <inheritdoc/>
-		public bool TryGetValue(out TValue? value)
+		public bool TryGetValue([MaybeNullWhen(false)] out TValue value)
 		{
 			value = IsSuccess ? Value : default;
 			return IsSuccess;
 		}
-
+		
 		/// <summary>
 		///		Implicitly converts the specified <paramref name="value"/> to an <see cref="DomainResult{TValue}"/>
 		/// </summary>

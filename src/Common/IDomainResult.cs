@@ -9,8 +9,6 @@ namespace DomainResults.Common
 	/// </summary>
 	public interface IDomainResult: IDomainResultBase
 	{
-#if !NETSTANDARD2_0 && !NETCOREAPP2_0 && !NETCOREAPP2_1
-
 		#region Extensions of 'IDomainResult' [STATIC] ------------------------
 
 		/// <summary>
@@ -95,32 +93,32 @@ namespace DomainResults.Common
 		///		Get 'not found' status. Gets converted to HTTP code 404 (NotFound)
 		/// </summary>
 		/// <param name="message"> Optional message </param>
-		static (TValue?, IDomainResult) NotFound<TValue>(string? message = null)		 => (default, DomainResult.NotFound(message));
+		static (TValue, IDomainResult) NotFound<TValue>(string? message = null)		 => (default, DomainResult.NotFound(message));
 		/// <summary>
 		///		Get 'not found' status. Gets converted to HTTP code 404 (NotFound)
 		/// </summary>
 		/// <param name="messages"> Custom messages </param>
-		static (TValue?, IDomainResult) NotFound<TValue>(IEnumerable<string> messages)=> (default, DomainResult.NotFound(messages));
+		static (TValue, IDomainResult) NotFound<TValue>(IEnumerable<string> messages)=> (default, DomainResult.NotFound(messages));
 		/// <summary>
 		///		Get 'unauthorized' status. Gets converted to HTTP code 403 (Forbidden)
 		/// </summary>
 		/// <param name="message"> Optional message </param>
-		static (TValue?, IDomainResult) Unauthorized<TValue>(string? message = null)	 => (default, DomainResult.Unauthorized(message));
+		static (TValue, IDomainResult) Unauthorized<TValue>(string? message = null)	 => (default, DomainResult.Unauthorized(message));
 		/// <summary>
 		///		Get 'failed' status. Gets converted to HTTP code 400/422
 		/// </summary>
 		/// <param name="error"> Optional message </param>
-		static (TValue?, IDomainResult) Failed<TValue>(string? error = null)			 => (default, DomainResult.Failed(error));
+		static (TValue, IDomainResult) Failed<TValue>(string? error = null)			 => (default, DomainResult.Failed(error));
 		/// <summary>
 		///		Get 'failed' status. Gets converted to HTTP code 400/422
 		/// </summary>
 		/// <param name="errors"> Custom messages </param>
-		static (TValue?, IDomainResult) Failed<TValue>(IEnumerable<string> errors)	 => (default, DomainResult.Failed(errors));
+		static (TValue, IDomainResult) Failed<TValue>(IEnumerable<string> errors)	 => (default, DomainResult.Failed(errors));
 		/// <summary>
 		///		Get 'failed' status with validation errors. Gets converted to HTTP code 400/422
 		/// </summary>
 		/// <param name="validationResults"> Results of a validation request </param>
-		static (TValue?, IDomainResult) Failed<TValue>(IEnumerable<ValidationResult> validationResults) 
+		static (TValue, IDomainResult) Failed<TValue>(IEnumerable<ValidationResult> validationResults) 
 																					 => (default, DomainResult.Failed(validationResults));
 
 		/// <summary>
@@ -131,35 +129,34 @@ namespace DomainResults.Common
 		///		Get 'not found' status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 404 (NotFound)
 		/// </summary>
 		/// <param name="message"> Optional message </param>
-		static Task<(TValue?, IDomainResult)> NotFoundTask<TValue>(string? message = null)	   => Task.FromResult(NotFound<TValue>(message));
+		static Task<(TValue, IDomainResult)> NotFoundTask<TValue>(string? message = null)	   => Task.FromResult(NotFound<TValue>(message));
 		/// <summary>
 		///		Get 'not found' status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 404 (NotFound)
 		/// </summary>
 		/// <param name="messages"> Custom messages </param>
-		static Task<(TValue?, IDomainResult)> NotFoundTask<TValue>(IEnumerable<string> messages)=> Task.FromResult(NotFound<TValue>(messages));
+		static Task<(TValue, IDomainResult)> NotFoundTask<TValue>(IEnumerable<string> messages)=> Task.FromResult(NotFound<TValue>(messages));
 		/// <summary>
 		///		Get 'unauthorized' status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 403 (Forbidden)
 		/// </summary>
 		/// <param name="message"> Optional message </param>
-		static Task<(TValue?, IDomainResult)> UnauthorizedTask<TValue>(string? message = null)	=> Task.FromResult(Unauthorized<TValue>(message));
+		static Task<(TValue, IDomainResult)> UnauthorizedTask<TValue>(string? message = null)	=> Task.FromResult(Unauthorized<TValue>(message));
 		/// <summary>
 		///		Get 'failed' status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 400/422
 		/// </summary>
 		/// <param name="error"> Optional message </param>
-		static Task<(TValue?, IDomainResult)> FailedTask<TValue>(string? error = null)		   => Task.FromResult(Failed<TValue>(error));
+		static Task<(TValue, IDomainResult)> FailedTask<TValue>(string? error = null)		   => Task.FromResult(Failed<TValue>(error));
 		/// <summary>
 		///		Get 'failed' status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 400/422
 		/// </summary>
 		/// <param name="errors"> Custom messages </param>
-		static Task<(TValue?, IDomainResult)> FailedTask<TValue>(IEnumerable<string> errors)	   => Task.FromResult(Failed<TValue>(errors));
+		static Task<(TValue, IDomainResult)> FailedTask<TValue>(IEnumerable<string> errors)	   => Task.FromResult(Failed<TValue>(errors));
 		/// <summary>
 		///		Get 'failed' status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 400/422
 		/// </summary>
 		/// <param name="validationResults"> Results of a validation request </param>
-		static Task<(TValue?, IDomainResult)> FailedTask<TValue>(IEnumerable<ValidationResult> validationResults) 
+		static Task<(TValue, IDomainResult)> FailedTask<TValue>(IEnumerable<ValidationResult> validationResults) 
 																								=> Task.FromResult(Failed<TValue>(validationResults));
 
 		#endregion // Extensions of '(TValue, IDomainResult)' [STATIC] --------
-#endif
 	}
 }

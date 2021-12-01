@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
 namespace DomainResults.Common
@@ -13,25 +14,26 @@ namespace DomainResults.Common
 		/// <summary>
 		///		Value returned by the domain operation
 		/// </summary>
-		T? Value { get; }
+		[AllowNull]
+		T Value { get; }
 
 		/// <summary>
-		///		Sets <paramref name="value"/> to the Value if <see cref="IDomainResultBase.Status"/> is <see cref="DomainOperationStatus.Success"/>
+		///		Gets the <see cref="Value"/> if <see cref="IDomainResultBase.Status"/> is <see cref="DomainOperationStatus.Success"/>
 		/// </summary>
-		/// <param name="value"> The value to be returned </param>
-		/// <returns> True if the value is returned. Otherwise - false </returns>
-		bool TryGetValue(out T? value);
+		/// <param name="value">
+		///		When this method returns, contains <see cref="Value"/> if <see cref="IDomainResultBase.IsSuccess"/> is <see langword="true" />; otherwise, the default value for the type <typeparamref name="T"/>. This parameter is passed uninitialized.
+		/// </param>
+		/// <returns> <see langword="true" /> if the value is returned; otherwise, <see langword="false" /> </returns>
+		bool TryGetValue([MaybeNullWhen(false)] out T value);
 
-#if !NETSTANDARD2_0 && !NETCOREAPP2_0 && !NETCOREAPP2_1
-		
 		/// <summary>
 		/// 	Deconstructs the instance to a (TValue, IDomainResult) pair
 		/// </summary>
 		/// <param name="value"> The result value returned by the domain operation </param>
 		/// <param name="details"> Details of the domain operation (like status) </param>
-		void Deconstruct(out T? value, out IDomainResult details) => (value, details) = (Value, new DomainResult(Status, Errors));
+		void Deconstruct([AllowNull] out T value, out IDomainResult details) => (value, details) = (Value, new DomainResult(Status, Errors));
 
-		// TODO: Consider to deprecate the extension methods in this interface (below) and move them to 'IDomainResult'
+		// TODO: Make a call on using either the extension methods in this interface (below) (and move them to 'IDomainResult') or extension methods on DomainResult class 
 
 		#region Extensions of 'IDomainResult<T>' [STATIC, PUBLIC] -------------
 
@@ -125,6 +127,5 @@ namespace DomainResults.Common
 		static Task<IDomainResult<T>> FailedTask(IEnumerable<ValidationResult> validationResults) => DomainResult<T>.FailedTask(validationResults);
 		
 		#endregion // Extensions of 'Task<IDomainResult<T>>' [STATIC, PUBLIC] -
-#endif
 	}
 }
