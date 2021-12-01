@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DomainResults.Mvc
 {
-#if !NETCOREAPP2_0
 	//
 	// Conversion to HTTP code 204 (NoContent) - ActionResult<T> (the type exists starting from .NET Core 2.1 and not present in earlier versions)
 	//
@@ -35,5 +34,4 @@ namespace DomainResults.Mvc
 																	   where T : IDomainResult
 			=> ToActionResult<object, T, NoContentResult>(null, await domainResultTask, errorAction, (value) => new NoContentResult());
 	}
-#endif
 }

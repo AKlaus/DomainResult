@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DomainResults.Examples.WebApi.Controllers
 {
-#if !NETCOREAPP2_0
 	[ApiController]
 	[Route("[controller]")]
 	public class SuccessResponsesOfTController : ControllerBase
@@ -38,5 +37,4 @@ namespace DomainResults.Examples.WebApi.Controllers
 			return _service.GetSuccessWithNumericValueTupleTask().ToActionResultOfT();
 		}
 	}
-#endif
 }
