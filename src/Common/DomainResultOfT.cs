@@ -20,6 +20,7 @@ namespace DomainResults.Common
 		public bool IsSuccess						=> _status.IsSuccess;
 
 		/// <inheritdoc/>
+		[AllowNull] 
 		public TValue Value { get; }
 
 		#region Constructors [PROTECTED] --------------------------------------
@@ -39,7 +40,7 @@ namespace DomainResults.Common
 		/// </summary>
 		/// <param name="value"> The value to be returned </param>
 		/// <param name="errorDetails"> Error details described in <see cref="IDomainResult"/> </param>
-		protected DomainResult(TValue value, IDomainResult errorDetails)
+		protected DomainResult([AllowNull] TValue value, IDomainResult errorDetails)
 		{
 			Value = value;
 			_status = errorDetails;
