@@ -36,7 +36,7 @@ namespace DomainResults.Tests.Mvc
 		{
 			new object[] { (10,  GetSuccess()) },
 			new object[] { ("1", GetSuccess()) },
-			new object[] { (new TestDto { Prop = "1" }, GetSuccess()) }
+			new object[] { (new TestDto("1"), GetSuccess()) }
 		};
 		#endregion // Test of successful '(TValue, IDomainResult)' response conversion ------------
 
@@ -65,7 +65,7 @@ namespace DomainResults.Tests.Mvc
 		{
 			new object[] { Task.FromResult((10,  GetSuccess())) },
 			new object[] { Task.FromResult(("1", GetSuccess())) },
-			new object[] { Task.FromResult((new TestDto { Prop = "1" }, GetSuccess())) }
+			new object[] { Task.FromResult((new TestDto("1"), GetSuccess())) }
 		};
 		#endregion // Test of successful 'Task<(TValue, IDomainResult)>' response conversion ------
 

@@ -58,7 +58,7 @@ namespace DomainResults.Tests.Mvc
 					GetTestCase(10,  false, wrapInTask),
 					GetTestCase("1", true, wrapInTask),
 					GetTestCase("1", false, wrapInTask),
-					GetTestCase(new TestDto { Prop = "1" }, true, wrapInTask) 
+					GetTestCase(new TestDto("1"), true, wrapInTask) 
 				};
 
 		private static object[] GetTestCase<T>(T domainValue, bool genericClass, bool wrapInTask = false)

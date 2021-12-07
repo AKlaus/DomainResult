@@ -121,7 +121,7 @@ namespace DomainResults.Tests.Mvc
 				{
 					GetDomainResultTestCase(10,  wrapInTask),						// E.g. { DomainResult.Success(10), res => res.Value }
 					GetDomainResultTestCase("1",  wrapInTask),
-					GetDomainResultTestCase(new TestDto { Prop = "1" },  wrapInTask)
+					GetDomainResultTestCase(new TestDto("1"),  wrapInTask)
 				};
 
 		private static IEnumerable<object[]> GetValueResultTestCases(bool wrapInTask)
@@ -129,7 +129,7 @@ namespace DomainResults.Tests.Mvc
 				{
 					GetValueResultTestCase(10,  wrapInTask),						// E.g. { DomainResult.Success(10), res => res.Value }
 					GetValueResultTestCase("1",  wrapInTask),
-					GetValueResultTestCase(new TestDto { Prop = "1" }, wrapInTask)
+					GetValueResultTestCase(new TestDto("1"), wrapInTask)
 				};
 
 		private static object[] GetDomainResultTestCase<T>(T domainValue, bool wrapInTask = false)

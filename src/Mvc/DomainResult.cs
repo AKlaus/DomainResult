@@ -58,7 +58,7 @@ namespace DomainResults.Mvc
 				Status = statusCode
 			};
 
-			errorAction?.Invoke(problemDetails, errorDetails);
+			errorAction?.Invoke(problemDetails, errorDetails!);
 
 			return new ObjectResult(problemDetails) { StatusCode = problemDetails.Status };
 		}
