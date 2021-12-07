@@ -46,8 +46,9 @@ namespace DomainResults.Tests.Mvc
 			Assert.NotNull(actionResOfT);
 
 			// and value remains there
-			Assert.Equal(domainValueTask.Result.Value, okResult.Value);
-			Assert.Equal(domainValueTask.Result.Value, actionResOfT.Value);
+			var domainValue = await domainValueTask;
+			Assert.Equal(domainValue.Value, okResult!.Value);
+			Assert.Equal(domainValue.Value, actionResOfT.Value);
 		}
 		public static readonly IEnumerable<object[]> SuccessfulTaskTestCases = GetTestCases(true);
 

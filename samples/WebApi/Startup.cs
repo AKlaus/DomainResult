@@ -1,4 +1,4 @@
-using DomainResult.Examples.WebApi.Configuration;
+using DomainResults.Examples.WebApi.Configuration;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
