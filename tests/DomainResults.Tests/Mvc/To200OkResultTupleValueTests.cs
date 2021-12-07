@@ -28,7 +28,7 @@ namespace DomainResults.Tests.Mvc
 			Assert.NotNull(actionResOfT);
 
 			// and value remains there
-			Assert.Equal(tupleValue.Item1, okResult.Value);
+			Assert.Equal(tupleValue.Item1!, okResult!.Value);
 			Assert.Equal(tupleValue.Item1, actionResOfT.Value);
 		}
 
@@ -57,7 +57,7 @@ namespace DomainResults.Tests.Mvc
 			Assert.NotNull(actionResOfT);
 
 			// and value remains there
-			Assert.Equal((await tupleValueTask).Item1, okResult.Value);
+			Assert.Equal((await tupleValueTask).Item1!, okResult!.Value);
 			Assert.Equal((await tupleValueTask).Item1, actionResOfT.Value);
 		}
 
@@ -69,11 +69,6 @@ namespace DomainResults.Tests.Mvc
 		};
 		#endregion // Test of successful 'Task<(TValue, IDomainResult)>' response conversion ------
 
-		private static IDomainResult GetSuccess() =>
-#if NETCOREAPP2_0 || NETCOREAPP2_1
-			DomainResult.Success();
-#else			
-			IDomainResult.Success();
-#endif
+		private static IDomainResult GetSuccess() => IDomainResult.Success();
 	}
 }

@@ -29,7 +29,7 @@ namespace DomainResults.Common
 		/// </summary>
 		/// <param name="status"> The state </param>
 		/// <param name="error"> Optional custom error messages </param>
-		protected DomainResult(DomainOperationStatus status, string? error)	: this(status, !string.IsNullOrEmpty(error) ? new[] { error! } : Array.Empty<string>()) { }
+		protected DomainResult(DomainOperationStatus status, string? error)	: this(status, !string.IsNullOrEmpty(error) ? new[] { error } : Array.Empty<string>()) { }
 		/// <summary>
 		///		Creates a new instance with a 'error'/'not found' status and error messages
 		/// </summary>
@@ -122,7 +122,7 @@ namespace DomainResults.Common
 		///		Get 'error' status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 400/422
 		/// </summary>
 		/// <param name="errors"> Custom messages </param>
-		public static Task<IDomainResult> FailedTask(IEnumerable<string> errors)		=> Task.FromResult(Failed(errors));
+		public static Task<IDomainResult> FailedTask(IEnumerable<string> errors)	=> Task.FromResult(Failed(errors));
 		/// <summary>
 		///		Get 'error' status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 400/422
 		/// </summary>

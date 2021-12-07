@@ -40,33 +40,15 @@ namespace DomainResults.Tests.Common
 		{
 			new object[] { (Func<IDomainResult>)(DomainResult.Success), DomainOperationStatus.Success, new string[0] },
 
-			new object[] { (Func<IDomainResult>)(() => DomainResult.NotFound("1")), DomainOperationStatus.NotFound, new [] { "1" } },
-			new object[] { (Func<IDomainResult>)(() => 
-#if NETCOREAPP2_0 || NETCOREAPP2_1
-				DomainResult.NotFound(new[] { "1", "2" }) 
-#else			
-				IDomainResult.NotFound(new[] { "1", "2" }) 
-#endif
-				), DomainOperationStatus.NotFound, new [] { "1", "2" } },
+			new object[] { (Func<IDomainResult>)(() => DomainResult.NotFound("1")),			DomainOperationStatus.NotFound, new [] { "1" } },
+			new object[] { (Func<IDomainResult>)(() =>IDomainResult.NotFound(new[] { "1", "2" })),	DomainOperationStatus.NotFound, new [] { "1", "2" } },
 
-			new object[] { (Func<IDomainResult>)(() => DomainResult.Unauthorized()), DomainOperationStatus.Unauthorized, new string[0] },
-			new object[] { (Func<IDomainResult>)(() =>  
-#if NETCOREAPP2_0 || NETCOREAPP2_1
-				DomainResult.Unauthorized("1") 
-#else			
-				IDomainResult.Unauthorized("1")  
-#endif
-				), DomainOperationStatus.Unauthorized, new [] { "1" } },
+			new object[] { (Func<IDomainResult>)(() => DomainResult.Unauthorized()),	DomainOperationStatus.Unauthorized, new string[0] },
+			new object[] { (Func<IDomainResult>)(() =>IDomainResult.Unauthorized("1")),	DomainOperationStatus.Unauthorized, new [] { "1" } },
 
 			new object[] { (Func<IDomainResult>)(() => DomainResult.Failed("1")), DomainOperationStatus.Failed, new[] { "1" } },
 			new object[] { (Func<IDomainResult>)(() => DomainResult.Failed(new[] { "1", "2" })), DomainOperationStatus.Failed, new[] { "1", "2" } },
-			new object[] { (Func<IDomainResult>)(() =>  
-#if NETCOREAPP2_0 || NETCOREAPP2_1
-				DomainResult.Failed(new[] { new ValidationResult("1") }) 
-#else			
-				IDomainResult.Failed(new[] { new ValidationResult("1") })  
-#endif
-				), DomainOperationStatus.Failed, new[] { "1" } }
+			new object[] { (Func<IDomainResult>)(() =>IDomainResult.Failed(new[] { new ValidationResult("1") })), DomainOperationStatus.Failed, new[] { "1" } }
 		};
 		#endregion // Test of 'IDomainResult' responses -----------------------
 
@@ -98,33 +80,15 @@ namespace DomainResults.Tests.Common
 		{
 			new object[] { (Func<Task<IDomainResult>>)(DomainResult.SuccessTask), DomainOperationStatus.Success, new string[0] },
 
-			new object[] { (Func<Task<IDomainResult>>)(() => DomainResult.NotFoundTask("1")), DomainOperationStatus.NotFound, new [] { "1" } },
-			new object[] { (Func<Task<IDomainResult>>)(() =>  
-#if NETCOREAPP2_0 || NETCOREAPP2_1
-				DomainResult.NotFoundTask(new [] { "1", "2" }) 
-#else			
-				IDomainResult.NotFoundTask(new [] { "1", "2" })  
-#endif
-				), DomainOperationStatus.NotFound, new [] { "1", "2" } },
+			new object[] { (Func<Task<IDomainResult>>)(() => DomainResult.NotFoundTask("1")),					DomainOperationStatus.NotFound, new [] { "1" } },
+			new object[] { (Func<Task<IDomainResult>>)(() =>IDomainResult.NotFoundTask(new [] { "1", "2" })),	DomainOperationStatus.NotFound, new [] { "1", "2" } },
 
-			new object[] { (Func<Task<IDomainResult>>)(() => DomainResult.UnauthorizedTask()), DomainOperationStatus.Unauthorized, new string[0] },
-			new object[] { (Func<Task<IDomainResult>>)(() =>  
-#if NETCOREAPP2_0 || NETCOREAPP2_1
-				DomainResult.UnauthorizedTask("1") 
-#else			
-				IDomainResult.UnauthorizedTask("1")
-#endif
-				), DomainOperationStatus.Unauthorized, new [] { "1" } },
+			new object[] { (Func<Task<IDomainResult>>)(() => DomainResult.UnauthorizedTask()),				DomainOperationStatus.Unauthorized, new string[0] },
+			new object[] { (Func<Task<IDomainResult>>)(() =>IDomainResult.UnauthorizedTask("1")),	DomainOperationStatus.Unauthorized, new [] { "1" } },
 
 			new object[] { (Func<Task<IDomainResult>>)(() => DomainResult.FailedTask("1")), DomainOperationStatus.Failed, new [] { "1" } },
 			new object[] { (Func<Task<IDomainResult>>)(() => DomainResult.FailedTask(new [] { "1", "2" })), DomainOperationStatus.Failed, new [] { "1", "2" } },
-			new object[] { (Func<Task<IDomainResult>>)(() =>  
-#if NETCOREAPP2_0 || NETCOREAPP2_1
-				DomainResult.FailedTask(new[] { new ValidationResult("1") }) 
-#else			
-				IDomainResult.FailedTask(new[] { new ValidationResult("1") })
-#endif
-				), DomainOperationStatus.Failed, new [] { "1" } }
+			new object[] { (Func<Task<IDomainResult>>)(() =>IDomainResult.FailedTask(new[] { new ValidationResult("1") })), DomainOperationStatus.Failed, new [] { "1" } }
 		};
 		#endregion // Test of 'Task<IDomainResult>' responses -----------------
 	}
