@@ -23,7 +23,7 @@ namespace DomainResults.Common
 		/// <summary>
 		///		Creates a new instance with 'success' status
 		/// </summary>
-		protected DomainResult()											: this(DomainOperationStatus.Success, string.Empty) { }
+		protected DomainResult()											: this(DomainOperationStatus.Success, (string?)null) { }
 		/// <summary>
 		///		Creates a new instance with a specified status and error messages
 		/// </summary>
