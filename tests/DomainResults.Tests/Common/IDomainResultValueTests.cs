@@ -15,10 +15,11 @@ namespace DomainResults.Tests.Common
 		[Fact]
 		public void Implicitly_Convert_DomainResult_Test()
 		{
-			// If the code below gets complied, then implicit conversion works
+			// Implicit conversion of 10 to DomainResult<int>.
+			// (it works if it gets compiled)
+			DomainResult<int> implicitlyConvertedDomainResult = 10;
 
-			Func<int, DomainResult<int>> func = (i) => i;
-			var res = func(10);
+			Assert.Equal(10, implicitlyConvertedDomainResult.Value);
 		}
 
 		[Fact]
