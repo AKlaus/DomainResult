@@ -41,7 +41,7 @@ jobs:
     - name: Test on .NET 6
       run: dotnet test --no-restore --verbosity normal --framework net6.0 /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
     - name: Test on .NET 5
-      run: dotnet test --no-restore --verbosity normal --framework net5.0 /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
+      run: dotnet test --no-restore --verbosity normal --framework net5.0
     - name: Test on .NET Core 3.1
       run: dotnet test --no-restore --verbosity normal --framework netcoreapp3.1
 
