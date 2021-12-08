@@ -29,12 +29,12 @@ namespace DomainResults.Common
 		///		Creates a new instance with a 'error'/'not found' status
 		/// </summary>
 		/// <param name="errorDetails"> Error details described in <see cref="IDomainResult"/> </param>
-		protected DomainResult(IDomainResult errorDetails)				: this(default, errorDetails) { }
+		protected DomainResult(IDomainResult errorDetails)	: this(default, errorDetails) { }
 		/// <summary>
 		///		Creates a new instance with 'success' status and a value
 		/// </summary>
 		/// <param name="value"> The value to be returned </param>
-		protected DomainResult(TValue value)							: this(value, DomainResult.Success()) {}
+		protected DomainResult(TValue value)				: this(value, DomainResult.Success()) {}
 		/// <summary>
 		///		The most generic constructor. Creates a new instance with a specified status and error messages
 		/// </summary>

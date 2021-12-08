@@ -49,14 +49,14 @@ namespace DomainResults.Mvc
 		/// <remarks>
 		///		Alternatively can simply return <seealso cref="NotFoundResult"/> or <seealso cref="BadRequestObjectResult"/> without a JSON
 		/// </remarks>
-		private static ObjectResult SadResponse<R>(int statusCode, string title, R errorDetails, Action<ProblemDetails, R>? errorAction = null) where R : IDomainResultBase
+		private static ObjectResult SadResponse<R>(int statusCode, string title, R? errorDetails, Action<ProblemDetails, R>? errorAction = null) where R : IDomainResultBase
 		{
 			var problemDetails = new ProblemDetails
-			{
-				Title = title,
-				Detail = errorDetails?.Errors?.Any() == true ? string.Join(", ", errorDetails.Errors) : null,
-				Status = statusCode
-			};
+				{
+					Title = title,
+					Detail = errorDetails?.Errors.Any() == true ? string.Join(", ", errorDetails.Errors) : null,
+					Status = statusCode
+				};
 
 			errorAction?.Invoke(problemDetails, errorDetails!);
 
