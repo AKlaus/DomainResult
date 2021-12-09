@@ -100,8 +100,8 @@ namespace DomainResults.Tests.Mvc
 
 			// and the ProblemDetails properties are as expected
 			Assert.Equal(expectedCode, problemDetails!.Status);
-			Assert.Equal(expectedTitle, problemDetails!.Title);
-			Assert.Equal(expectedErrorMsg, problemDetails!.Detail);
+			Assert.Equal(expectedTitle, problemDetails.Title);
+			Assert.Equal(expectedErrorMsg, problemDetails.Detail);
 		}
 
 		/// <summary>

@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DomainResults.Mvc
 {
-#if !NETCOREAPP2_0
 	//
 	// Conversion to custom HTTP codes - ActionResult<T> (the type exists starting from .NET Core 2.1 and not present in .NET Standard 2.0)
 	//
@@ -75,5 +74,4 @@ namespace DomainResults.Mvc
 			return ToActionResultOfT(domainResult.Value, domainResult, errorAction, valueToActionResultFunc); 
 		}
 	}
-#endif
 }

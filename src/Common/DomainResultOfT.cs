@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
 // ReSharper disable MemberCanBePrivate.Global
@@ -19,6 +20,7 @@ namespace DomainResults.Common
 		public bool IsSuccess						=> _status.IsSuccess;
 
 		/// <inheritdoc/>
+		[AllowNull] 
 		public TValue Value { get; }
 
 		#region Constructors [PROTECTED] --------------------------------------
@@ -27,18 +29,18 @@ namespace DomainResults.Common
 		///		Creates a new instance with a 'error'/'not found' status
 		/// </summary>
 		/// <param name="errorDetails"> Error details described in <see cref="IDomainResult"/> </param>
-		protected DomainResult(IDomainResult errorDetails)				: this(default!, errorDetails) { }
+		protected DomainResult(IDomainResult errorDetails)	: this(default, errorDetails) { }
 		/// <summary>
 		///		Creates a new instance with 'success' status and a value
 		/// </summary>
 		/// <param name="value"> The value to be returned </param>
-		protected DomainResult(TValue value)							: this(value, DomainResult.Success()) {}
+		protected DomainResult(TValue value)				: this(value, DomainResult.Success()) {}
 		/// <summary>
 		///		The most generic constructor. Creates a new instance with a specified status and error messages
 		/// </summary>
 		/// <param name="value"> The value to be returned </param>
 		/// <param name="errorDetails"> Error details described in <see cref="IDomainResult"/> </param>
-		protected DomainResult(TValue value, IDomainResult errorDetails)
+		protected DomainResult([AllowNull] TValue value, IDomainResult errorDetails)
 		{
 			Value = value;
 			_status = errorDetails;
@@ -54,12 +56,12 @@ namespace DomainResults.Common
 		#endregion // Constructors [PROTECTED] --------------------------------
 
 		/// <inheritdoc/>
-		public bool TryGetValue(out TValue value)
+		public bool TryGetValue([MaybeNullWhen(false)] out TValue value)
 		{
-			value = IsSuccess ? Value : default!;
+			value = IsSuccess ? Value : default;
 			return IsSuccess;
 		}
-
+		
 		/// <summary>
 		///		Implicitly converts the specified <paramref name="value"/> to an <see cref="DomainResult{TValue}"/>
 		/// </summary>

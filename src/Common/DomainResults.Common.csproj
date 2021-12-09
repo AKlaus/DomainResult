@@ -6,7 +6,7 @@ Provides:
  - data types for returning from domain operations (wraps up the returned value and adds operation status with error messages if applicable);
  - 50+ extension methods to effortlessly form the desired response.</Description>
 
-		<TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
+		<TargetFramework>netstandard2.1</TargetFramework>
 		
 		<AssemblyName>DomainResults.Common</AssemblyName>
 		<RootNamespace>DomainResults.Common</RootNamespace>

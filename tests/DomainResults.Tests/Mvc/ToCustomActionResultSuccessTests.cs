@@ -20,7 +20,7 @@ namespace DomainResults.Tests.Mvc
 
 			Then_ResponseType_And_Value_And_Url_Are_Correct(actionResult, getValueFunc(domainValue));
 		}
-#if !NETCOREAPP2_0
+		
 		[Theory]
 		[MemberData(nameof(DomainResultTestCases))]
 		public void DomainResult_Converted_To_CreatedResultOfT_Test<TValue>(IDomainResult<TValue> domainValue, Func<IDomainResult<TValue>, TValue> getValueFunc, Uri urlUri)
@@ -29,7 +29,6 @@ namespace DomainResults.Tests.Mvc
 
 			Then_ResponseType_And_Value_And_Url_Are_Correct(actionResult, getValueFunc(domainValue));
 		}
-#endif
 		public static readonly IEnumerable<object[]> DomainResultTestCases = GetDomainResultTestCases(false);
 		
 		[Theory]
@@ -40,7 +39,7 @@ namespace DomainResults.Tests.Mvc
 
 			Then_ResponseType_And_Value_And_Url_Are_Correct(actionResult, getValueFunc(domainValueTask));
 		}
-#if !NETCOREAPP2_0
+		
 		[Theory]
 		[MemberData(nameof(DomainResultTaskTestCases))]
 		public async Task DomainResult_Task_Converted_To_CreatedResultOfT_Test<TValue>(Task<IDomainResult<TValue>> domainValueTask, Func<Task<IDomainResult<TValue>>, TValue> getValueFunc, Uri urlUri)
@@ -49,7 +48,6 @@ namespace DomainResults.Tests.Mvc
 
 			Then_ResponseType_And_Value_And_Url_Are_Correct(actionResult, getValueFunc(domainValueTask));
 		}
-#endif
 		public static readonly IEnumerable<object[]> DomainResultTaskTestCases = GetDomainResultTestCases(true);
 
 		[Theory]
@@ -60,7 +58,7 @@ namespace DomainResults.Tests.Mvc
 
 			Then_ResponseType_And_Value_And_Url_Are_Correct(actionResult, domainValue.Item1);
 		}
-#if !NETCOREAPP2_0
+		
 		[Theory]
 		[MemberData(nameof(ValueResultTestCases))]
 		public void ValueResult_Converted_To_CreatedResultOfT_Test<TValue>((TValue, IDomainResult) domainValue, Uri urlUri)
@@ -69,7 +67,6 @@ namespace DomainResults.Tests.Mvc
 
 			Then_ResponseType_And_Value_And_Url_Are_Correct(actionResult, domainValue.Item1);
 		}
-#endif
 		public static readonly IEnumerable<object[]> ValueResultTestCases = GetValueResultTestCases(false);
 
 		[Theory]
@@ -80,7 +77,7 @@ namespace DomainResults.Tests.Mvc
 
 			Then_ResponseType_And_Value_And_Url_Are_Correct(actionResult, domainValueTask.Result.Item1);
 		}
-#if !NETCOREAPP2_0
+		
 		[Theory]
 		[MemberData(nameof(ValueResultTaskTestCases))]
 		public async Task ValueResult_Task_Converted_To_CreatedResultOfT_Test<TValue>(Task<(TValue, IDomainResult)> domainValueTask, Uri urlUri)
@@ -89,7 +86,6 @@ namespace DomainResults.Tests.Mvc
 
 			Then_ResponseType_And_Value_And_Url_Are_Correct(actionResult, domainValueTask.Result.Item1);
 		}
-#endif
 		public static readonly IEnumerable<object[]> ValueResultTaskTestCases = GetValueResultTestCases(true);
 
 		#region Auxiliary methods [PRIVATE] -----------------------------------
@@ -108,9 +104,8 @@ namespace DomainResults.Tests.Mvc
 			if (typeof(TAction).IsAssignableFrom(typeof(IActionResult)))
 				createdResult = actionResult as CreatedResult;
 			else
-#if !NETCOREAPP2_0
 				createdResult = (actionResult as ActionResult<TValue>)?.Result as CreatedResult;
-#endif
+
 			Assert.NotNull(createdResult);
 			Assert.Equal(201, createdResult?.StatusCode);
 
@@ -126,7 +121,7 @@ namespace DomainResults.Tests.Mvc
 				{
 					GetDomainResultTestCase(10,  wrapInTask),						// E.g. { DomainResult.Success(10), res => res.Value }
 					GetDomainResultTestCase("1",  wrapInTask),
-					GetDomainResultTestCase(new TestDto { Prop = "1" },  wrapInTask)
+					GetDomainResultTestCase(new TestDto("1"),  wrapInTask)
 				};
 
 		private static IEnumerable<object[]> GetValueResultTestCases(bool wrapInTask)
@@ -134,7 +129,7 @@ namespace DomainResults.Tests.Mvc
 				{
 					GetValueResultTestCase(10,  wrapInTask),						// E.g. { DomainResult.Success(10), res => res.Value }
 					GetValueResultTestCase("1",  wrapInTask),
-					GetValueResultTestCase(new TestDto { Prop = "1" }, wrapInTask)
+					GetValueResultTestCase(new TestDto("1"), wrapInTask)
 				};
 
 		private static object[] GetDomainResultTestCase<T>(T domainValue, bool wrapInTask = false)
@@ -151,17 +146,11 @@ namespace DomainResults.Tests.Mvc
 		private static object[] GetValueResultTestCase<T>(T domainValue, bool wrapInTask = false)
 			=> new [] 
 			{
-				wrapInTask  ? Task.FromResult((domainValue, GetSuccess())) as object
-							: (domainValue, GetSuccess()),
+				wrapInTask  ? Task.FromResult((domainValue, IDomainResult.Success())) as object
+							: (domainValue, IDomainResult.Success()),
 				new Uri(ExpectedUrl)
 			};
-
-		private static IDomainResult GetSuccess() =>
-#if NETCOREAPP2_0 || NETCOREAPP2_1
-			DomainResult.Success();
-#else			
-			IDomainResult.Success();
-#endif
-		#endregion // Auxiliary methods [PRIVATE] -----------------------------*/
+		
+		#endregion // Auxiliary methods [PRIVATE] -----------------------------
 	}
 }

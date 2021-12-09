@@ -22,7 +22,7 @@ namespace DomainResults.Mvc
 		public static IActionResult ToActionResult<R>(this R domainResult,
 													 Action<ProblemDetails, R>? errorAction = null)
 													 where R : IDomainResult
-			=> ToActionResult<object, R, NoContentResult>(null, domainResult, errorAction, (value) => new NoContentResult());
+			=> ToActionResult<object, R, NoContentResult>(null, domainResult, errorAction, _ => new NoContentResult());
 
 		/// <summary>
 		///		Returns a task with HTTP code 204 (NoContent) or a 4xx code in case of an error
@@ -33,6 +33,6 @@ namespace DomainResults.Mvc
 		public static async Task<IActionResult> ToActionResult<R>(this Task<R> domainResultTask,
 																  Action<ProblemDetails, R>? errorAction = null)
 																  where R : IDomainResult
-			=> ToActionResult<object, R, NoContentResult>(null, await domainResultTask, errorAction, (value) => new NoContentResult());
+			=> ToActionResult<object, R, NoContentResult>(null, await domainResultTask, errorAction, _ => new NoContentResult());
 	}
 }

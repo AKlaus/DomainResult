@@ -2,9 +2,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 
-namespace DomainResult.Examples.WebApi.Configuration
+namespace DomainResults.Examples.WebApi.Configuration
 {
-	internal static partial class ServiceCollectionExtensions
+	internal static class ServiceCollectionExtensions
 	{
 		public static void AddAndConfigureSwagger(this IServiceCollection services)
 		{

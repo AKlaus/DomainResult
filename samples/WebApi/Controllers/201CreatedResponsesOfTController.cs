@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DomainResults.Examples.WebApi.Controllers
 {
-#if !NETCOREAPP2_0
 	[ApiController]
 	[Route("[controller]")]
 	public class CreatedResponsesOfTController : ControllerBase
@@ -49,5 +48,4 @@ namespace DomainResults.Examples.WebApi.Controllers
 			return Ok(new { id });
 		}
 	}
-#endif
 }

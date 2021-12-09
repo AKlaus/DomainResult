@@ -1,7 +1,10 @@
 ﻿namespace DomainResults.Tests.Mvc
 {
-	internal class TestDto
+	internal record TestDto
 	{
-		public string Prop { get; set; }
+		// ReSharper disable once UnusedAutoPropertyAccessor.Global
+		// ReSharper disable once MemberCanBePrivate.Global
+		public string Prop { get; }
+		public TestDto(string prop) { Prop = prop; }
 	}
 }

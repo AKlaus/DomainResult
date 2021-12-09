@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DomainResults.Mvc
 {
-#if !NETCOREAPP2_0
 	//
 	// Conversion to ActionResult<T> (the type exists starting from .NET Core 2.1 and not present in earlier versions)
 	//
@@ -26,8 +25,7 @@ namespace DomainResults.Mvc
 				DomainOperationStatus.Success		=> EqualityComparer<V>.Default.Equals(value!, default!)
 																		? new NoContentResult() as ActionResult // No value, means returning HTTP status 204
 																		: valueToActionResultFunc(value),
-				_ => throw new ArgumentOutOfRangeException(),
+				_ => throw new ArgumentOutOfRangeException(nameof(errorDetails)),
 			};
 	}
-#endif
 }

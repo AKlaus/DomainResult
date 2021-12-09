@@ -62,11 +62,7 @@ namespace DomainResults.Tests.Common
 		public void Successful_IDomainResultOfT_Converts_To_IDomainResultOfV()
 		{
 			var domainResult = DomainResult.Success(10);
-#if NETCOREAPP2_0 || NETCOREAPP2_1
-			var domainResultOfT = DomainResult<char>.From(domainResult);
-#else			
 			var domainResultOfT = domainResult.To<char>();
-#endif
 			
 			Assert.True(domainResultOfT.IsSuccess);
 			Assert.Equal(default(char), domainResultOfT.Value);
@@ -76,11 +72,7 @@ namespace DomainResults.Tests.Common
 		public void Errored_IDomainResultOfT_Converts_To_IDomainResultOfV()
 		{
 			var domainResult = DomainResult.Failed<int>("Bla");
-#if NETCOREAPP2_0 || NETCOREAPP2_1
-			var domainResultOfT = DomainResult<char>.From(domainResult);
-#else			
 			var domainResultOfT = domainResult.To<char>();
-#endif
 			
 			Assert.False(domainResultOfT.IsSuccess);
 			Assert.Equal(default(char), domainResultOfT.Value);

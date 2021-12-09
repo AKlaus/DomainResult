@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DomainResults.Mvc
 {
-#if !NETCOREAPP2_0
 	//
 	// Conversion to HTTP code 200 (OK) - ActionResult<T> (the type exists starting from .NET Core 2.1 and not present in earlier versions)
 	//
@@ -34,7 +33,7 @@ namespace DomainResults.Mvc
 																	  Action<ProblemDetails, IDomainResult<T>>? errorAction = null)
 		{
 			var domainResult = await domainResultTask;
-			return ToActionResultOfT(domainResult.Value, domainResult, errorAction, (value) => new ActionResult<T>(value));
+			return ToActionResultOfT(domainResult.Value, domainResult, errorAction, value => new ActionResult<T>(value));
 		}
 
 		/// <summary>
@@ -65,5 +64,4 @@ namespace DomainResults.Mvc
 			return ToActionResultOfT(domainResult.Item1, domainResult.Item2, errorAction, (value) => new ActionResult<V>(value));
 		}
 	}
-#endif
 }

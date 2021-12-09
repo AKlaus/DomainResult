@@ -1,4 +1,5 @@
-﻿using DomainResults.Examples.Domain;
+﻿using DomainResults.Common;
+using DomainResults.Examples.Domain;
 using DomainResults.Mvc;
 
 using Microsoft.AspNetCore.Http;

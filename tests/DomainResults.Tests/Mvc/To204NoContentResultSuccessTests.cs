@@ -36,7 +36,6 @@ namespace DomainResults.Tests.Mvc
 			Assert.IsType<NoContentResult>(actionRes);
 		}
 
-#if !NETCOREAPP2_0
 		[Fact]
 		public void DomainResultConverted_To_NoContentOfT()
 		{
@@ -62,6 +61,5 @@ namespace DomainResults.Tests.Mvc
 			// THEN the response type is correct
 			Assert.IsType<NoContentResult>(actionRes.Result);
 		}
-#endif
 	}
 }

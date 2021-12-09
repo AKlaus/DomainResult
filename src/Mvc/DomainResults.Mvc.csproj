@@ -6,19 +6,15 @@ To be used in Web API projects to accompany 'DomainResult.Common' package used i
 		</Description>
 
 		<!-- Can't target .NET Standard as the Microsoft.AspNetCore.XXX dependency is .NET Core specific. Hence target each main version independently. -->
-		<TargetFrameworks>netcoreapp2.1;netcoreapp3.1;net5.0</TargetFrameworks>
+		<TargetFrameworks>netcoreapp3.1;net5.0;net6.0</TargetFrameworks>
 		
 		<AssemblyName>DomainResults.Mvc</AssemblyName>
 		<RootNamespace>DomainResults.Mvc</RootNamespace>
 		<PackageId>DomainResult</PackageId>
 	</PropertyGroup>
 
-	<!-- The Microsoft.AspNetCore.Mvc package moved into the shared framework in ASP.NET Core 3.0 and is therefore no longer published -->
-	<ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp2.1'">
-		<PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
-	</ItemGroup>
-	<!-- So reference 'Microsoft.AspNetCore.App' from .NET Core 3 and up -->
-	<ItemGroup Condition="'$(TargetFramework)' != 'netcoreapp2.1'">
+	<ItemGroup>
+		<!-- For .NET older than v3 need to reference 'Microsoft.AspNetCore.Mvc' package instead -->
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />
 	</ItemGroup>
 	

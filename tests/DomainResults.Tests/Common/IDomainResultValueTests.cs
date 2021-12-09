@@ -15,13 +15,13 @@ namespace DomainResults.Tests.Common
 		[Fact]
 		public void Implicitly_Convert_DomainResult_Test()
 		{
-			// If the code below gets complied, then implicit conversion works
+			// Implicit conversion of 10 to DomainResult<int>.
+			// (it works if it gets compiled)
+			DomainResult<int> implicitlyConvertedDomainResult = 10;
 
-			Func<int, DomainResult<int>> func = (i) => i;
-			var res = func(10);
+			Assert.Equal(10, implicitlyConvertedDomainResult.Value);
 		}
 
-#if !NETCOREAPP2_0 && !NETCOREAPP2_1
 		[Fact]
 		public void DomainResult_Can_Be_Deconstructed_Test()
 		{
@@ -32,7 +32,6 @@ namespace DomainResults.Tests.Common
 			Assert.IsAssignableFrom<IDomainResult>(details);
 			Assert.Equal(DomainOperationStatus.Success, details.Status);
 		}
-#endif
 
 		[Theory]
 		[MemberData(nameof(TestCasesWithValue))]

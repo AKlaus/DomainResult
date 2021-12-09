@@ -26,7 +26,7 @@ namespace DomainResults.Tests.Mvc
 			Assert.NotNull(actionResOfT);
 
 			// and value remains there
-			Assert.Equal(domainValue.Value, okResult.Value);
+			Assert.Equal(domainValue.Value, okResult!.Value);
 			Assert.Equal(domainValue.Value, actionResOfT.Value);
 		}
 		public static readonly IEnumerable<object[]> SuccessfulTestCases = GetTestCases(false);
@@ -46,8 +46,9 @@ namespace DomainResults.Tests.Mvc
 			Assert.NotNull(actionResOfT);
 
 			// and value remains there
-			Assert.Equal(domainValueTask.Result.Value, okResult.Value);
-			Assert.Equal(domainValueTask.Result.Value, actionResOfT.Value);
+			var domainValue = await domainValueTask;
+			Assert.Equal(domainValue.Value, okResult!.Value);
+			Assert.Equal(domainValue.Value, actionResOfT.Value);
 		}
 		public static readonly IEnumerable<object[]> SuccessfulTaskTestCases = GetTestCases(true);
 
@@ -58,7 +59,7 @@ namespace DomainResults.Tests.Mvc
 					GetTestCase(10,  false, wrapInTask),
 					GetTestCase("1", true, wrapInTask),
 					GetTestCase("1", false, wrapInTask),
-					GetTestCase(new TestDto { Prop = "1" }, true, wrapInTask) 
+					GetTestCase(new TestDto("1"), true, wrapInTask) 
 				};
 
 		private static object[] GetTestCase<T>(T domainValue, bool genericClass, bool wrapInTask = false)

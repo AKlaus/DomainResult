@@ -9,8 +9,6 @@ namespace DomainResults.Common
 	/// </summary>
 	public interface IDomainResult: IDomainResultBase
 	{
-#if !NETSTANDARD2_0 && !NETCOREAPP2_0 && !NETCOREAPP2_1
-
 		#region Extensions of 'IDomainResult' [STATIC] ------------------------
 
 		/// <summary>
@@ -160,6 +158,5 @@ namespace DomainResults.Common
 																								=> Task.FromResult(Failed<TValue>(validationResults));
 
 		#endregion // Extensions of '(TValue, IDomainResult)' [STATIC] --------
-#endif
 	}
 }

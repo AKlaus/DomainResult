@@ -1,4 +1,3 @@
-#if !NETCOREAPP2_0 && !NETCOREAPP2_1
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -101,4 +100,3 @@ namespace DomainResults.Tests.Common
 		#endregion // Test of 'Task<(TValue, IDomainResult)>' responses -------
 	}
 }
-#endif
