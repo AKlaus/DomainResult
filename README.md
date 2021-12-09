@@ -82,7 +82,7 @@ public Task<IActionResult> GetInvoice()
 }
 ```
 
-or for ASP.NET Core 2.1+ we can leverage [ActionResult&lt;T&gt;](https://docs.microsoft.com/en-us/aspnet/core/web-api/action-return-types#actionresultt-type)
+or leverage [ActionResult&lt;T&gt;](https://docs.microsoft.com/en-us/aspnet/core/web-api/action-return-types#actionresultt-type)
 
 ```cs
 [ProducesResponseType(StatusCodes.Status200OK)]
@@ -107,7 +107,7 @@ The above returns:
 - Install [DomainResult.Common](https://www.nuget.org/packages/DomainResult.Common) NuGet package for the _Domain Layer_ (aka _Business Layer_) projects. If the _Domain Layer_ is inside the _Web API_ project, then skip this step.
 - Follow the documentation below, `samples` in the repo and common sense.
 
-The library targets `.NET Core 2.1`, `.NET Core 3.1` and `.NET 5.0`.
+The library targets `.NET Core 3.1`, `.NET 5.0` and `.NET 6.0`.
 
 ## 'DomainResult.Common' package. Returning result from Domain Layer method
 
@@ -166,7 +166,6 @@ _Notes_:
 
 - The `Task` suffix on the extension methods indicates that the returned type is wrapped in a `Task` (e.g. `SuccessTask()`, `FailedTask()`, `NotFoundTask()`, `UnauthorizedTask()`).
 - The `Failed()` and `NotFound()` methods take as input parameters: `string`, `string[]`. `Failed()` can also take [ValidationResult](https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.dataannotations.validationresult).
-- Support for extension methods on interfaces starts from `.NET Standard 2.1`.
 
 ## 'DomainResult' package. Conversion to ActionResult
 
@@ -175,11 +174,9 @@ _Notes_:
 | Returned type                                  | Returned type wrapped in `Task`                      | Extension methods                                    |
 | ---------------------------------------------- | ---------------------------------------------------- | ---------------------------------------------------- |
 | `IActionResult`                                | `Task<IActionResult>`                                | `ToActionResult()`<br>`ToCustomActionResult()`       |
-| `ActionResult<T>`<sup>[\*](#myfootnote1)</sup> | `Task<ActionResult<T>>`<sup>[\*](#myfootnote1)</sup> | `ToActionResultOfT()`<br>`ToCustomActionResultOfT()` |
+| `ActionResult<T>` | `Task<ActionResult<T>>` | `ToActionResultOfT()`<br>`ToCustomActionResultOfT()` |
 
-<sup><a name="myfootnote1">\*</a></sup> <sub><sup>[ActionResult&lt;T&gt;](https://docs.microsoft.com/en-us/aspnet/core/web-api/action-return-types#actionresultt-type) type was introduced in ASP.NET Core 2.1.</sup></sub>
-
-<sub><sup>Note: 'DomainResult' package has dependency on `Microsoft.AspNetCore.*` namespace and `DomainResult.Common` package.</sup></sub>
+<sub><sup>Note: `DomainResult` package has dependency on `Microsoft.AspNetCore.*` namespace and `DomainResult.Common` package.</sup></sub>
 
 The mapping rules are built around `IDomainResult.Status`:
 
