@@ -148,6 +148,8 @@ IDomainResult res = IDomainResult.Success();        // res.Status is 'Success'
 (value, state) = IDomainResult.Success(10);         // value = 10; state.Status is 'Success'
 // The same but wrapped in a task
 var res = IDomainResult.SuccessTask(10);            // res is Task<(int, IDomainResult)>
+// Implicit convertion
+IDomainResult<int> res = 10;                        // res.Value = 10; res.Status is 'Success'
 
 // Error message
 IDomainResult res = IDomainResult.Failed("Ahh!");   // res.Status is 'Failed' and res.Errors = new []{ "Ahh!" }
