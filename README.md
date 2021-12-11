@@ -6,7 +6,8 @@
 [![Test Coverage](https://coveralls.io/repos/github/AKlaus/DomainResult/badge.svg?branch=master)](https://coveralls.io/github/AKlaus/DomainResult?branch=master)
 [![DomainResult NuGet version](https://img.shields.io/nuget/v/DomainResult.svg?style=flat&label=nuget%3A%20DomainResult)](https://www.nuget.org/packages/DomainResult)
 [![DomainResult.Common NuGet version](https://img.shields.io/nuget/v/DomainResult.Common.svg?style=flat&label=nuget%3A%20DomainResult.Common)](https://www.nuget.org/packages/DomainResult.Common)
-<br/>
+
+
 
 Two tiny NuGet packages addressing challenges in the [ASP.NET Web API](https://dotnet.microsoft.com/apps/aspnet/apis) realm posed by separation of the _Domain Layer_ (aka _Business Layer_) from the _Application Layer_:
 
@@ -50,7 +51,7 @@ public async Task<(InvoiceResponseDto, IDomainResult)> GetInvoice(int invoiceId)
 }
 ```
 
-or if you're against [ValueTuple](https://docs.microsoft.com/en-us/dotnet/api/system.valuetuple) or static methods on interfaces (it's [new in C# 8](https://docs.microsoft.com/en-us/dotnet/csharp/tutorials/default-interface-methods-versions#provide-parameterization)), then a more traditional method signature:
+or if you're against [ValueTuple](https://docs.microsoft.com/en-us/dotnet/api/system.valuetuple) or static methods on interfaces ([added in C# 8](https://docs.microsoft.com/en-us/dotnet/csharp/tutorials/default-interface-methods-versions#provide-parameterization)), then a more traditional method signature:
 
 ```cs
 public async Task<IDomainResult<InvoiceResponseDto>> GetInvoice(int invoiceId)
