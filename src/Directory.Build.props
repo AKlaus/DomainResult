@@ -13,7 +13,7 @@
 
 		<Deterministic>true</Deterministic>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<PackageTags>actionresult;domainresult;webapi;service</PackageTags>
+		<PackageTags>actionresult;domainresult;webapi;service;ddd</PackageTags>
 
 		<!-- Generate XML docs for all targets https://stackoverflow.com/a/47118584/968003 -->
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
