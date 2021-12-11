@@ -7,12 +7,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DomainResults.Mvc
 {
+	//
+	// Conversion to HTTP code 204 (NoContent)
+	//
 	public static partial class DomainResultExtensions
 	{
-		//
-		// Conversion to HTTP code 204 (NoContent)
-		//
-
 		/// <summary>
 		///		Returns HTTP code 204 (NoContent) or a 4xx code in case of an error
 		/// </summary>
