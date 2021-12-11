@@ -34,9 +34,9 @@ namespace DomainResults.Tests.Mvc
 
 		public static readonly IEnumerable<object[]> SuccessfulTestCases = new List<object[]>
 		{
-			new object[] { (10,  GetSuccess()) },
-			new object[] { ("1", GetSuccess()) },
-			new object[] { (new TestDto("1"), GetSuccess()) }
+			new object[] { (10,  IDomainResult.Success()) },
+			new object[] { ("1", IDomainResult.Success()) },
+			new object[] { (new TestDto("1"), IDomainResult.Success()) }
 		};
 		#endregion // Test of successful '(TValue, IDomainResult)' response conversion ------------
 
@@ -63,12 +63,10 @@ namespace DomainResults.Tests.Mvc
 
 		public static readonly IEnumerable<object[]> SuccessfulTaskTestCases = new List<object[]>
 		{
-			new object[] { Task.FromResult((10,  GetSuccess())) },
-			new object[] { Task.FromResult(("1", GetSuccess())) },
-			new object[] { Task.FromResult((new TestDto("1"), GetSuccess())) }
+			new object[] { Task.FromResult((10,  IDomainResult.Success())) },
+			new object[] { Task.FromResult(("1", IDomainResult.Success())) },
+			new object[] { Task.FromResult((new TestDto("1"), IDomainResult.Success())) }
 		};
 		#endregion // Test of successful 'Task<(TValue, IDomainResult)>' response conversion ------
-
-		private static IDomainResult GetSuccess() => IDomainResult.Success();
 	}
 }
