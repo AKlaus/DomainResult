@@ -26,4 +26,8 @@ To be used in Web API projects to accompany 'DomainResult.Common' package used i
 	<ItemGroup>
 		<ProjectReference Include="..\Common\DomainResults.Common.csproj" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Update="MinVer" Version="4.0.0" />
+	</ItemGroup>
 </Project>
