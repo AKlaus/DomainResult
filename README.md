@@ -19,9 +19,9 @@ Two tiny NuGet packages addressing challenges in the [ASP.NET Web API](https://d
 - [Basic use-case](#basic-use-case)
 - [Quick start](#quick-start)
 - ['DomainResult.Common' package. Returning result from Domain Layer method](#domainresultcommon-package-returning-result-from-domain-layer-method)
-  - [Examples](#examples)
+  - [Examples (Domain)](#examples-domain)
 - ['DomainResult' package. Conversion to ActionResult](#domainresult-package-conversion-to-actionresult)
-  - [Examples](#basic-examples)
+  - [Examples (ASP.NET)](#examples-asp-net)
 - [Custom Problem Details output](#custom-problem-details-output)
   - [Custom ActionResult response for 2xx HTTP codes](#custom-actionresult-response-for-2xx-http-codes)
   - [Custom error handling](#custom-error-handling)
@@ -83,7 +83,7 @@ public Task<IActionResult> GetInvoice()
 }
 ```
 
-or leverage [ActionResult&lt;T&gt;](https://docs.microsoft.com/en-us/aspnet/core/web-api/action-return-types#actionresultt-type)
+or leverage [ActionResult&lt;T&gt;](https://docs.microsoft.com/en-us/aspnet/core/web-api/action-return-types#actionresultt-type) (see [comparison with IActionResult](https://stackoverflow.com/a/54371053/968003))
 
 ```cs
 [ProducesResponseType(StatusCodes.Status200OK)]
@@ -140,7 +140,7 @@ It has **50+ static extension methods** to return a successful or unsuccessful r
 | `IDomainResult<T>`   | `Task<IDomainResult<T>>`        |
 | `(T, IDomainResult)` | `Task<(T, IDomainResult)>`      |
 
-### Examples:
+### Examples (Domain):
 
 ```cs
 // Successful result with no value
@@ -190,7 +190,7 @@ The mapping rules are built around `IDomainResult.Status`:
 | `Failed`               | HTTP code `400` (default) or can be configured to `422` or any other code                                        |
 | `Unauthorized`         | HTTP code `403 Forbidden` (default)                                                                              |
 
-### Examples:
+### Examples (ASP.NET):
 
 ```cs
 // Returns `IActionResult` with HTTP code `204 NoContent` on success
@@ -257,10 +257,10 @@ It works with any of extensions in `Microsoft.AspNetCore.Mvc.ControllerBase`. He
 The default HTTP codes for statuses `Failed`, `NotFound` and `Unauthorized` are defined in public static properties of `ActionResultConventions` with default values:
 
 ```cs
-// The HTTP code to return for client request error
-int ErrorHttpCode { get; set; }                 = 400;
+// The HTTP code to return when a request 'failed'
+int FailedHttpCode { get; set; }                = 400;
 // The 'title' property of the returned JSON on HTTP code 400
-string ErrorProblemDetailsTitle { get; set; }   = "Bad Request";
+string FailedProblemDetailsTitle { get; set; }  = "Bad Request";
 
 // The HTTP code to return when a record not found
 int NotFoundHttpCode { get; set; }              = 404;
