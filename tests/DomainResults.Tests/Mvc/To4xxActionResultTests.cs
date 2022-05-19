@@ -118,8 +118,8 @@ namespace DomainResults.Tests.Mvc
 
 			var returnValues = new List<object[]>
 				{
-					new[] { OptionalWrapper(domainErrorFunc(new[] { "1" })),		ActionResultConventions.ErrorHttpCode,	 "Bad Request", "1" },
-					new[] { OptionalWrapper(domainErrorFunc(new[] { "1", "2" })),	ActionResultConventions.ErrorHttpCode,	 "Bad Request", "1, 2" },
+					new[] { OptionalWrapper(domainErrorFunc(new[] { "1" })),		ActionResultConventions.FailedHttpCode,	 "Bad Request", "1" },
+					new[] { OptionalWrapper(domainErrorFunc(new[] { "1", "2" })),	ActionResultConventions.FailedHttpCode,	 "Bad Request", "1, 2" },
 					new[] { OptionalWrapper(domainNotFoundFunc(new[] { "1" })),		ActionResultConventions.NotFoundHttpCode, "Not Found",   "1" },
 					new[] { OptionalWrapper(domainNotFoundFunc(new[] { "1", "2" })),ActionResultConventions.NotFoundHttpCode, "Not Found",   "1, 2" },
 					new[] { OptionalWrapper(domainUnauthFunc("1")),					ActionResultConventions.UnauthorizedHttpCode, "Unauthorized access",   "1" },

@@ -16,34 +16,34 @@ namespace DomainResults.Tests.Mvc
 		[Theory]
 		[InlineData(null, 400)]
 		[InlineData(422,  422)]
-		public void ErrorHttpCode_Is_Honoured_in_Error_Response_Test(int? errorHttpCode, int expectedErrorHttpCode)
+		public void FailedHttpCode_Is_Honoured_in_Error_Response_Test(int? failedHttpCode, int expectedFailedHttpCode)
 		{
-			var defaultValue = ActionResultConventions.ErrorHttpCode;
+			var defaultValue = ActionResultConventions.FailedHttpCode;
 
 			// GIVEN a custom HTTP code for errors
-			if (errorHttpCode.HasValue)
-				ActionResultConventions.ErrorHttpCode = errorHttpCode.Value;
+			if (failedHttpCode.HasValue)
+				ActionResultConventions.FailedHttpCode = failedHttpCode.Value;
 
 			// WHEN a IDomainResult with Status 'Error' gets converted to ActionResult
 			var domainResult = IDomainResult.Failed();
 			var actionRes = domainResult.ToActionResult() as ObjectResult;
 
 			// THEN the HTTP code is expected
-			Assert.Equal(expectedErrorHttpCode, actionRes!.StatusCode);
+			Assert.Equal(expectedFailedHttpCode, actionRes!.StatusCode);
 
-			ActionResultConventions.ErrorHttpCode = defaultValue;
+			ActionResultConventions.FailedHttpCode = defaultValue;
 		}
 
 		[Theory]
 		[InlineData(null, "Bad Request")]
 		[InlineData("1", "1")]
-		public void ErrorProblemDetailsTitle_Is_Honoured_in_Error_Response_Test(string errorTitle, string expectedErrorTitle)
+		public void FailedProblemDetailsTitle_Is_Honoured_in_Error_Response_Test(string failedTitle, string expectedFailedTitle)
 		{
-			var defaultValue = ActionResultConventions.ErrorProblemDetailsTitle;
+			var defaultValue = ActionResultConventions.FailedProblemDetailsTitle;
 
 			// GIVEN a custom HTTP code for errors
-			if (!string.IsNullOrEmpty(errorTitle))
-				ActionResultConventions.ErrorProblemDetailsTitle = errorTitle;
+			if (!string.IsNullOrEmpty(failedTitle))
+				ActionResultConventions.FailedProblemDetailsTitle = failedTitle;
 
 			// WHEN a IDomainResult with Status 'Error' gets converted to ActionResult
 			var domainResult = IDomainResult.Failed();
@@ -51,9 +51,9 @@ namespace DomainResults.Tests.Mvc
 			var problemDetails = actionRes!.Value as ProblemDetails;
 
 			// THEN the ProblemDetails Title is expected
-			Assert.Equal(expectedErrorTitle, problemDetails!.Title);
+			Assert.Equal(expectedFailedTitle, problemDetails!.Title);
 
-			ActionResultConventions.ErrorProblemDetailsTitle = defaultValue;
+			ActionResultConventions.FailedProblemDetailsTitle = defaultValue;
 		}
 
 		[Theory]

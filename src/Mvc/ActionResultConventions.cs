@@ -11,12 +11,12 @@
 		/// <remarks>
 		///		Opinions: https://stackoverflow.com/a/52098667/968003, https://stackoverflow.com/a/20215807/968003
 		/// </remarks>
-		public static int ErrorHttpCode { get; set; } = 400;
+		public static int FailedHttpCode { get; set; } = 400;
 		/// <summary>
-		///		The title in the returned JSON accompanying the <see cref="ErrorHttpCode"/> response (HTTP code 4xx).
+		///		The title in the returned JSON accompanying the <see cref="FailedHttpCode"/> response (HTTP code 4xx).
 		///		The default value: "Bad Request"
 		/// </summary>
-		public static string ErrorProblemDetailsTitle { get; set; } = "Bad Request";
+		public static string FailedProblemDetailsTitle { get; set; } = "Bad Request";
 
 		/// <summary>
 		///		The HTTP code to return when a record not found. The default value: 404
