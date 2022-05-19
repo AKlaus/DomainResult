@@ -36,7 +36,7 @@ namespace DomainResults.Mvc
 			{
 				DomainOperationStatus.NotFound		=> SadResponse(ActionResultConventions.NotFoundHttpCode,	 ActionResultConventions.NotFoundProblemDetailsTitle,		errorDetails, errorAction),
 				DomainOperationStatus.Unauthorized	=> SadResponse(ActionResultConventions.UnauthorizedHttpCode, ActionResultConventions.UnauthorizedProblemDetailsTitle,	errorDetails, errorAction),
-				DomainOperationStatus.Failed		=> SadResponse(ActionResultConventions.ErrorHttpCode,	 	 ActionResultConventions.ErrorProblemDetailsTitle,			errorDetails, errorAction),
+				DomainOperationStatus.Failed		=> SadResponse(ActionResultConventions.FailedHttpCode,	 	 ActionResultConventions.FailedProblemDetailsTitle,			errorDetails, errorAction),
 				DomainOperationStatus.Success		=> EqualityComparer<V>.Default.Equals(value!, default!)
 																		? new NoContentResult() as ActionResult // No value, means returning HTTP status 204
 																		: valueToActionResultFunc(value),
