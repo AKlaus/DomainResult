@@ -21,7 +21,7 @@ Two tiny NuGet packages addressing challenges in the [ASP.NET Web API](https://d
 - ['DomainResult.Common' package. Returning result from Domain Layer method](#domainresultcommon-package-returning-result-from-domain-layer-method)
   - [Examples (Domain)](#examples-domain)
 - ['DomainResult' package. Conversion to ActionResult](#domainresult-package-conversion-to-actionresult)
-  - [Examples (ASP.NET)](#examples-asp-net)
+  - [Examples (ASP.NET)](#examples-aspnet)
 - [Custom Problem Details output](#custom-problem-details-output)
   - [Custom ActionResult response for 2xx HTTP codes](#custom-actionresult-response-for-2xx-http-codes)
   - [Custom error handling](#custom-error-handling)
