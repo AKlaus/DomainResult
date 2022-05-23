@@ -183,13 +183,14 @@ _Notes_:
 
 The mapping rules are built around `IDomainResult.Status`:
 
-| `IDomainResult.Status`    | Returned `ActionResult`-based type                                                                               |
-|---------------------------|------------------------------------------------------------------------------------------------------------------|
-| `Success`                 | If no value is returned then `204 NoContent`, otherwise - `200 OK`<br>Supports custom codes (e.g. `201 Created`) |
-| `NotFound`                | HTTP code `404 NotFound` (default)                                                                               |
-| `Failed`                  | HTTP code `400` (default) or can be configured to `422` or any other code                                        |
-| `Unauthorized`            | HTTP code `403 Forbidden` (default)                                                                              |
-| `CriticalDependencyError` | HTTP code `503 Service Unavailable` (default)                                                                    |
+| `IDomainResult.Status`    | Returned `ActionResult`-based type                                                                                |
+|---------------------------|-------------------------------------------------------------------------------------------------------------------|
+| `Success`                 | If no value is returned then `204 NoContent`, otherwise - `200 OK`<br>Supports custom codes (e.g. `201 Created`)  |
+| `NotFound`                | HTTP code `404 NotFound` (default)                                                                                |
+| `Failed`                  | HTTP code `400` (default) or can be configured to `422` or any other code                                         |
+| `Unauthorized`            | HTTP code `403 Forbidden` (default)                                                                               |
+| `Conflict`                | HTTP code `409 Conflict` (default)                                                                                |
+| `CriticalDependencyError` | HTTP code `503 Service Unavailable` (default)                                                                     |
 
 ### Examples (ASP.NET):
 
@@ -255,28 +256,20 @@ It works with any of extensions in `Microsoft.AspNetCore.Mvc.ControllerBase`. He
 
 ### Custom error handling
 
-The default HTTP codes for statuses `Failed`, `NotFound`, `Unauthorized` and `CriticalDependencyError` are defined in public static properties of `ActionResultConventions` with default values:
+The default HTTP codes for the supported statuses (`Failed`, `NotFound`, etc.) are defined in `ActionResultConventions` class. The default values are:
 
 ```cs
-// The HTTP code to return when a request 'failed'
+// The HTTP code to return when a request 'failed' (also can be 422)
 int FailedHttpCode { get; set; }                  = 400;
 // The 'title' property of the returned JSON on HTTP code 400
-string FailedProblemDetailsTitle { get; set; }  = "Bad Request";
+string FailedProblemDetailsTitle { get; set; }    = "Bad Request";
 
 // The HTTP code to return when a record not found
 int NotFoundHttpCode { get; set; }                = 404;
 // The 'title' property of the returned JSON on HTTP code 404
-string NotFoundProblemDetailsTitle { get; set; }= "Not Found";
+string NotFoundProblemDetailsTitle { get; set; }  = "Not Found";
 
-// The HTTP code to return when access to a record is forbidden
-int UnauthorizedHttpCode { get; set; }            = 403;
-// The 'title' property of the returned JSON on HTTP code 403
-string UnauthorizedProblemDetailsTitle { get; set; }= "Unauthorized access";
-
-// The HTTP code to return when an external service call failed
-int CriticalDependencyErrorHttpCode { get; set; } = 503;
-// The 'title' property of the returned JSON on HTTP code 503
-string CriticalDependencyErrorProblemDetailsTitle { get; set; }= "External service unavailable";
+// ...and so on for `Unauthorized` (403), `Conflict` (409), `CriticalDependencyError` (503)
 ```
 
 Feel free to change them (hmm... remember they're static, with all the pros and cons). The reasons you may want it:
