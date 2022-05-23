@@ -269,20 +269,7 @@ int NotFoundHttpCode { get; set; }                = 404;
 // The 'title' property of the returned JSON on HTTP code 404
 string NotFoundProblemDetailsTitle { get; set; }  = "Not Found";
 
-// The HTTP code to return when access to a record is forbidden
-int UnauthorizedHttpCode { get; set; }            = 403;
-// The 'title' property of the returned JSON on HTTP code 403
-string UnauthorizedProblemDetailsTitle { get; set; }= "Unauthorized access";
-
-// The HTTP code to return when failed due to a conflict with the current state
-int ConflictHttpCode { get; set; }                = 409;
-// The 'title' property of the returned JSON on HTTP code 409
-string ConflictProblemDetailsTitle { get; set; }  = "Conflict with the current state of the target resource";
-
-// The HTTP code to return when an external service call failed (also can be 502)
-int CriticalDependencyErrorHttpCode { get; set; } = 503;
-// The 'title' property of the returned JSON on HTTP code 503
-string CriticalDependencyErrorProblemDetailsTitle { get; set; }= "External service unavailable";
+// ...and so on for `Unauthorized` (403), `Conflict` (409), `CriticalDependencyError` (503)
 ```
 
 Feel free to change them (hmm... remember they're static, with all the pros and cons). The reasons you may want it:
