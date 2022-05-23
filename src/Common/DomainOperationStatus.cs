@@ -22,6 +22,10 @@
 		/// </summary>
 		Unauthorized,
 		/// <summary>
+		///		Conflict with the current state of the target resource (gets converted to HTTP code 409 on the API)
+		/// </summary>
+		Conflict,
+		/// <summary>
 		///		External service call failed (gets converted to HTTP code 503 'Service Unavailable' on the API)
 		/// </summary>
 		CriticalDependencyError,

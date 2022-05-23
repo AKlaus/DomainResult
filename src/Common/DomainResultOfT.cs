@@ -26,12 +26,12 @@ namespace DomainResults.Common
 		#region Constructors [PROTECTED] --------------------------------------
 
 		/// <summary>
-		///		Creates a new instance with a 'error'/'not found' status
+		///		Creates a new instance with a faulty status
 		/// </summary>
 		/// <param name="errorDetails"> Error details described in <see cref="IDomainResult"/> </param>
 		protected DomainResult(IDomainResult errorDetails)	: this(default, errorDetails) { }
 		/// <summary>
-		///		Creates a new instance with 'success' status and a value
+		///		Creates a new instance with <see cref="DomainOperationStatus.Success"/> status and a value
 		/// </summary>
 		/// <param name="value"> The value to be returned </param>
 		protected DomainResult(TValue value)				: this(value, DomainResult.Success()) {}
@@ -73,46 +73,52 @@ namespace DomainResults.Common
 		#region Extensions of 'IDomainResult<T>' [STATIC, PUBLIC] -------------
 
 		/// <summary>
-		///		Get 'success' status with a value. Gets converted to HTTP code 200 (Ok)
+		///		Returns <see cref="DomainOperationStatus.Success"/> status with a value. Gets converted to HTTP code 200 (Ok)
 		/// </summary>
 		/// <param name="value"> The value to be returned </param>
 		public static IDomainResult<TValue> Success(TValue value)					=> new DomainResult<TValue>(value);
 
 		/// <summary>
-		///		Get 'not found' status. Gets converted to HTTP code 404 (NotFound)
+		///		Returns <see cref="DomainOperationStatus.NotFound"/> status. Gets converted to HTTP code 404 (NotFound)
 		/// </summary>
 		/// <param name="message"> Optional message </param>
 		public static IDomainResult<TValue> NotFound(string? message = null)		=> new DomainResult<TValue>(DomainResult.NotFound(message));
 		/// <summary>
-		///		Get 'not found' status. Gets converted to HTTP code 404 (NotFound)
+		///		Returns <see cref="DomainOperationStatus.NotFound"/> status. Gets converted to HTTP code 404 (NotFound)
 		/// </summary>
 		/// <param name="messages"> Custom messages </param>
 		public static IDomainResult<TValue> NotFound(IEnumerable<string> messages)	=> new DomainResult<TValue>(DomainResult.NotFound(messages));
 
 		/// <summary>
-		///		Get 'Unauthorized' status. Gets converted to HTTP code 403 (Forbidden)
+		///		Returns <see cref="DomainOperationStatus.Unauthorized"/> status. Gets converted to HTTP code 403 (Forbidden)
 		/// </summary>
 		/// <param name="message"> Optional message </param>
 		public static IDomainResult<TValue> Unauthorized(string? message = null)	=> new DomainResult<TValue>(DomainResult.Unauthorized(message));
+
+		/// <summary>
+		///		Returns <see cref="DomainOperationStatus.Conflict"/> status. Gets converted to HTTP code 409 (Conflict)
+		/// </summary>
+		/// <param name="message"> Optional message </param>
+		public static IDomainResult<TValue> Conflict(string? message = null)	=> new DomainResult<TValue>(DomainResult.Conflict(message));
 		
 		/// <summary>
-		///		Get 'failed' status. Gets be converted to HTTP code 400/422
+		///		Returns <see cref="DomainOperationStatus.Failed"/> status. Gets be converted to HTTP code 400/422
 		/// </summary>
 		/// <param name="error"> Optional message </param>
 		public static IDomainResult<TValue> Failed(string? error = null)			=> new DomainResult<TValue>(DomainResult.Failed(error));
 		/// <summary>
-		///		Get 'failed' status. Gets be converted to HTTP code 400/422
+		///		Returns <see cref="DomainOperationStatus.Failed"/> status. Gets be converted to HTTP code 400/422
 		/// </summary>
 		/// <param name="errors"> Custom messages </param>
 		public static IDomainResult<TValue> Failed(IEnumerable<string> errors)		=> new DomainResult<TValue>(DomainResult.Failed(errors));
 		/// <summary>
-		///		Get 'failed' status with validation errors. Gets be converted to HTTP code 400/422
+		///		Returns <see cref="DomainOperationStatus.Failed"/> status with validation errors. Gets be converted to HTTP code 400/422
 		/// </summary>
 		/// <param name="validationResults"> Results of a validation request </param>
 		public static IDomainResult<TValue> Failed(IEnumerable<ValidationResult> validationResults) => new DomainResult<TValue>(DomainResult.Failed(validationResults));
 
 		/// <summary>
-		///		Get 'Critical error' status for a dependency. Gets converted to HTTP code 503 (Service Unavailable)
+		///		Returns <see cref="DomainOperationStatus.CriticalDependencyError"/> status (failed dependency call). Gets converted to HTTP code 503 (Service Unavailable)
 		/// </summary>
 		/// <param name="error"> Optional error message </param>
 		public static IDomainResult<TValue> CriticalDependencyError(string? error = null)	=> new DomainResult<TValue>(DomainResult.CriticalDependencyError(error));
@@ -132,48 +138,54 @@ namespace DomainResults.Common
 		#region Extensions of 'Task<IDomainResult<T>>' [STATIC, PUBLIC] -------
 
 		/// <summary>
-		///		Get 'success' status with a value (all wrapped in <see cref="Task{T}"/>).
+		///		Returns <see cref="DomainOperationStatus.Success"/> status with a value (all wrapped in <see cref="Task{T}"/>).
 		///		Gets converted to HTTP code 200 (Ok)
 		/// </summary>
 		/// <param name="value"> The value to be returned </param>
 		public static Task<IDomainResult<TValue>> SuccessTask(TValue value)					=> Task.FromResult(Success(value));
 
 		/// <summary>
-		///		Get 'not found' status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 404 (NotFound)
+		///		Returns <see cref="DomainOperationStatus.NotFound"/> status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 404 (NotFound)
 		/// </summary>
 		/// <param name="message"> Optional message </param>
 		public static Task<IDomainResult<TValue>> NotFoundTask(string? message = null)		=> Task.FromResult(NotFound(message));
 		/// <summary>
-		///		Get 'not found' status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 404 (NotFound)
+		///		Returns <see cref="DomainOperationStatus.NotFound"/> status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 404 (NotFound)
 		/// </summary>
 		/// <param name="messages"> Custom messages </param>
 		public static Task<IDomainResult<TValue>> NotFoundTask(IEnumerable<string> messages)=> Task.FromResult(NotFound(messages));
 
 		/// <summary>
-		///		Get 'Unauthorized' status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 403 (Forbidden)
+		///		Returns <see cref="DomainOperationStatus.Unauthorized"/> status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 403 (Forbidden)
 		/// </summary>
 		/// <param name="message"> Optional message </param>
 		public static Task<IDomainResult<TValue>> UnauthorizedTask(string? message = null)	=> Task.FromResult(Unauthorized(message));
 
 		/// <summary>
-		///		Get 'error' status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 400/422
+		///		Returns <see cref="DomainOperationStatus.Conflict"/> status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 409 (Conflict)
+		/// </summary>
+		/// <param name="message"> Optional message </param>
+		public static Task<IDomainResult<TValue>> ConflictTask(string? message = null)	=> Task.FromResult(Conflict(message));
+
+		/// <summary>
+		///		Returns <see cref="DomainOperationStatus.Failed"/> status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 400/422
 		/// </summary>
 		/// <param name="error"> Optional message </param>
 		public static Task<IDomainResult<TValue>> FailedTask(string? error = null)			=> Task.FromResult(Failed(error));
 		/// <summary>
-		///		Get 'error' status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 400/422
+		///		Returns <see cref="DomainOperationStatus.Failed"/> status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 400/422
 		/// </summary>
 		/// <param name="errors"> Custom messages </param>
 		public static Task<IDomainResult<TValue>> FailedTask(IEnumerable<string> errors)	=> Task.FromResult(Failed(errors));
 		/// <summary>
-		///		Get 'error' status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 400/422
+		///		Returns <see cref="DomainOperationStatus.Failed"/> status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 400/422
 		/// </summary>
 		/// <param name="validationResults"> Results of a validation request </param>
 		public static Task<IDomainResult<TValue>> FailedTask(IEnumerable<ValidationResult> validationResults)
 																							=> Task.FromResult(Failed(validationResults));
 
 		/// <summary>
-		///		Get 'Critical error' for a dependency status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 503 (Service Unavailable)
+		///		Returns <see cref="DomainOperationStatus.CriticalDependencyError"/> (failed dependency call) status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 503 (Service Unavailable)
 		/// </summary>
 		/// <param name="error"> Optional error message </param>
 		public static Task<IDomainResult<TValue>> CriticalDependencyErrorTask(string? error = null)	
