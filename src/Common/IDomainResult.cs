@@ -96,6 +96,7 @@ namespace DomainResults.Common
 		#endregion // Extensions of 'IDomainResult' [STATIC] ------------------
 
 		#region Extensions of '(TValue, IDomainResult)' [STATIC] --------------
+#pragma warning disable CS8619
 
 		/// <summary>
 		///		Get 'success' status. Gets converted to HTTP code 200 (Ok)
@@ -181,6 +182,7 @@ namespace DomainResults.Common
 		static Task<(TValue, IDomainResult)> CriticalDependencyErrorTask<TValue>(string? error = null)
 																								=> Task.FromResult(CriticalDependencyError<TValue>(error));
 
+#pragma warning restore CS8619
 		#endregion // Extensions of '(TValue, IDomainResult)' [STATIC] --------
 	}
 }
