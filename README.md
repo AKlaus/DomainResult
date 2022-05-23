@@ -256,7 +256,7 @@ It works with any of extensions in `Microsoft.AspNetCore.Mvc.ControllerBase`. He
 
 ### Custom error handling
 
-The default HTTP codes for all the statuses (`Failed`, `NotFound`, etc.) are defined in public static properties of `ActionResultConventions` with default values:
+The default HTTP codes for the supported statuses (`Failed`, `NotFound`, etc.) are defined in `ActionResultConventions` class. The default values are:
 
 ```cs
 // The HTTP code to return when a request 'failed' (also can be 422)
