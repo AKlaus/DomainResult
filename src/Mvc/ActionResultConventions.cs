@@ -48,7 +48,7 @@ public static class ActionResultConventions
 	///		The title in the returned JSON accompanying the <see cref="ConflictHttpCode"/> response (Conflict)
 	///		The default value: "Conflict with the current state of the target resource"
 	/// </summary>
-	public static string ConflictProblemDetailsTitle { get; set; } = "Conflict with the current state of the target resource";
+	public static string ConflictProblemDetailsTitle { get; set; } = "Conflict with the current state";
 
 	/// <summary>
 	///		The HTTP code to return when an external service call failed (<see cref="DomainOperationStatus.CriticalDependencyError"/> status). The default value: 503
