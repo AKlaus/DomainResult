@@ -14,12 +14,16 @@
 		/// </summary>
 		NotFound,
 		/// <summary>
-		///		Failed operation (gets converted to HTTP code 4xx on the API)
+		///		Failed operation (gets converted to HTTP code 400 on the API)
 		/// </summary>
 		Failed,
 		/// <summary>
 		///		Refused to authorize the operation (gets converted to HTTP code 403 on the API)
 		/// </summary>
 		Unauthorized,
+		/// <summary>
+		///		External service call failed (gets converted to HTTP code 503 'Service Unavailable' on the API)
+		/// </summary>
+		CriticalDependencyError,
 	}
 }

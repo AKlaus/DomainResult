@@ -35,26 +35,35 @@ namespace DomainResults.Common
 		/// </summary>
 		/// <typeparam name="TValue"> The expected value type if the operation was successful </typeparam>
 		/// <param name="message"> Optional message </param>
-		public static IDomainResult<TValue> Unauthorized<TValue>(string? message = null)		=> DomainResult<TValue>.Unauthorized(message);
+		public static IDomainResult<TValue> Unauthorized<TValue>(string? message = null)	=> DomainResult<TValue>.Unauthorized(message);
 
 		/// <summary>
-		///		Get 'error' status. Gets converted to HTTP code 400/422
+		///		Get 'failed' status. Gets converted to HTTP code 400/422
 		/// </summary>
 		/// <typeparam name="TValue"> The expected value type if the operation was successful </typeparam>
 		/// <param name="error"> Optional message </param>
-		public static IDomainResult<TValue> Failed<TValue>(string? error = null)				=> DomainResult<TValue>.Failed(error);
+		public static IDomainResult<TValue> Failed<TValue>(string? error = null)			=> DomainResult<TValue>.Failed(error);
 		/// <summary>
-		///		Get 'error' status. Gets converted to HTTP code 400/422
+		///		Get 'failed' status. Gets converted to HTTP code 400/422
 		/// </summary>
 		/// <typeparam name="TValue"> The expected value type if the operation was successful </typeparam>
 		/// <param name="errors"> Custom messages </param>
 		public static IDomainResult<TValue> Failed<TValue>(IEnumerable<string> errors)		=> DomainResult<TValue>.Failed(errors);
 		/// <summary>
-		///		Get 'error' status with validation errors. Gets converted to HTTP code 400/422
+		///		Get 'failed' status with validation errors. Gets converted to HTTP code 400/422
 		/// </summary>
 		/// <typeparam name="TValue"> The expected value type if the operation was successful </typeparam>
 		/// <param name="validationResults"> Results of a validation request </param>
-		public static IDomainResult<TValue> Failed<TValue>(IEnumerable<ValidationResult> validationResults) => DomainResult<TValue>.Failed(validationResults);
+		public static IDomainResult<TValue> Failed<TValue>(IEnumerable<ValidationResult> validationResults) 
+																							=> DomainResult<TValue>.Failed(validationResults);
+
+		/// <summary>
+		///		Get 'Critical error' for a dependency status. Gets converted to HTTP code 503 (Service Unavailable)
+		/// </summary>
+		/// <typeparam name="TValue"> The expected value type if the operation was successful </typeparam>
+		/// <param name="error"> Optional message </param>
+		public static IDomainResult<TValue> CriticalDependencyError<TValue>(string? error = null)		
+																							=> DomainResult<TValue>.CriticalDependencyError(error);
 
 		#endregion // Extensions of 'IDomainResult<T>' [STATIC, PUBLIC] -------
 
@@ -89,23 +98,32 @@ namespace DomainResults.Common
 		public static Task<IDomainResult<TValue>> UnauthorizedTask<TValue>(string? message = null)	=> DomainResult<TValue>.UnauthorizedTask(message);
 		
 		/// <summary>
-		///		Get 'error' status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 400/422
+		///		Get 'failed' status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 400/422
 		/// </summary>
 		/// <typeparam name="TValue"> The expected value type if the operation was successful </typeparam>
 		/// <param name="error"> Optional message </param>
 		public static Task<IDomainResult<TValue>> FailedTask<TValue>(string? error = null)			=> DomainResult<TValue>.FailedTask(error);
 		/// <summary>
-		///		Get 'error' status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 400/422
+		///		Get 'failed' status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 400/422
 		/// </summary>
 		/// <typeparam name="TValue"> The expected value type if the operation was successful </typeparam>
 		/// <param name="errors"> Custom messages </param>
-		public static Task<IDomainResult<TValue>> FailedTask<TValue>(IEnumerable<string> errors)		=> DomainResult<TValue>.FailedTask(errors);
+		public static Task<IDomainResult<TValue>> FailedTask<TValue>(IEnumerable<string> errors)	=> DomainResult<TValue>.FailedTask(errors);
 		/// <summary>
-		///		Get 'error' status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 400/422
+		///		Get 'failed' status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 400/422
 		/// </summary>
 		/// <typeparam name="TValue"> The expected value type if the operation was successful </typeparam>
 		/// <param name="validationResults"> Results of a validation request </param>
-		public static Task<IDomainResult<TValue>> FailedTask<TValue>(IEnumerable<ValidationResult> validationResults) => DomainResult<TValue>.FailedTask(validationResults);
+		public static Task<IDomainResult<TValue>> FailedTask<TValue>(IEnumerable<ValidationResult> validationResults) 
+																									=> DomainResult<TValue>.FailedTask(validationResults);
+
+		/// <summary>
+		///		Get 'Critical error' for a dependency status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 503 (Service Unavailable)
+		/// </summary>
+		/// <typeparam name="TValue"> The expected value type if the operation was successful </typeparam>
+		/// <param name="error"> Optional message </param>
+		public static Task<IDomainResult<TValue>> CriticalDependencyErrorTask<TValue>(string? error = null)	
+																									=> DomainResult<TValue>.CriticalDependencyErrorTask(error);
 
 		#endregion // Extensions of 'Task<IDomainResult<T>>' [STATIC, PUBLIC] -
 	}

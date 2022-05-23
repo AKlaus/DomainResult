@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace DomainResults.Examples.WebApi.Controllers;
 
 /// <summary>
-///		Converts <see cref="IDomainResult"/>, <see cref="IDomainResult{T}"/> and `(T, <see cref="IDomainResult"/>)` responses with <see cref="IDomainResult.Status"/>='Error' to <see cref="BadRequestResult"/>
+///		Converts <see cref="IDomainResult"/>, <see cref="IDomainResult{T}"/> and `(T, <see cref="IDomainResult"/>)` responses with <see cref="IDomainResult.Status"/>='Failed' to <see cref="BadRequestResult"/>
 /// </summary>
 [ApiController]
 [Route("[controller]")]

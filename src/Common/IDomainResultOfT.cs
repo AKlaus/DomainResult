@@ -76,6 +76,12 @@ namespace DomainResults.Common
 		/// <param name="validationResults"> Results of a validation request </param>
 		static IDomainResult<T> Failed(IEnumerable<ValidationResult> validationResults) => DomainResult<T>.Failed(validationResults);
 
+		/// <summary>
+		///		Get 'Critical error' for a dependency status. Gets converted to HTTP code 503 (Service Unavailable)
+		/// </summary>
+		/// <param name="error"> Optional error message </param>
+		static IDomainResult<T> CriticalDependencyError(string? error = null)	=> DomainResult<T>.CriticalDependencyError(error);
+
 		#endregion // Extensions of 'IDomainResult<T>' [STATIC, PUBLIC] -------
 
 		/// <summary>
@@ -125,7 +131,13 @@ namespace DomainResults.Common
 		/// </summary>
 		/// <param name="validationResults"> Results of a validation request </param>
 		static Task<IDomainResult<T>> FailedTask(IEnumerable<ValidationResult> validationResults) => DomainResult<T>.FailedTask(validationResults);
-		
+
+		/// <summary>
+		///		Get 'Critical error' for a dependency status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 503 (Service Unavailable)
+		/// </summary>
+		/// <param name="error"> Optional error message </param>
+		static Task<IDomainResult<T>> CriticalDependencyErrorTask(string? error = null)	=> DomainResult<T>.CriticalDependencyErrorTask(error);
+
 		#endregion // Extensions of 'Task<IDomainResult<T>>' [STATIC, PUBLIC] -
 	}
 }

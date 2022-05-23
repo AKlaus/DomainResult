@@ -79,7 +79,9 @@ namespace DomainResults.Tests.Common
 
 			new object[] { (Func<IDomainResult<int>>)(() => DomainResult<int>.Failed("1")), DomainOperationStatus.Failed, new[] { "1" } },
 			new object[] { (Func<IDomainResult<int>>)(() => DomainResult<int>.Failed(new[] { "1", "2" })), DomainOperationStatus.Failed, new[] { "1", "2" } },
-			new object[] { (Func<IDomainResult<int>>)(() => DomainResult<int>.Failed(new[] { new ValidationResult("1") })), DomainOperationStatus.Failed, new[] { "1" } }
+			new object[] { (Func<IDomainResult<int>>)(() => DomainResult<int>.Failed(new[] { new ValidationResult("1") })), DomainOperationStatus.Failed, new[] { "1" } },
+			
+			new object[] { (Func<IDomainResult<int>>)(() => DomainResult<int>.CriticalDependencyError("1")), DomainOperationStatus.CriticalDependencyError, new [] { "1" } }
 		};
 		#endregion // Test of 'IDomainResult<TValue>' responses ---------------
 
@@ -132,7 +134,9 @@ namespace DomainResults.Tests.Common
 
 			new object[] { (Func<Task<IDomainResult<int>>>)(() => DomainResult<int>.FailedTask("1")), DomainOperationStatus.Failed, new [] { "1" } },
 			new object[] { (Func<Task<IDomainResult<int>>>)(() => DomainResult<int>.FailedTask(new [] { "1", "2" })), DomainOperationStatus.Failed, new [] { "1", "2" } },
-			new object[] { (Func<Task<IDomainResult<int>>>)(() => DomainResult<int>.FailedTask(new[] { new ValidationResult("1") })), DomainOperationStatus.Failed, new [] { "1" } }
+			new object[] { (Func<Task<IDomainResult<int>>>)(() => DomainResult<int>.FailedTask(new[] { new ValidationResult("1") })), DomainOperationStatus.Failed, new [] { "1" } },
+			
+			new object[] { (Func<Task<IDomainResult<int>>>)(() => DomainResult<int>.CriticalDependencyErrorTask("1")), DomainOperationStatus.CriticalDependencyError, new [] { "1" } }
 		};
 		#endregion // Test of 'Task<IDomainResult<TValue>>' responses ---------
 	}

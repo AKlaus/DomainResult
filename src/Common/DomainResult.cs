@@ -75,20 +75,25 @@ namespace DomainResults.Common
 		/// <param name="message"> Optional message </param>
 		public static IDomainResult Unauthorized(string? message = null)	=> new DomainResult(DomainOperationStatus.Unauthorized, message);
 		/// <summary>
-		///		Get 'error' status. Gets converted to HTTP code 400/422
+		///		Get 'failed' status. Gets converted to HTTP code 400/422
 		/// </summary>
 		/// <param name="error"> Optional message </param>
 		public static IDomainResult Failed(string? error = null)			=> new DomainResult(DomainOperationStatus.Failed, error);
 		/// <summary>
-		///		Get 'error' status. Gets converted to HTTP code 400/422
+		///		Get 'failed' status. Gets converted to HTTP code 400/422
 		/// </summary>
 		/// <param name="errors"> Custom messages </param>
 		public static IDomainResult Failed(IEnumerable<string> errors)		=> new DomainResult(DomainOperationStatus.Failed, errors);
 		/// <summary>
-		///		Get 'error' status with validation errors. Gets converted to HTTP code 400/422
+		///		Get 'failed' status with validation errors. Gets converted to HTTP code 400/422
 		/// </summary>
 		/// <param name="validationResults"> Results of a validation request </param>
 		public static IDomainResult Failed(IEnumerable<ValidationResult> validationResults) => new DomainResult(validationResults);
+		/// <summary>
+		///		Get 'Critical error' status for a dependency. Gets converted to HTTP code 503 (Service Unavailable) at the API level
+		/// </summary>
+		/// <param name="error"> Optional error message </param>
+		public static IDomainResult CriticalDependencyError(string? error = null)	=> new DomainResult(DomainOperationStatus.CriticalDependencyError, error);
 
 		#endregion // Extensions of 'IDomainResult' [STATIC, PUBLIC] ----------
 
@@ -114,20 +119,25 @@ namespace DomainResults.Common
 		/// <param name="message"> Optional message </param>
 		public static Task<IDomainResult> UnauthorizedTask(string? message = null)	=> Task.FromResult(Unauthorized(message));
 		/// <summary>
-		///		Get 'error' status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 400/422
+		///		Get 'failed' status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 400/422
 		/// </summary>
 		/// <param name="error"> Optional message </param>
 		public static Task<IDomainResult> FailedTask(string? error = null)			=> Task.FromResult(Failed(error));
 		/// <summary>
-		///		Get 'error' status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 400/422
+		///		Get 'failed' status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 400/422
 		/// </summary>
 		/// <param name="errors"> Custom messages </param>
 		public static Task<IDomainResult> FailedTask(IEnumerable<string> errors)	=> Task.FromResult(Failed(errors));
 		/// <summary>
-		///		Get 'error' status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 400/422
+		///		Get 'failed' status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 400/422
 		/// </summary>
 		/// <param name="validationResults"> Results of a validation request </param>
 		public static Task<IDomainResult> FailedTask(IEnumerable<ValidationResult> validationResults) => Task.FromResult(Failed(validationResults));
+		/// <summary>
+		///		Get 'Critical error' status for a dependency wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 503 (Service Unavailable)
+		/// </summary>
+		/// <param name="error"> Optional message </param>
+		public static Task<IDomainResult> CriticalDependencyErrorTask(string? error = null)	=> Task.FromResult(CriticalDependencyError(error));
 
 		#endregion // Extensions of 'Task<IDomainResult>' [STATIC, PUBLIC] ----
 	}

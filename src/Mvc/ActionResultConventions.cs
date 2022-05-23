@@ -37,5 +37,15 @@
 		///		The default value: "Unauthorized access"
 		/// </summary>
 		public static string UnauthorizedProblemDetailsTitle { get; set; } = "Unauthorized access";
+
+		/// <summary>
+		///		The HTTP code to return when an external service call failed. The default value: 503
+		/// </summary>
+		public static int CriticalDependencyErrorHttpCode { get; set; } = 503;
+		/// <summary>
+		///		The title in the returned JSON accompanying the <see cref="CriticalDependencyErrorHttpCode"/> response (Service Unavailable)
+		///		The default value: "External service unavailable"
+		/// </summary>
+		public static string CriticalDependencyErrorProblemDetailsTitle { get; set; } = "External service unavailable";
 	}
 }
