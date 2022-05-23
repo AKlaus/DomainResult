@@ -48,7 +48,10 @@ namespace DomainResults.Tests.Common
 
 			new object[] { (Func<IDomainResult>)(() => DomainResult.Failed("1")), DomainOperationStatus.Failed, new[] { "1" } },
 			new object[] { (Func<IDomainResult>)(() => DomainResult.Failed(new[] { "1", "2" })), DomainOperationStatus.Failed, new[] { "1", "2" } },
-			new object[] { (Func<IDomainResult>)(() =>IDomainResult.Failed(new[] { new ValidationResult("1") })), DomainOperationStatus.Failed, new[] { "1" } }
+			new object[] { (Func<IDomainResult>)(() =>IDomainResult.Failed(new[] { new ValidationResult("1") })), DomainOperationStatus.Failed, new[] { "1" } },
+			
+			new object[] { (Func<IDomainResult>)(() => DomainResult.CriticalDependencyError()),		DomainOperationStatus.CriticalDependencyError, new string[0] },
+			new object[] { (Func<IDomainResult>)(() =>IDomainResult.CriticalDependencyError("1")),	DomainOperationStatus.CriticalDependencyError, new [] { "1" } }
 		};
 		#endregion // Test of 'IDomainResult' responses -----------------------
 
@@ -88,7 +91,10 @@ namespace DomainResults.Tests.Common
 
 			new object[] { (Func<Task<IDomainResult>>)(() => DomainResult.FailedTask("1")), DomainOperationStatus.Failed, new [] { "1" } },
 			new object[] { (Func<Task<IDomainResult>>)(() => DomainResult.FailedTask(new [] { "1", "2" })), DomainOperationStatus.Failed, new [] { "1", "2" } },
-			new object[] { (Func<Task<IDomainResult>>)(() =>IDomainResult.FailedTask(new[] { new ValidationResult("1") })), DomainOperationStatus.Failed, new [] { "1" } }
+			new object[] { (Func<Task<IDomainResult>>)(() =>IDomainResult.FailedTask(new[] { new ValidationResult("1") })), DomainOperationStatus.Failed, new [] { "1" } },
+
+			new object[] { (Func<Task<IDomainResult>>)(() => DomainResult.CriticalDependencyErrorTask()),		DomainOperationStatus.CriticalDependencyError, new string[0] },
+			new object[] { (Func<Task<IDomainResult>>)(() =>IDomainResult.CriticalDependencyErrorTask("1")),	DomainOperationStatus.CriticalDependencyError, new [] { "1" } }
 		};
 		#endregion // Test of 'Task<IDomainResult>' responses -----------------
 	}
