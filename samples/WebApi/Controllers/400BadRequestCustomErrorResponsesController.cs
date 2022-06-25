@@ -32,7 +32,7 @@ public class BadRequestCustomErrorResponsesController : ControllerBase
 												problemDetails.Detail = "I wish devs put more efforts into it...";
 											});
 	[HttpGet("[action]")]
-	[ProducesResponseType(StatusCodes.Status400BadRequest)]
+	[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest, "application/problem+json")]
 	public Task<IActionResult> GetErrorWithCustomTitleAndOriginalMessage()
 								 => _service.GetFailedWithMessageTask()
 											.ToActionResult((problemDetails, _) =>

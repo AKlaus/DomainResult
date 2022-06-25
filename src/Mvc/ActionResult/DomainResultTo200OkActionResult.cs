@@ -5,6 +5,7 @@ using DomainResults.Common;
 
 using Microsoft.AspNetCore.Mvc;
 
+// ReSharper disable once CheckNamespace
 namespace DomainResults.Mvc;
 
 public static partial class DomainResultExtensions

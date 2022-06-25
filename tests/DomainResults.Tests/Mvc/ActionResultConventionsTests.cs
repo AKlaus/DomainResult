@@ -18,11 +18,11 @@ public class ActionResult_Conventions_Tests
 	[InlineData(422,  422)]
 	public void FailedHttpCode_Is_Honoured_in_Error_Response_Test(int? failedHttpCode, int expectedFailedHttpCode)
 	{
-		var defaultValue = ActionResultConventions.FailedHttpCode;
+		var defaultValue = HttpCodeConvention.FailedHttpCode;
 
 		// GIVEN a custom HTTP code for errors
 		if (failedHttpCode.HasValue)
-			ActionResultConventions.FailedHttpCode = failedHttpCode.Value;
+			HttpCodeConvention.FailedHttpCode = failedHttpCode.Value;
 
 		// WHEN a IDomainResult with Status 'Error' gets converted to ActionResult
 		var domainResult = IDomainResult.Failed();
@@ -31,7 +31,7 @@ public class ActionResult_Conventions_Tests
 		// THEN the HTTP code is expected
 		Assert.Equal(expectedFailedHttpCode, actionRes!.StatusCode);
 
-		ActionResultConventions.FailedHttpCode = defaultValue;
+		HttpCodeConvention.FailedHttpCode = defaultValue;
 	}
 
 	[Theory]
@@ -39,11 +39,11 @@ public class ActionResult_Conventions_Tests
 	[InlineData("1", "1")]
 	public void FailedProblemDetailsTitle_Is_Honoured_in_Error_Response_Test(string failedTitle, string expectedFailedTitle)
 	{
-		var defaultValue = ActionResultConventions.FailedProblemDetailsTitle;
+		var defaultValue = HttpCodeConvention.FailedProblemDetailsTitle;
 
 		// GIVEN a custom HTTP code for errors
 		if (!string.IsNullOrEmpty(failedTitle))
-			ActionResultConventions.FailedProblemDetailsTitle = failedTitle;
+			HttpCodeConvention.FailedProblemDetailsTitle = failedTitle;
 
 		// WHEN a IDomainResult with Status 'Error' gets converted to ActionResult
 		var domainResult = IDomainResult.Failed();
@@ -53,7 +53,7 @@ public class ActionResult_Conventions_Tests
 		// THEN the ProblemDetails Title is expected
 		Assert.Equal(expectedFailedTitle, problemDetails!.Title);
 
-		ActionResultConventions.FailedProblemDetailsTitle = defaultValue;
+		HttpCodeConvention.FailedProblemDetailsTitle = defaultValue;
 	}
 
 	[Theory]
@@ -61,11 +61,11 @@ public class ActionResult_Conventions_Tests
 	[InlineData(499, 499)]
 	public void NotFoundHttpCode_Is_Honoured_in_NotFound_Response_Test(int? notFoundHttpCode, int expectedNotFoundHttpCode)
 	{
-		var defaultValue = ActionResultConventions.NotFoundHttpCode;
+		var defaultValue = HttpCodeConvention.NotFoundHttpCode;
 
 		// GIVEN a custom HTTP code for 'Not Found'
 		if (notFoundHttpCode.HasValue)
-			ActionResultConventions.NotFoundHttpCode = notFoundHttpCode.Value;
+			HttpCodeConvention.NotFoundHttpCode = notFoundHttpCode.Value;
 
 		// WHEN a IDomainResult with Status 'Not Found' gets converted to ActionResult
 		var domainResult = IDomainResult.NotFound();
@@ -74,7 +74,7 @@ public class ActionResult_Conventions_Tests
 		// THEN the HTTP code is expected
 		Assert.Equal(expectedNotFoundHttpCode, actionRes!.StatusCode);
 
-		ActionResultConventions.NotFoundHttpCode = defaultValue;
+		HttpCodeConvention.NotFoundHttpCode = defaultValue;
 	}
 
 	[Theory]
@@ -82,11 +82,11 @@ public class ActionResult_Conventions_Tests
 	[InlineData("1", "1")]
 	public void NotFoundHttpDetailsTitle_Is_Honoured_in_NotFound_Response_Test(string notFoundTitle, string expectedNotFoundTitle)
 	{
-		var defaultValue = ActionResultConventions.NotFoundProblemDetailsTitle;
+		var defaultValue = HttpCodeConvention.NotFoundProblemDetailsTitle;
 
 		// GIVEN a custom HTTP code for errors
 		if (!string.IsNullOrEmpty(notFoundTitle))
-			ActionResultConventions.NotFoundProblemDetailsTitle = notFoundTitle;
+			HttpCodeConvention.NotFoundProblemDetailsTitle = notFoundTitle;
 
 		// WHEN a IDomainResult with Status 'Not Found' gets converted to ActionResult
 		var domainResult = IDomainResult.NotFound();
@@ -96,6 +96,6 @@ public class ActionResult_Conventions_Tests
 		// THEN the ProblemDetails Title is expected
 		Assert.Equal(expectedNotFoundTitle, problemDetails!.Title);
 
-		ActionResultConventions.NotFoundProblemDetailsTitle = defaultValue;
+		HttpCodeConvention.NotFoundProblemDetailsTitle = defaultValue;
 	}
 }

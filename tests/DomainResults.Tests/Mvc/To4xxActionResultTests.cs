@@ -126,13 +126,13 @@ public class To_4xx_ActionResult_Tests
 
 		var returnValues = new List<object[]>
 			{
-				new[] { OptionalWrapper(domainFailedFunc(new[] { "1" })),		ActionResultConventions.FailedHttpCode,	 "Bad Request", "1" },
-				new[] { OptionalWrapper(domainFailedFunc(new[] { "1", "2" })),	ActionResultConventions.FailedHttpCode,	 "Bad Request", "1, 2" },
-				new[] { OptionalWrapper(domainNotFoundFunc(new[] { "1" })),		ActionResultConventions.NotFoundHttpCode, "Not Found",   "1" },
-				new[] { OptionalWrapper(domainNotFoundFunc(new[] { "1", "2" })),ActionResultConventions.NotFoundHttpCode, "Not Found",   "1, 2" },
-				new[] { OptionalWrapper(domainUnauthFunc("1")),					ActionResultConventions.UnauthorizedHttpCode, "Unauthorized access",   "1" },
-				new[] { OptionalWrapper(domainConflictFunc("1")),				ActionResultConventions.ConflictHttpCode, "Conflict with the current state",   "1" },
-				new[] { OptionalWrapper(domainCriticalFunc("1")),				ActionResultConventions.CriticalDependencyErrorHttpCode, "External service unavailable",   "1" },
+				new[] { OptionalWrapper(domainFailedFunc(new[] { "1" })),		HttpCodeConvention.FailedHttpCode,	 "Bad Request", "1" },
+				new[] { OptionalWrapper(domainFailedFunc(new[] { "1", "2" })),	HttpCodeConvention.FailedHttpCode,	 "Bad Request", "1, 2" },
+				new[] { OptionalWrapper(domainNotFoundFunc(new[] { "1" })),		HttpCodeConvention.NotFoundHttpCode, "Not Found",   "1" },
+				new[] { OptionalWrapper(domainNotFoundFunc(new[] { "1", "2" })),HttpCodeConvention.NotFoundHttpCode, "Not Found",   "1, 2" },
+				new[] { OptionalWrapper(domainUnauthFunc("1")),					HttpCodeConvention.UnauthorizedHttpCode, "Unauthorized access",   "1" },
+				new[] { OptionalWrapper(domainConflictFunc("1")),				HttpCodeConvention.ConflictHttpCode, "Conflict with the current state",   "1" },
+				new[] { OptionalWrapper(domainCriticalFunc("1")),				HttpCodeConvention.CriticalDependencyErrorHttpCode, "External service unavailable",   "1" },
 			};
 		foreach (var val in returnValues)
 			yield return val;

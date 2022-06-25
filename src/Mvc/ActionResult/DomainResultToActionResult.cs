@@ -5,12 +5,14 @@ using System.Linq;
 
 using DomainResults.Common;
 
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
+// ReSharper disable once CheckNamespace
 namespace DomainResults.Mvc;
 
 /// <summary>
-///     Converts domain response to <see cref="ActionResult" />
+///     Converts domain response to <see cref="ActionResult" /> or <see cref="IResult" /> response for the WebAPI
 /// </summary>
 public static partial class DomainResultExtensions
 {
@@ -34,12 +36,12 @@ public static partial class DomainResultExtensions
 																where TResult : ActionResult
 		=> errorDetails.Status switch
 		{
-			DomainOperationStatus.NotFound		=> SadResponse(ActionResultConventions.NotFoundHttpCode,	ActionResultConventions.NotFoundProblemDetailsTitle,		errorDetails, errorAction),
-			DomainOperationStatus.Unauthorized	=> SadResponse(ActionResultConventions.UnauthorizedHttpCode,ActionResultConventions.UnauthorizedProblemDetailsTitle,	errorDetails, errorAction),
-			DomainOperationStatus.Conflict		=> SadResponse(ActionResultConventions.ConflictHttpCode,	ActionResultConventions.ConflictProblemDetailsTitle,		errorDetails, errorAction),
-			DomainOperationStatus.Failed		=> SadResponse(ActionResultConventions.FailedHttpCode,		ActionResultConventions.FailedProblemDetailsTitle,			errorDetails, errorAction),
+			DomainOperationStatus.NotFound		=> SadResponse(HttpCodeConvention.NotFoundHttpCode,	HttpCodeConvention.NotFoundProblemDetailsTitle,		errorDetails, errorAction),
+			DomainOperationStatus.Unauthorized	=> SadResponse(HttpCodeConvention.UnauthorizedHttpCode,HttpCodeConvention.UnauthorizedProblemDetailsTitle,	errorDetails, errorAction),
+			DomainOperationStatus.Conflict		=> SadResponse(HttpCodeConvention.ConflictHttpCode,	HttpCodeConvention.ConflictProblemDetailsTitle,		errorDetails, errorAction),
+			DomainOperationStatus.Failed		=> SadResponse(HttpCodeConvention.FailedHttpCode,		HttpCodeConvention.FailedProblemDetailsTitle,			errorDetails, errorAction),
 			DomainOperationStatus.CriticalDependencyError
-												=> SadResponse(ActionResultConventions.CriticalDependencyErrorHttpCode,	ActionResultConventions.CriticalDependencyErrorProblemDetailsTitle,	errorDetails, errorAction),
+												=> SadResponse(HttpCodeConvention.CriticalDependencyErrorHttpCode,	HttpCodeConvention.CriticalDependencyErrorProblemDetailsTitle,	errorDetails, errorAction),
 			DomainOperationStatus.Success		=> EqualityComparer<V>.Default.Equals(value!, default!)
 																	? new NoContentResult() as ActionResult // No value, means returning HTTP status 204
 																	: valueToActionResultFunc(value),
