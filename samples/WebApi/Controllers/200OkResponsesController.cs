@@ -14,16 +14,12 @@ public class SuccessResponsesController : ControllerBase
 	private readonly DomainSuccessService _service = new();
 
 	[HttpGet("[action]")]
-	public IActionResult Get200OkWithNumber()
-	{
-		return _service.GetSuccessWithNumericValue().ToActionResult();
-	}
+	public IActionResult Get200OkWithNumber() 
+		=> _service.GetSuccessWithNumericValue().ToActionResult();
 
 	[HttpGet("[action]")]
-	public Task<IActionResult> Get200OkWithNumberTask()
-	{
-		return _service.GetSuccessWithNumericValueTask().ToActionResult();
-	}
+	public Task<IActionResult> Get200OkWithNumberTask() 
+		=> _service.GetSuccessWithNumericValueTask().ToActionResult();
 
 	[HttpGet("[action]")]
 	public IActionResult Get200OkTupleWithNumber()
@@ -33,8 +29,6 @@ public class SuccessResponsesController : ControllerBase
 	}
 
 	[HttpGet("[action]")]
-	public Task<IActionResult> Get200OkTupleWithNumberTask()
-	{
-		return _service.GetSuccessWithNumericValueTupleTask().ToActionResult();
-	}
+	public Task<IActionResult> Get200OkTupleWithNumberTask() 
+		=> _service.GetSuccessWithNumericValueTupleTask().ToActionResult();
 }

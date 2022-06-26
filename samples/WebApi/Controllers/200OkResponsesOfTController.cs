@@ -12,17 +12,14 @@ namespace DomainResults.Examples.WebApi.Controllers;
 public class SuccessResponsesOfTController : ControllerBase
 {
 	private readonly DomainSuccessService _service = new();
+	
 	[HttpGet("[action]")]
-	public ActionResult<int> Get200OkWithExplicitNumber()
-	{
-		return _service.GetSuccessWithNumericValue().ToActionResultOfT();
-	}
+	public ActionResult<int> Get200OkWithExplicitNumber() 
+		=> _service.GetSuccessWithNumericValue().ToActionResultOfT();
 
 	[HttpGet("[action]")]
-	public Task<ActionResult<int>> Get200OkWithExplicitNumberTask()
-	{
-		return _service.GetSuccessWithNumericValueTask().ToActionResultOfT();
-	}
+	public Task<ActionResult<int>> Get200OkWithExplicitNumberTask() 
+		=> _service.GetSuccessWithNumericValueTask().ToActionResultOfT();
 
 	[HttpGet("[action]")]
 	public ActionResult<int> Get200OkTupleWithExplicitNumber()
@@ -32,8 +29,6 @@ public class SuccessResponsesOfTController : ControllerBase
 	}
 
 	[HttpGet("[action]")]
-	public Task<ActionResult<int>> Get200OkTupleWithExplicitNumberTask()
-	{
-		return _service.GetSuccessWithNumericValueTupleTask().ToActionResultOfT();
-	}
+	public Task<ActionResult<int>> Get200OkTupleWithExplicitNumberTask() 
+		=> _service.GetSuccessWithNumericValueTupleTask().ToActionResultOfT();
 }
