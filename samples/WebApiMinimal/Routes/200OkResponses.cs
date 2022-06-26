@@ -1,6 +1,3 @@
-using System;
-using System.Threading.Tasks;
-
 using DomainResults.Examples.Domain;
 using DomainResults.Mvc;
 
@@ -19,21 +16,20 @@ internal static partial class RoutesExtension
 	{
 		DomainSuccessService service = new();
 		
-		app.MapGet("200OkWithNumber", (Func<IResult>)(() => service.GetSuccessWithNumericValue().ToResult()))
-		   .WithTags("SuccessResponses")
+		app.MapGet("200OkWithNumber", () => service.GetSuccessWithNumericValue().ToResult())
+		   .WithTags("Success: 200 Ok")
 		   .Produces(StatusCodes.Status200OK, typeof(int));
 		
-		app.MapGet("Get200OkWithNumberTask", (Func<Task<IResult>>)(() => service.GetSuccessWithNumericValueTask().ToResult()))
-		   .WithTags("SuccessResponses")
+		app.MapGet("Get200OkWithNumberTask", () => service.GetSuccessWithNumericValueTask().ToResult())
+		   .WithTags("Success: 200 Ok")
 		   .Produces(StatusCodes.Status200OK, typeof(int));
 		
-		app.MapGet("Get200OkTupleWithNumber", (Func<IResult>)(() => service.GetSuccessWithNumericValueTuple().ToResult()))
-		   .WithTags("SuccessResponses")
+		app.MapGet("Get200OkTupleWithNumber", () => service.GetSuccessWithNumericValueTuple().ToResult())
+		   .WithTags("Success: 200 Ok")
 		   .Produces(StatusCodes.Status200OK, typeof(int));
 				
-		app.MapGet("Get200OkTupleWithNumberTask", (Func<Task<IResult>>)(() => service.GetSuccessWithNumericValueTupleTask().ToResult()))
-		   .WithTags("SuccessResponses")
+		app.MapGet("Get200OkTupleWithNumberTask", () => service.GetSuccessWithNumericValueTupleTask().ToResult())
+		   .WithTags("Success: 200 Ok")
 		   .Produces(StatusCodes.Status200OK, typeof(int));
-
 	}
 }
