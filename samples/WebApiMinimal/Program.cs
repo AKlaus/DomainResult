@@ -10,17 +10,23 @@ var app = builder.Build();
 	app.UseDeveloperExceptionPage();
 	app.ConfigureSwagger();
 
-// All routes to return HTTP 200 status
+// All routes for HTTP 200 status
 app.MapSuccessResponses();
-// All routes to return HTTP 201 status
+// All routes for HTTP 201 status
 app.MapSuccessCreatedResponses();
-// All routes to return HTTP 204 status
+// All routes for HTTP 204 status
 app.MapSuccessNoContentResponses();
-// All routes to return HTTP 400 status
+// All routes for HTTP 400 status
 app.MapBadRequestResponses();
-// All routes to return HTTP 400 status with custom errors
+// All routes for HTTP 400 status with custom errors
 app.MapBadRequestCustomErrorResponses();
-// All routes to return HTTP 403 status
+// All routes for HTTP 403 status
 app.MapForbiddenResponses();
+// All routes for HTTP 404 status
+app.MapNotFoundResponses();
+// All routes for HTTP 409 status
+app.MapConflictResponses();
+// All routes for HTTP 503 status
+app.MapServiceUnavailableResponses();
 
 app.Run();

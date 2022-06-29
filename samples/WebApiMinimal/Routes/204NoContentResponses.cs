@@ -10,7 +10,7 @@ namespace DomainResults.Examples.WebApiMinimal.Routes;
 internal static partial class RoutesExtension 
 {
 	/// <summary>
-	///		Map all routes to return HTTP 204 status
+	///		Map all routes returning HTTP 204 status
 	/// </summary>
 	public static void MapSuccessNoContentResponses(this IEndpointRouteBuilder app)
 	{
