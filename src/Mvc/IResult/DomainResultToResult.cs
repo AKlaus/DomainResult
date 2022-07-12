@@ -38,9 +38,9 @@ public static partial class DomainResultExtensions
 		=> errorDetails.Status switch
 		{
 			DomainOperationStatus.NotFound		=> SadResult(HttpCodeConvention.NotFoundHttpCode,	HttpCodeConvention.NotFoundProblemDetailsTitle,		errorDetails, errorAction),
-			DomainOperationStatus.Unauthorized	=> SadResult(HttpCodeConvention.UnauthorizedHttpCode,HttpCodeConvention.UnauthorizedProblemDetailsTitle,	errorDetails, errorAction),
+			DomainOperationStatus.Unauthorized	=> SadResult(HttpCodeConvention.UnauthorizedHttpCode,HttpCodeConvention.UnauthorizedProblemDetailsTitle,errorDetails, errorAction),
 			DomainOperationStatus.Conflict		=> SadResult(HttpCodeConvention.ConflictHttpCode,	HttpCodeConvention.ConflictProblemDetailsTitle,		errorDetails, errorAction),
-			DomainOperationStatus.Failed		=> SadResult(HttpCodeConvention.FailedHttpCode,		HttpCodeConvention.FailedProblemDetailsTitle,			errorDetails, errorAction),
+			DomainOperationStatus.Failed		=> SadResult(HttpCodeConvention.FailedHttpCode,		HttpCodeConvention.FailedProblemDetailsTitle,		errorDetails, errorAction),
 			DomainOperationStatus.CriticalDependencyError
 												=> SadResult(HttpCodeConvention.CriticalDependencyErrorHttpCode,	HttpCodeConvention.CriticalDependencyErrorProblemDetailsTitle,	errorDetails, errorAction),
 			DomainOperationStatus.Success		=> EqualityComparer<V>.Default.Equals(value!, default!)
