@@ -4,6 +4,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using DomainResults.Common;
 using DomainResults.Mvc;
+
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Xunit;
 
@@ -18,7 +20,12 @@ public class To_Custom_ActionResult_Success_Tests
 	{
 		var actionResult = domainValue.ToCustomActionResult(val => new CreatedResult(urlUri, val));
 
-		Then_ResponseType_And_Value_And_Url_Are_Correct(actionResult, getValueFunc(domainValue));
+		Then_Response_Is_ActionResult_Type_And_Value_And_Url_Are_Correct(actionResult, getValueFunc(domainValue));
+
+#if NET6_0_OR_GREATER
+		var res = domainValue.ToCustomResult(val => Results.Created(urlUri, val));
+		Then_Response_Is_IResult_Type_And_Value_And_Url_Are_Correct(res, getValueFunc(domainValue));
+#endif
 	}
 	
 	[Theory]
@@ -27,7 +34,7 @@ public class To_Custom_ActionResult_Success_Tests
 	{
 		var actionResult = domainValue.ToCustomActionResultOfT(val => new CreatedResult(urlUri, val));
 
-		Then_ResponseType_And_Value_And_Url_Are_Correct(actionResult, getValueFunc(domainValue));
+		Then_Response_Is_ActionResult_Type_And_Value_And_Url_Are_Correct(actionResult, getValueFunc(domainValue));
 	}
 	public static readonly IEnumerable<object[]> DomainResultTestCases = GetDomainResultTestCases(false);
 	
@@ -37,7 +44,12 @@ public class To_Custom_ActionResult_Success_Tests
 	{
 		var actionResult = await domainValueTask.ToCustomActionResult(val => new CreatedResult(urlUri, val));
 
-		Then_ResponseType_And_Value_And_Url_Are_Correct(actionResult, getValueFunc(domainValueTask));
+		Then_Response_Is_ActionResult_Type_And_Value_And_Url_Are_Correct(actionResult, getValueFunc(domainValueTask));
+
+#if NET6_0_OR_GREATER
+		var res = await domainValueTask.ToCustomResult(val => Results.Created(urlUri, val));
+		Then_Response_Is_IResult_Type_And_Value_And_Url_Are_Correct(res, getValueFunc(domainValueTask));
+#endif
 	}
 	
 	[Theory]
@@ -46,7 +58,7 @@ public class To_Custom_ActionResult_Success_Tests
 	{
 		var actionResult = await domainValueTask.ToCustomActionResultOfT(val => new CreatedResult(urlUri, val));
 
-		Then_ResponseType_And_Value_And_Url_Are_Correct(actionResult, getValueFunc(domainValueTask));
+		Then_Response_Is_ActionResult_Type_And_Value_And_Url_Are_Correct(actionResult, getValueFunc(domainValueTask));
 	}
 	public static readonly IEnumerable<object[]> DomainResultTaskTestCases = GetDomainResultTestCases(true);
 
@@ -56,7 +68,12 @@ public class To_Custom_ActionResult_Success_Tests
 	{
 		var actionResult = domainValue.ToCustomActionResult(val => new CreatedResult(urlUri, val));
 
-		Then_ResponseType_And_Value_And_Url_Are_Correct(actionResult, domainValue.Item1);
+		Then_Response_Is_ActionResult_Type_And_Value_And_Url_Are_Correct(actionResult, domainValue.Item1);
+
+#if NET6_0_OR_GREATER
+		var res = domainValue.ToCustomResult(val => Results.Created(urlUri, val));
+		Then_Response_Is_IResult_Type_And_Value_And_Url_Are_Correct(res, domainValue.Item1);
+#endif
 	}
 	
 	[Theory]
@@ -65,7 +82,7 @@ public class To_Custom_ActionResult_Success_Tests
 	{
 		var actionResult = domainValue.ToCustomActionResultOfT(val => new CreatedResult(urlUri, val));
 
-		Then_ResponseType_And_Value_And_Url_Are_Correct(actionResult, domainValue.Item1);
+		Then_Response_Is_ActionResult_Type_And_Value_And_Url_Are_Correct(actionResult, domainValue.Item1);
 	}
 	public static readonly IEnumerable<object[]> ValueResultTestCases = GetValueResultTestCases(false);
 
@@ -75,7 +92,12 @@ public class To_Custom_ActionResult_Success_Tests
 	{
 		var actionResult = await domainValueTask.ToCustomActionResult(val => new CreatedResult(urlUri, val));
 
-		Then_ResponseType_And_Value_And_Url_Are_Correct(actionResult, domainValueTask.Result.Item1);
+		Then_Response_Is_ActionResult_Type_And_Value_And_Url_Are_Correct(actionResult, domainValueTask.Result.Item1);
+
+#if NET6_0_OR_GREATER
+		var res = await domainValueTask.ToCustomResult(val => Results.Created(urlUri, val));
+		Then_Response_Is_IResult_Type_And_Value_And_Url_Are_Correct(res, domainValueTask.Result.Item1);
+#endif		
 	}
 	
 	[Theory]
@@ -84,7 +106,7 @@ public class To_Custom_ActionResult_Success_Tests
 	{
 		var actionResult = await domainValueTask.ToCustomActionResultOfT(val => new CreatedResult(urlUri, val));
 
-		Then_ResponseType_And_Value_And_Url_Are_Correct(actionResult, domainValueTask.Result.Item1);
+		Then_Response_Is_ActionResult_Type_And_Value_And_Url_Are_Correct(actionResult, domainValueTask.Result.Item1);
 	}
 	public static readonly IEnumerable<object[]> ValueResultTaskTestCases = GetValueResultTestCases(true);
 
@@ -93,11 +115,11 @@ public class To_Custom_ActionResult_Success_Tests
 	private const string ExpectedUrl = "http://localhost/";
 
 	/// <summary>
-	///		The 'THEN' section of the tests, checking the Response type, HTTP code, location URL and the returned value
+	///		The 'THEN' section of the tests, checking the Response type (<see cref="ActionResult"/>), HTTP code, location URL and the returned value
 	/// </summary>
 	/// <param name="actionResult"> The <see cref="ActionResult"/> in question </param>
 	/// <param name="expectedValue"> The expected identification value in the response </param>
-	private void Then_ResponseType_And_Value_And_Url_Are_Correct<TValue, TAction>(TAction actionResult, TValue expectedValue)
+	private void Then_Response_Is_ActionResult_Type_And_Value_And_Url_Are_Correct<TValue, TAction>(TAction actionResult, TValue expectedValue)
 	{
 		// THEN the response type is correct
 		CreatedResult? createdResult;
@@ -105,16 +127,33 @@ public class To_Custom_ActionResult_Success_Tests
 			createdResult = actionResult as CreatedResult;
 		else
 			createdResult = (actionResult as ActionResult<TValue>)?.Result as CreatedResult;
-
 		Assert.NotNull(createdResult);
-		Assert.Equal(201, createdResult?.StatusCode);
 
+		// and the HTTP code is 201
+		Assert.Equal(201, createdResult?.StatusCode);
 		// and value remains there
 		Assert.Equal(expectedValue, createdResult?.Value);
-
 		// and the location URL is correct
 		Assert.Equal(ExpectedUrl, createdResult?.Location);
 	}
+
+#if NET6_0_OR_GREATER
+	/// <summary>
+	///		The 'THEN' section of the tests, checking the Response type (<see cref="IResult"/>), HTTP code, location URL and the returned value
+	/// </summary>
+	private void Then_Response_Is_IResult_Type_And_Value_And_Url_Are_Correct<TValue>(IResult res, TValue expectedValue)
+	{
+		// THEN the response type is correct
+		res.AssertCreatedResultType();
+
+		// and the HTTP code is 201
+		Assert.Equal(201, res.GetPropValue("StatusCode"));
+		// and the value remains there
+		Assert.Equal(expectedValue, res.GetPropValue());
+		// and the location URL is correct
+		Assert.Equal(ExpectedUrl, res.GetPropValue("Location"));
+	}
+#endif
 
 	private static IEnumerable<object[]> GetDomainResultTestCases(bool wrapInTask)
 		=> new List<object[]>

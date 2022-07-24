@@ -22,7 +22,22 @@ public class To_204_NoContentResult_Success_Tests
 		// THEN the response type is correct
 		Assert.IsType<NoContentResult>(actionRes);
 	}
+	
+#if NET6_0_OR_GREATER	
+	[Fact]
+	public void DomainResultConverted_To_NoContent_of_IResult()
+	{
+		// GIVEN a successful domain result
+		var domainRes = DomainResult.Success();
 
+		// WHEN convert it to IResult
+		var res = domainRes.ToResult();
+
+		// THEN the response type is NoContent
+		res.AssertNoContentResultType();
+	}
+#endif
+	
 	[Fact]
 	public async Task DomainResult_Task_Converted_To_NoContent()
 	{
@@ -35,4 +50,19 @@ public class To_204_NoContentResult_Success_Tests
 		// THEN the response type is correct
 		Assert.IsType<NoContentResult>(actionRes);
 	}
+	
+#if NET6_0_OR_GREATER	
+	[Fact]
+	public async Task DomainResult_Task_Converted_To_NoContent_of_IResult()
+	{
+		// GIVEN a successful domain result
+		var domainRes = DomainResult.SuccessTask();
+
+		// WHEN convert it to IResult
+		var res = await domainRes.ToResult();
+
+		// THEN the response type is NoContent
+		res.AssertNoContentResultType();
+	}
+#endif
 }

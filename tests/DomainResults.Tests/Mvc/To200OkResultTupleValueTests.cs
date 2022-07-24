@@ -32,6 +32,22 @@ public class To_200_OkResult_TupleValue_Tests
 		Assert.Equal(tupleValue.Item1, actionResOfT.Value);
 	}
 
+#if NET6_0_OR_GREATER
+	[Theory]
+	[MemberData(nameof(SuccessfulTestCases))]
+	public void ValueResult_Converted_ToIResult_Test<TValue>((TValue, IDomainResult) tupleValue)
+	{
+		// WHEN convert a value to IResult
+		var res = tupleValue.ToResult();
+
+		// THEN the response type is correct
+		res.AssertOkObjectResultType();
+
+		// and value remains there
+		Assert.Equal(tupleValue.Item1!, res.GetPropValue());
+	}
+#endif
+
 	public static readonly IEnumerable<object[]> SuccessfulTestCases = new List<object[]>
 	{
 		new object[] { (10,  IDomainResult.Success()) },
@@ -60,6 +76,22 @@ public class To_200_OkResult_TupleValue_Tests
 		Assert.Equal((await tupleValueTask).Item1!, okResult!.Value);
 		Assert.Equal((await tupleValueTask).Item1, actionResOfT.Value);
 	}
+
+#if NET6_0_OR_GREATER
+	[Theory]
+	[MemberData(nameof(SuccessfulTaskTestCases))]
+	public async Task ValueResult_Task_Converted_ToIResult_Test<TValue>(Task<(TValue, IDomainResult)> tupleValueTask)
+	{
+		// WHEN convert a value to IResult
+		var res = await tupleValueTask.ToResult();
+
+		// THEN the response type is correct
+		res.AssertOkObjectResultType();
+
+		// and value remains there
+		Assert.Equal((await tupleValueTask).Item1!, res.GetPropValue());
+	}
+#endif
 
 	public static readonly IEnumerable<object[]> SuccessfulTaskTestCases = new List<object[]>
 	{

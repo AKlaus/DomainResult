@@ -5,7 +5,7 @@ namespace DomainResults.Mvc;
 /// <summary>
 ///		Conventions for returned HTTP codes and messages
 /// </summary>
-public static class ActionResultConventions
+public static class HttpCodeConvention
 {
 	/// <summary>
 	///		The HTTP code to return for client request error (<see cref="DomainOperationStatus.Failed"/> status). Can be either 400 (default) or 422

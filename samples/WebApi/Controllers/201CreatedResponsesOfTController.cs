@@ -14,37 +14,31 @@ public class CreatedResponsesOfTController : ControllerBase
 {
 	private readonly DomainSuccessService _service = new();
 
-	[HttpGet("[action]")]
+	[HttpPost("[action]")]
 	[ProducesResponseType(StatusCodes.Status201Created)]
-	public ActionResult<int> Get201CreatedFromTuple()
-	{
-		return _service.GetSuccessWithNumericValueTuple().ToCustomActionResultOfT(val => CreatedAtAction(nameof(GetById), new { id = val }, val));
-	}
+	public ActionResult<int> Post201CreatedFromTuple()
+		=> _service.GetSuccessWithNumericValueTuple()
+		           .ToCustomActionResultOfT(val => CreatedAtAction(nameof(GetById), new { id = val }, val));
 
-	[HttpGet("[action]")]
+	[HttpPost("[action]")]
 	[ProducesResponseType(StatusCodes.Status201Created)]
-	public Task<ActionResult<int>> Get201CreatedFromTupleTask()
-	{
-		return _service.GetSuccessWithNumericValueTupleTask().ToCustomActionResultOfT(val => CreatedAtAction(nameof(GetById), new { id = val }, val));
-	}
+	public Task<ActionResult<int>> Post201CreatedFromTupleTask()
+		=> _service.GetSuccessWithNumericValueTupleTask()
+		           .ToCustomActionResultOfT(val => CreatedAtAction(nameof(GetById), new { id = val }, val));
 
-	[HttpGet("[action]")]
+	[HttpPost("[action]")]
 	[ProducesResponseType(StatusCodes.Status201Created)]
-	public ActionResult<int> Get201Created()
-	{
-		return _service.GetSuccessWithNumericValue().ToCustomActionResultOfT(val => CreatedAtAction(nameof(GetById), new { id = val }, val));
-	}
+	public ActionResult<int> Post201Created()
+		=> _service.GetSuccessWithNumericValue()
+		           .ToCustomActionResultOfT(val => CreatedAtAction(nameof(GetById), new { id = val }, val));
 
-	[HttpGet("[action]")]
+	[HttpPost("[action]")]
 	[ProducesResponseType(StatusCodes.Status201Created)]
-	public Task<ActionResult<int>> Get201CreatedTask()
-	{
-		return _service.GetSuccessWithNumericValueTask().ToCustomActionResultOfT(val => CreatedAtAction(nameof(GetById), new { id = val }, val));
-	}
+	public Task<ActionResult<int>> Post201CreatedTask()
+		=> _service.GetSuccessWithNumericValueTask()
+		           .ToCustomActionResultOfT(val => CreatedAtAction(nameof(GetById), new { id = val }, val));
 
 	[HttpGet("{id}")]
-	public IActionResult GetById([FromRoute] int id)
-	{
-		return Ok(new { id });
-	}
+	public IActionResult GetById([FromRoute] int id) 
+		=> Ok(new { id });
 }

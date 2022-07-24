@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<AssemblyName>Examples.WebApiMinimal</AssemblyName>
+		<RootNamespace>DomainResults.Examples.WebApiMinimal</RootNamespace>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\src\Mvc\DomainResults.Mvc.csproj" />
+		<ProjectReference Include="..\Domain\Examples.Domain.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="NSwag.AspNetCore" Version="13.16.1" />
+	</ItemGroup>
+</Project>

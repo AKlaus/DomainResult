@@ -11,6 +11,8 @@ namespace DomainResults.Tests.Mvc;
 [SuppressMessage("ReSharper", "InconsistentNaming")]
 public class To_200_OkResult_DomainResult_Tests
 {
+	#region Test of successful 'IDomainResult<TValue>' response conversion -----
+
 	[Theory]
 	[MemberData(nameof(SuccessfulTestCases))]
 	public void DomainResult_With_Value_Converted_ToActionResult_Test<TValue>(IDomainResult<TValue> domainValue)
@@ -29,8 +31,27 @@ public class To_200_OkResult_DomainResult_Tests
 		Assert.Equal(domainValue.Value!, okResult!.Value);
 		Assert.Equal(domainValue.Value, actionResOfT.Value);
 	}
-	public static readonly IEnumerable<object[]> SuccessfulTestCases = GetTestCases(false);
+	
+#if NET6_0_OR_GREATER
+	[Theory]
+	[MemberData(nameof(SuccessfulTestCases))]
+	public void DomainResult_With_Value_Converted_ToIResult_Test<TValue>(IDomainResult<TValue> domainValue)
+	{
+		// WHEN convert a value to IResult
+		var res = domainValue.ToResult();
 
+		// THEN the response type is correct
+		res.AssertOkObjectResultType();
+
+		// and value remains there
+		Assert.Equal(domainValue.Value!, res.GetPropValue());
+	}
+#endif
+	public static readonly IEnumerable<object[]> SuccessfulTestCases = GetTestCases(false);
+	
+	#endregion // Test of successful 'IDomainResult<TValue>' response conversion
+
+	#region Test of successful 'Task<IDomainResult<TValue>>' response conversion
 	[Theory]
 	[MemberData(nameof(SuccessfulTaskTestCases))]
 	public async Task DomainResult_With_Value_Task_Converted_ToActionResult_Test<TValue>(Task<IDomainResult<TValue>> domainValueTask)
@@ -50,7 +71,24 @@ public class To_200_OkResult_DomainResult_Tests
 		Assert.Equal(domainValue.Value!, okResult!.Value);
 		Assert.Equal(domainValue.Value, actionResOfT.Value);
 	}
+#if NET6_0_OR_GREATER
+	[Theory]
+	[MemberData(nameof(SuccessfulTaskTestCases))]
+	public async Task DomainResult_With_Value_Task_Converted_ToIResult_Test<TValue>(Task<IDomainResult<TValue>> domainValueTask)
+	{
+		// WHEN convert a value to IResult
+		var res = await domainValueTask.ToResult();
+
+		// THEN the response type is correct
+		res.AssertOkObjectResultType();
+
+		// and value remains there
+		Assert.Equal((await domainValueTask).Value!, res.GetPropValue());
+	}
+#endif
 	public static readonly IEnumerable<object[]> SuccessfulTaskTestCases = GetTestCases(true);
+
+	#endregion // Test of successful 'Task<IDomainResult<TValue>>' response conversion
 
 	private static IEnumerable<object[]> GetTestCases(bool wrapInTask)
 		=> new List<object[]> 
