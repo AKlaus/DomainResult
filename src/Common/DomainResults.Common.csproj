@@ -16,6 +16,5 @@ Provides:
 	<ItemGroup>
 		<!-- Required to support https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.dataannotations.validationresult -->
 		<PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
-		<PackageReference Update="MinVer" Version="4.0.0" />
 	</ItemGroup>
 </Project>
