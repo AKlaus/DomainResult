@@ -7,96 +7,140 @@ using Microsoft.AspNetCore.Mvc;
 
 using Xunit;
 
-namespace DomainResults.Tests.Mvc
+namespace DomainResults.Tests.Mvc;
+
+[SuppressMessage("ReSharper", "InconsistentNaming")]
+[Collection("Sequential")]
+public class ActionResult_Conventions_Tests
 {
-	[SuppressMessage("ReSharper", "InconsistentNaming")]
-	[Collection("Sequential")]
-	public class ActionResult_Conventions_Tests
+	[Theory]
+	[InlineData(null, 400)]
+	[InlineData(422,  422)]
+	public void FailedHttpCode_Is_Honoured_in_Failed_Response_Test(int? failedHttpCode, int expectedFailedHttpCode)
 	{
-		[Theory]
-		[InlineData(null, 400)]
-		[InlineData(422,  422)]
-		public void ErrorHttpCode_Is_Honoured_in_Error_Response_Test(int? errorHttpCode, int expectedErrorHttpCode)
-		{
-			var defaultValue = ActionResultConventions.ErrorHttpCode;
+		var defaultValue = HttpCodeConvention.FailedHttpCode;
 
-			// GIVEN a custom HTTP code for errors
-			if (errorHttpCode.HasValue)
-				ActionResultConventions.ErrorHttpCode = errorHttpCode.Value;
+		// GIVEN a custom HTTP code for errors
+		if (failedHttpCode.HasValue)
+			HttpCodeConvention.FailedHttpCode = failedHttpCode.Value;
 
-			// WHEN a IDomainResult with Status 'Error' gets converted to ActionResult
-			var domainResult = IDomainResult.Failed();
-			var actionRes = domainResult.ToActionResult() as ObjectResult;
+		// WHEN a IDomainResult with Status 'Error' gets converted
+		var domainResult = IDomainResult.Failed();
+		//	 to ActionResult
+		var actionRes = domainResult.ToActionResult() as ObjectResult;
+#if NET6_0_OR_GREATER
+		//	 to IResult (minimal API)
+		var res = domainResult.ToResult();
+#endif
 
-			// THEN the HTTP code is expected
-			Assert.Equal(expectedErrorHttpCode, actionRes!.StatusCode);
+		// THEN the HTTP code is expected
+		//		for the ActionResult conversion 
+		Assert.Equal(expectedFailedHttpCode, actionRes!.StatusCode);
+		Assert.Equal(expectedFailedHttpCode, (actionRes.Value as ProblemDetails)!.Status);
+#if NET6_0_OR_GREATER
+		//		for the IResult (minimal API) conversion
+		res.AssertObjectResultType();
+		Assert.Equal(expectedFailedHttpCode, res.GetProblemDetails()!.Status);
+#endif
 
-			ActionResultConventions.ErrorHttpCode = defaultValue;
-		}
+		HttpCodeConvention.FailedHttpCode = defaultValue;
+	}
 
-		[Theory]
-		[InlineData(null, "Bad Request")]
-		[InlineData("1", "1")]
-		public void ErrorProblemDetailsTitle_Is_Honoured_in_Error_Response_Test(string errorTitle, string expectedErrorTitle)
-		{
-			var defaultValue = ActionResultConventions.ErrorProblemDetailsTitle;
+	[Theory]
+	[InlineData(null, "Bad Request")]
+	[InlineData("1", "1")]
+	public void FailedProblemDetailsTitle_Is_Honoured_in_Error_Response_Test(string failedTitle, string expectedFailedTitle)
+	{
+		var defaultValue = HttpCodeConvention.FailedProblemDetailsTitle;
 
-			// GIVEN a custom HTTP code for errors
-			if (!string.IsNullOrEmpty(errorTitle))
-				ActionResultConventions.ErrorProblemDetailsTitle = errorTitle;
+		// GIVEN a custom HTTP code for errors
+		if (!string.IsNullOrEmpty(failedTitle))
+			HttpCodeConvention.FailedProblemDetailsTitle = failedTitle;
 
-			// WHEN a IDomainResult with Status 'Error' gets converted to ActionResult
-			var domainResult = IDomainResult.Failed();
-			var actionRes = domainResult.ToActionResult() as ObjectResult;
-			var problemDetails = actionRes!.Value as ProblemDetails;
+		// WHEN a IDomainResult with Status 'Error' gets converted
+		//	 to ActionResult
+		var domainResult = IDomainResult.Failed();
+		var actionRes = domainResult.ToActionResult() as ObjectResult;
+#if NET6_0_OR_GREATER
+		//	 to IResult (minimal API)
+		var res = domainResult.ToResult();
+#endif
 
-			// THEN the ProblemDetails Title is expected
-			Assert.Equal(expectedErrorTitle, problemDetails!.Title);
+		// THEN the ProblemDetails Title is expected
+		//		for the ActionResult conversion 
+		var problemDetails = actionRes!.Value as ProblemDetails;
+		Assert.Equal(expectedFailedTitle, problemDetails!.Title);
+#if NET6_0_OR_GREATER
+		//		for the IResult (minimal API) conversion
+		res.AssertObjectResultType();
+		Assert.Equal(expectedFailedTitle, res.GetProblemDetails()!.Title);
+#endif
 
-			ActionResultConventions.ErrorProblemDetailsTitle = defaultValue;
-		}
+		HttpCodeConvention.FailedProblemDetailsTitle = defaultValue;
+	}
 
-		[Theory]
-		[InlineData(null, 404)]
-		[InlineData(499, 499)]
-		public void NotFoundHttpCode_Is_Honoured_in_NotFound_Response_Test(int? notFoundHttpCode, int expectedNotFoundHttpCode)
-		{
-			var defaultValue = ActionResultConventions.NotFoundHttpCode;
+	[Theory]
+	[InlineData(null, 404)]
+	[InlineData(499, 499)]
+	public void NotFoundHttpCode_Is_Honoured_in_NotFound_Response_Test(int? notFoundHttpCode, int expectedNotFoundHttpCode)
+	{
+		var defaultValue = HttpCodeConvention.NotFoundHttpCode;
 
-			// GIVEN a custom HTTP code for 'Not Found'
-			if (notFoundHttpCode.HasValue)
-				ActionResultConventions.NotFoundHttpCode = notFoundHttpCode.Value;
+		// GIVEN a custom HTTP code for 'Not Found'
+		if (notFoundHttpCode.HasValue)
+			HttpCodeConvention.NotFoundHttpCode = notFoundHttpCode.Value;
 
-			// WHEN a IDomainResult with Status 'Not Found' gets converted to ActionResult
-			var domainResult = IDomainResult.NotFound();
-			var actionRes = domainResult.ToActionResult() as ObjectResult;
+		// WHEN a IDomainResult with Status 'Not Found' gets converted
+		var domainResult = IDomainResult.NotFound();
+		//	 to ActionResult
+		var actionRes = domainResult.ToActionResult() as ObjectResult;
+#if NET6_0_OR_GREATER
+		//	 to IResult (minimal API)
+		var res = domainResult.ToResult();
+#endif
 
-			// THEN the HTTP code is expected
-			Assert.Equal(expectedNotFoundHttpCode, actionRes!.StatusCode);
+		// THEN the HTTP code is expected
+		//		for the ActionResult conversion 
+		Assert.Equal(expectedNotFoundHttpCode, actionRes!.StatusCode);
+		Assert.Equal(expectedNotFoundHttpCode, (actionRes.Value as ProblemDetails)!.Status);
+#if NET6_0_OR_GREATER
+		//		for the IResult (minimal API) conversion
+		res.AssertObjectResultType();
+		Assert.Equal(expectedNotFoundHttpCode, res.GetProblemDetails()!.Status);
+#endif
 
-			ActionResultConventions.NotFoundHttpCode = defaultValue;
-		}
+		HttpCodeConvention.NotFoundHttpCode = defaultValue;
+	}
 
-		[Theory]
-		[InlineData(null, "Not Found")]
-		[InlineData("1", "1")]
-		public void NotFoundHttpDetailsTitle_Is_Honoured_in_NotFound_Response_Test(string notFoundTitle, string expectedNotFoundTitle)
-		{
-			var defaultValue = ActionResultConventions.NotFoundProblemDetailsTitle;
+	[Theory]
+	[InlineData(null, "Not Found")]
+	[InlineData("1", "1")]
+	public void NotFoundHttpDetailsTitle_Is_Honoured_in_NotFound_Response_Test(string notFoundTitle, string expectedNotFoundTitle)
+	{
+		var defaultValue = HttpCodeConvention.NotFoundProblemDetailsTitle;
 
-			// GIVEN a custom HTTP code for errors
-			if (!string.IsNullOrEmpty(notFoundTitle))
-				ActionResultConventions.NotFoundProblemDetailsTitle = notFoundTitle;
+		// GIVEN a custom HTTP code for errors
+		if (!string.IsNullOrEmpty(notFoundTitle))
+			HttpCodeConvention.NotFoundProblemDetailsTitle = notFoundTitle;
 
-			// WHEN a IDomainResult with Status 'Not Found' gets converted to ActionResult
-			var domainResult = IDomainResult.NotFound();
-			var actionRes = domainResult.ToActionResult() as ObjectResult;
-			var problemDetails = actionRes!.Value as ProblemDetails;
+		// WHEN a IDomainResult with Status 'Not Found' gets converted
+		var domainResult = IDomainResult.NotFound();
+		//	 to ActionResult
+		var actionRes = domainResult.ToActionResult() as ObjectResult;
+#if NET6_0_OR_GREATER
+		//	 to IResult (minimal API)
+		var res = domainResult.ToResult();
+#endif
 
-			// THEN the ProblemDetails Title is expected
-			Assert.Equal(expectedNotFoundTitle, problemDetails!.Title);
+		// THEN the ProblemDetails Title is expected
+		var problemDetails = actionRes!.Value as ProblemDetails;
+		Assert.Equal(expectedNotFoundTitle, problemDetails!.Title);
+#if NET6_0_OR_GREATER
+		//		for the IResult (minimal API) conversion
+		res.AssertObjectResultType();
+		Assert.Equal(expectedNotFoundTitle, res.GetProblemDetails()!.Title);
+#endif
 
-			ActionResultConventions.NotFoundProblemDetailsTitle = defaultValue;
-		}
+		HttpCodeConvention.NotFoundProblemDetailsTitle = defaultValue;
 	}
 }

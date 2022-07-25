@@ -6,67 +6,99 @@ using DomainResults.Mvc;
 using Microsoft.AspNetCore.Mvc;
 using Xunit;
 
-namespace DomainResults.Tests.Mvc
+namespace DomainResults.Tests.Mvc;
+
+[SuppressMessage("ReSharper", "InconsistentNaming")]
+public class To_200_OkResult_TupleValue_Tests
 {
-	[SuppressMessage("ReSharper", "InconsistentNaming")]
-	public class To_200_OkResult_TupleValue_Tests
+	#region Test of successful '(TValue, IDomainResult)' response conversion ------------------
+
+	[Theory]
+	[MemberData(nameof(SuccessfulTestCases))]
+	public void ValueResult_Converted_ToActionResult_Test<TValue>((TValue, IDomainResult) tupleValue)
 	{
-		#region Test of successful '(TValue, IDomainResult)' response conversion ------------------
+		// WHEN convert a value to ActionResult
+		var actionRes = tupleValue.ToActionResult();
+		// and to ActionResult<T>
+		var actionResOfT = tupleValue.ToActionResultOfT();
 
-		[Theory]
-		[MemberData(nameof(SuccessfulTestCases))]
-		public void ValueResult_Converted_ToActionResult_Test<TValue>((TValue, IDomainResult) tupleValue)
-		{
-			// WHEN convert a value to ActionResult
-			var actionRes = tupleValue.ToActionResult();
-			// and to ActionResult<T>
-			var actionResOfT = tupleValue.ToActionResultOfT();
+		// THEN the response type is correct
+		var okResult = actionRes as OkObjectResult;
+		Assert.NotNull(okResult);
+		Assert.NotNull(actionResOfT);
 
-			// THEN the response type is correct
-			var okResult = actionRes as OkObjectResult;
-			Assert.NotNull(okResult);
-			Assert.NotNull(actionResOfT);
-
-			// and value remains there
-			Assert.Equal(tupleValue.Item1!, okResult!.Value);
-			Assert.Equal(tupleValue.Item1, actionResOfT.Value);
-		}
-
-		public static readonly IEnumerable<object[]> SuccessfulTestCases = new List<object[]>
-		{
-			new object[] { (10,  IDomainResult.Success()) },
-			new object[] { ("1", IDomainResult.Success()) },
-			new object[] { (new TestDto("1"), IDomainResult.Success()) }
-		};
-		#endregion // Test of successful '(TValue, IDomainResult)' response conversion ------------
-
-		#region Test of successful 'Task<(TValue, IDomainResult)>' response conversion ------------
-
-		[Theory]
-		[MemberData(nameof(SuccessfulTaskTestCases))]
-		public async Task ValueResult_Task_Converted_ToActionResult_Test<TValue>(Task<(TValue, IDomainResult)> tupleValueTask)
-		{
-			// WHEN convert a value to ActionResult
-			var actionRes = await tupleValueTask.ToActionResult();
-			// and to ActionResult<T>
-			var actionResOfT = await tupleValueTask.ToActionResultOfT();
-
-			// THEN the response type is correct
-			var okResult = actionRes as OkObjectResult;
-			Assert.NotNull(okResult);
-			Assert.NotNull(actionResOfT);
-
-			// and value remains there
-			Assert.Equal((await tupleValueTask).Item1!, okResult!.Value);
-			Assert.Equal((await tupleValueTask).Item1, actionResOfT.Value);
-		}
-
-		public static readonly IEnumerable<object[]> SuccessfulTaskTestCases = new List<object[]>
-		{
-			new object[] { Task.FromResult((10,  IDomainResult.Success())) },
-			new object[] { Task.FromResult(("1", IDomainResult.Success())) },
-			new object[] { Task.FromResult((new TestDto("1"), IDomainResult.Success())) }
-		};
-		#endregion // Test of successful 'Task<(TValue, IDomainResult)>' response conversion ------
+		// and value remains there
+		Assert.Equal(tupleValue.Item1!, okResult!.Value);
+		Assert.Equal(tupleValue.Item1, actionResOfT.Value);
 	}
+
+#if NET6_0_OR_GREATER
+	[Theory]
+	[MemberData(nameof(SuccessfulTestCases))]
+	public void ValueResult_Converted_ToIResult_Test<TValue>((TValue, IDomainResult) tupleValue)
+	{
+		// WHEN convert a value to IResult
+		var res = tupleValue.ToResult();
+
+		// THEN the response type is correct
+		res.AssertOkObjectResultType();
+
+		// and value remains there
+		Assert.Equal(tupleValue.Item1!, res.GetPropValue());
+	}
+#endif
+
+	public static readonly IEnumerable<object[]> SuccessfulTestCases = new List<object[]>
+	{
+		new object[] { (10,  IDomainResult.Success()) },
+		new object[] { ("1", IDomainResult.Success()) },
+		new object[] { (new TestDto("1"), IDomainResult.Success()) }
+	};
+	#endregion // Test of successful '(TValue, IDomainResult)' response conversion ------------
+
+	#region Test of successful 'Task<(TValue, IDomainResult)>' response conversion ------------
+
+	[Theory]
+	[MemberData(nameof(SuccessfulTaskTestCases))]
+	public async Task ValueResult_Task_Converted_ToActionResult_Test<TValue>(Task<(TValue, IDomainResult)> tupleValueTask)
+	{
+		// WHEN convert a value to ActionResult
+		var actionRes = await tupleValueTask.ToActionResult();
+		// and to ActionResult<T>
+		var actionResOfT = await tupleValueTask.ToActionResultOfT();
+
+		// THEN the response type is correct
+		var okResult = actionRes as OkObjectResult;
+		Assert.NotNull(okResult);
+		Assert.NotNull(actionResOfT);
+
+		// and value remains there
+		Assert.Equal((await tupleValueTask).Item1!, okResult!.Value);
+		Assert.Equal((await tupleValueTask).Item1, actionResOfT.Value);
+	}
+
+#if NET6_0_OR_GREATER
+	[Theory]
+	[MemberData(nameof(SuccessfulTaskTestCases))]
+	public async Task ValueResult_Task_Converted_ToIResult_Test<TValue>(Task<(TValue, IDomainResult)> tupleValueTask)
+	{
+		// WHEN convert a value to IResult
+		var res = await tupleValueTask.ToResult();
+
+		// THEN the response type is correct
+		res.AssertOkObjectResultType();
+
+		// and value remains there
+		Assert.Equal((await tupleValueTask).Item1!, res.GetPropValue());
+	}
+#endif
+
+	public static readonly IEnumerable<object[]> SuccessfulTaskTestCases = new List<object[]>
+	{
+		new object[] { Task.FromResult((10,  IDomainResult.Success())) },
+		new object[] { Task.FromResult(("1", IDomainResult.Success())) },
+		new object[] { Task.FromResult((new TestDto("1"), IDomainResult.Success())) }
+	};
+	#endregion // Test of successful 'Task<(TValue, IDomainResult)>' response conversion ------
 }
+

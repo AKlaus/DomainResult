@@ -1,6 +1,6 @@
 # DomainResult
 
-**NuGet for decoupling domain operation results from ActionResult-based types of ASP.NET Web API**
+**NuGet for decoupling domain operation results from IActionResult and IResult types of ASP.NET Web API**
 
 ![CI](https://github.com/AKlaus/DomainResult/workflows/CI/badge.svg)
 [![Test Coverage](https://coveralls.io/repos/github/AKlaus/DomainResult/badge.svg?branch=master)](https://coveralls.io/github/AKlaus/DomainResult?branch=master)
@@ -11,19 +11,24 @@
 
 Two tiny NuGet packages addressing challenges in the [ASP.NET Web API](https://dotnet.microsoft.com/apps/aspnet/apis) realm posed by separation of the _Domain Layer_ (aka _Business Layer_) from the _Application Layer_:
 
-- eliminating dependency on _Microsoft.AspNetCore.Mvc_ (and [IActionResult](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.iactionresult) in particular) in the _Domain Layer_ (usually a separate project);
-- mapping various of responses from the _Domain Layer_ to appropriate [ActionResult](https://docs.microsoft.com/en-us/aspnet/core/web-api/action-return-types)-related type.
+- eliminating dependency on _Microsoft.AspNetCore.*_ ([IActionResult](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.iactionresult) and [IResult](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.http.iresult) in particular) in the _Domain Layer_ (usually a separate project);
+- mapping various of responses from the _Domain Layer_ to appropriate [ActionResult](https://docs.microsoft.com/en-us/aspnet/core/web-api/action-return-types) in classic Web API controllers or [IResult](https://devblogs.microsoft.com/dotnet/asp-net-core-updates-in-net-6-preview-7/#added-iresult-implementations-for-producing-common-http-responses) in the [minimal API](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis).
 
 ### Content:
 
 - [Basic use-case](#basic-use-case)
 - [Quick start](#quick-start)
 - ['DomainResult.Common' package. Returning result from Domain Layer method](#domainresultcommon-package-returning-result-from-domain-layer-method)
-  - [Examples](#examples)
-- ['DomainResult' package. Conversion to ActionResult](#domainresult-package-conversion-to-actionresult)
-  - [Examples](#basic-examples)
+  - [Examples (Domain)](#examples-domain)
+- ['DomainResult' package](#domainresult-package)
+  - [Conversion to IActionResult](#conversion-to-iactionresult)
+    - [Examples (IActionResult conversion)](#examples-iactionresult-conversion)
+  - [Conversion to IResult (minimal API)](#conversion-to-iresult-minimal-api)
+    - [Examples (IResult conversion)](#examples-iresult-conversion)
 - [Custom Problem Details output](#custom-problem-details-output)
-  - [Custom ActionResult response for 2xx HTTP codes](#custom-actionresult-response-for-2xx-http-codes)
+  - [Custom response for 2xx HTTP codes](#custom-response-for-2xx-http-codes)
+    - [Example (custom response for IActionResult)](#example-custom-response-for-iactionresult)
+    - [Example (custom response for IResult)](#example-custom-response-for-iresult)
   - [Custom error handling](#custom-error-handling)
 - [Alternative solutions](#alternative-solutions)
   - [Why not FluentResults?](#why-not-fluentresults)
@@ -83,7 +88,7 @@ public Task<IActionResult> GetInvoice()
 }
 ```
 
-or leverage [ActionResult&lt;T&gt;](https://docs.microsoft.com/en-us/aspnet/core/web-api/action-return-types#actionresultt-type)
+or leverage [ActionResult&lt;T&gt;](https://docs.microsoft.com/en-us/aspnet/core/web-api/action-return-types#actionresultt-type) (see [comparison with IActionResult](https://stackoverflow.com/a/54371053/968003))
 
 ```cs
 [ProducesResponseType(StatusCodes.Status200OK)]
@@ -93,6 +98,13 @@ public Task<ActionResult<InvoiceResponseDto>> GetInvoice()
 {
     return _service.GetInvoice().ToActionResultOfT();
 }
+```
+
+or for the _Minimal APIs_ ([added in .NET 6](https://devblogs.microsoft.com/dotnet/asp-net-core-updates-in-net-6-preview-4/#introducing-minimal-apis)) convert to [IResult](https://devblogs.microsoft.com/dotnet/asp-net-core-updates-in-net-6-preview-7/#added-iresult-implementations-for-producing-common-http-responses):
+
+```cs
+app.MapGet("Invoice", () => _service.GetInvoice().ToResult())
+   .Produces(StatusCodes.Status200OK, typeof(InvoiceResponseDto));
 ```
 
 The above returns:
@@ -135,12 +147,12 @@ T Value { get; }
 It has **50+ static extension methods** to return a successful or unsuccessful result from the domain method with one of the following types:
 
 | Returned type        | Returned type wrapped in `Task` |
-| -------------------- | ------------------------------- |
+|----------------------|---------------------------------|
 | `IDomainResult`      | `Task<IDomainResult>`           |
 | `IDomainResult<T>`   | `Task<IDomainResult<T>>`        |
 | `(T, IDomainResult)` | `Task<(T, IDomainResult)>`      |
 
-### Examples:
+### Examples (Domain):
 
 ```cs
 // Successful result with no value
@@ -170,27 +182,33 @@ _Notes_:
 - The `Task` suffix on the extension methods indicates that the returned type is wrapped in a `Task` (e.g. `SuccessTask()`, `FailedTask()`, `NotFoundTask()`, `UnauthorizedTask()`).
 - The `Failed()` and `NotFound()` methods take as input parameters: `string`, `string[]`. `Failed()` can also take [ValidationResult](https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.dataannotations.validationresult).
 
-## 'DomainResult' package. Conversion to ActionResult
+## 'DomainResult' package
 
-**Converts a `IDomainResult`-based object to various `ActionResult`-based types providing 20+ static extension methods.**
-
-| Returned type                                  | Returned type wrapped in `Task`                      | Extension methods                                    |
-| ---------------------------------------------- | ---------------------------------------------------- | ---------------------------------------------------- |
-| `IActionResult`                                | `Task<IActionResult>`                                | `ToActionResult()`<br>`ToCustomActionResult()`       |
-| `ActionResult<T>` | `Task<ActionResult<T>>` | `ToActionResultOfT()`<br>`ToCustomActionResultOfT()` |
-
-<sub><sup>Note: `DomainResult` package has dependency on `Microsoft.AspNetCore.*` namespace and `DomainResult.Common` package.</sup></sub>
+**Converts a `IDomainResult`-based object to various `IActionResult` and `IResult`-based types providing 40+ static extension methods.**
 
 The mapping rules are built around `IDomainResult.Status`:
 
-| `IDomainResult.Status` | Returned `ActionResult`-based type                                                                               |
-| ---------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| `Success`              | If no value is returned then `204 NoContent`, otherwise - `200 OK`<br>Supports custom codes (e.g. `201 Created`) |
-| `NotFound`             | HTTP code `404 NotFound` (default)                                                                               |
-| `Failed`               | HTTP code `400` (default) or can be configured to `422` or any other code                                        |
-| `Unauthorized`         | HTTP code `403 Forbidden` (default)                                                                              |
+| `IDomainResult.Status`    | Returned `IActionResult` or `IResult`-based type                                                                 |
+|---------------------------|------------------------------------------------------------------------------------------------------------------|
+| `Success`                 | If no value is returned then `204 NoContent`, otherwise - `200 OK`<br>Supports custom codes (e.g. `201 Created`) |
+| `NotFound`                | HTTP code `404 NotFound` (default)                                                                               |
+| `Failed`                  | HTTP code `400` (default) or can be configured to `422` or any other code                                        |
+| `Unauthorized`            | HTTP code `403 Forbidden` (default)                                                                              |
+| `Conflict`                | HTTP code `409 Conflict` (default)                                                                               |
+| `CriticalDependencyError` | HTTP code `503 Service Unavailable` (default)                                                                    |
 
-### Examples:
+<sub><sup>Note: `DomainResult` package has dependency on `Microsoft.AspNetCore.*` namespace and `DomainResult.Common` package.</sup></sub>
+
+### Conversion to IActionResult
+
+For classic Web API controllers, call the following extension methods on a `IDomainResult` value:
+
+| Returned type     | Returned type wrapped in `Task` | Extension methods                                    |
+|-------------------|---------------------------------|------------------------------------------------------|
+| `IActionResult`   | `Task<IActionResult>`           | `ToActionResult()`<br>`ToCustomActionResult()`       |
+| `ActionResult<T>` | `Task<ActionResult<T>>`         | `ToActionResultOfT()`<br>`ToCustomActionResultOfT()` |
+
+#### Examples (IActionResult conversion)
 
 ```cs
 // Returns `IActionResult` with HTTP code `204 NoContent` on success
@@ -213,15 +231,39 @@ Task<IDomainResult<T>>.ToActionResultOfT();
 Task<(T, IDomainResult)>.ToActionResultOfT();
 ```
 
+### Conversion to IResult (minimal API)
+
+For the modern [minimal API](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis) (for .NET 6+), call `ToResult()` extension method on a `IDomainResult` value to return the corresponding `IResult` instance.
+
+#### Examples (IResult conversion)
+
+```cs
+// Returns `IResult` with HTTP code `204 NoContent` on success
+IDomainResult.ToResult();
+// The same as above, but returns `Task<IResult>` with no need in 'await'
+Task<IDomainResult>.ToResult();
+
+// Returns `IResult` with HTTP code `200 Ok` along with the value
+IDomainResult<T>.ToResult();
+(T, IDomainResult).ToResult();
+// As above, but returns `Task<IResult>` with no need in 'await'
+Task<IDomainResult<T>>.ToResult();
+Task<(T, IDomainResult)>.ToResult();
+```
+
 ## Custom Problem Details output
 
 There is a way to tune the Problem Details output case-by-case.
 
-### Custom ActionResult response for 2xx HTTP codes
+### Custom response for 2xx HTTP codes
 
-When returning a standard `200` or `204` HTTP code is not enough, there are extension methods to knock yourself out - `ToCustomActionResult()` and `ToCustomActionResultOfT`.
+When returning a standard `200` or `204` HTTP code is not enough, there are extension methods to knock yourself out:
+- `ToCustomActionResult()` and `ToCustomActionResultOfT()` for returning `IActionResult`
+- `ToCustomResult()` for returning `IResult`
 
-Example of returning [201 Created](https://httpstatuses.com/201) along with a location header field pointing to the created resource (as per [RFC7231](https://tools.ietf.org/html/rfc7231#section-7.2)):
+Examples of returning [201 Created](https://httpstatuses.com/201) along with a location header field pointing to the created resource (as per [RFC7231](https://tools.ietf.org/html/rfc7231#section-7.2)):
+
+#### Example (custom response for IActionResult)
 
 ```cs
 [HttpPost]
@@ -252,25 +294,33 @@ It works with any of extensions in `Microsoft.AspNetCore.Mvc.ControllerBase`. He
 - [File](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.controllerbase.File) or [PhysicalFile](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.controllerbase.PhysicalFile) for returning `200 OK` with the specified `Content-Type`, and the specified file name;
 - [Redirect](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.controllerbase.Redirect), [RedirectToRoute](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.controllerbase.RedirectToRoute), [RedirectToAction](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.controllerbase.RedirectToAction) for returning [302 Found](https://httpstatuses.com/302) with various details.
 
-### Custom error handling
+#### Example (custom response for IResult)
 
-The default HTTP codes for statuses `Failed`, `NotFound` and `Unauthorized` are defined in public static properties of `ActionResultConventions` with default values:
+A similar example for a custom response with the minimal API would look like this
 
 ```cs
-// The HTTP code to return for client request error
-int ErrorHttpCode { get; set; }                 = 400;
+app.MapPost("/", 
+            () => _service.CreateItem(dto)
+                          .ToCustomResult(val => Results.CreatedAtRoute("GetById", new { id = val }, val))
+           )
+```
+
+### Custom error handling
+
+The default HTTP codes for the supported statuses (`Failed`, `NotFound`, etc.) are defined in `ActionResultConventions` class. The default values are:
+
+```cs
+// The HTTP code to return when a request 'failed' (also can be 422)
+int FailedHttpCode { get; set; }                  = 400;
 // The 'title' property of the returned JSON on HTTP code 400
-string ErrorProblemDetailsTitle { get; set; }   = "Bad Request";
+string FailedProblemDetailsTitle { get; set; }    = "Bad Request";
 
 // The HTTP code to return when a record not found
-int NotFoundHttpCode { get; set; }              = 404;
+int NotFoundHttpCode { get; set; }                = 404;
 // The 'title' property of the returned JSON on HTTP code 404
-string NotFoundProblemDetailsTitle { get; set; }= "Not Found";
+string NotFoundProblemDetailsTitle { get; set; }  = "Not Found";
 
-// The HTTP code to return when access to a record is forbidden
-int UnauthorizedHttpCode { get; set; }          = 403;
-// The 'title' property of the returned JSON on HTTP code 403
-string UnauthorizedProblemDetailsTitle { get; set; }= "Unauthorized access";
+// ...and so on for `Unauthorized` (403), `Conflict` (409), `CriticalDependencyError` (503)
 ```
 
 Feel free to change them (hmm... remember they're static, with all the pros and cons). The reasons you may want it:
@@ -278,8 +328,9 @@ Feel free to change them (hmm... remember they're static, with all the pros and 
 - Localisation of the titles
 - Favour [422](https://httpstatuses.com/422) HTTP code in stead of [400](https://httpstatuses.com/400) (see opinions [here](https://stackoverflow.com/a/52098667/968003) and [here](https://stackoverflow.com/a/20215807/968003)).
 
-The extension methods also support custom response in case of the `IDomainResult.Status` being `Failed`, `NotFound` or `Unauthorized`:
+The extension methods also support a custom response for special cases when the `IDomainResult.Status` requires a different handler:
 
+For the classic controllers:
 ```cs
 [HttpGet("[action]")]
 [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
@@ -296,6 +347,19 @@ public Task<ActionResult<int>> GetFailedWithCustomStatusAndMessage()
               problemDetails.Detail = "I wish devs put more efforts into it...";   // Custom message
             });
 }
+```
+The same for the minimal API:
+```cs
+app.MapGet("/", 
+           () => _service.GetFailedWithNoMessage()
+                         .ToResult((problemDetails, state) =>
+                            {
+                                if (state.Errors.Any())
+                                    return;
+                                problemDetails.Status = 422;
+                                problemDetails.Title = "D'oh!";
+                                problemDetails.Detail = "I wish devs put more efforts into it...";
+                            }))
 ```
 
 ## Alternative solutions
