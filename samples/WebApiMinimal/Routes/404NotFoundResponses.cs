@@ -48,6 +48,6 @@ internal static partial class RoutesExtension
 		
 		foreach (var route in routes)                               
 		   route.WithTags("Failed: 404 NotFound")
-				.Produces(StatusCodes.Status404NotFound);
+				.ProducesProblem(StatusCodes.Status404NotFound);
 	}
 }

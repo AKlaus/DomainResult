@@ -104,7 +104,9 @@ or for the _Minimal APIs_ ([added in .NET 6](https://devblogs.microsoft.com/dotn
 
 ```cs
 app.MapGet("Invoice", () => _service.GetInvoice().ToResult())
-   .Produces(StatusCodes.Status200OK, typeof(InvoiceResponseDto));
+   .Produces(StatusCodes.Status200OK, typeof(InvoiceResponseDto))
+   .ProducesProblem(StatusCodes.Status400BadRequest)
+   .ProducesProblem(StatusCodes.Status404NotFound);
 ```
 
 The above returns:

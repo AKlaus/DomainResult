@@ -36,6 +36,6 @@ internal static partial class RoutesExtension
 		
 		foreach (var route in routes)                               
 		   route.WithTags("Failed: 409 Conflict")
-				.Produces(StatusCodes.Status409Conflict);
+				.ProducesProblem(StatusCodes.Status409Conflict);
 	}
 }

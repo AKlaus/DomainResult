@@ -36,6 +36,6 @@ internal static partial class RoutesExtension
 		
 		foreach (var route in routes)                               
 		   route.WithTags("Error: 503 ServiceUnavailable")
-				.Produces(StatusCodes.Status503ServiceUnavailable);
+				.ProducesProblem(StatusCodes.Status503ServiceUnavailable);
 	}
 }

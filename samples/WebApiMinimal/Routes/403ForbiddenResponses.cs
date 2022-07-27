@@ -36,6 +36,6 @@ internal static partial class RoutesExtension
 		
 		foreach (var route in routes)                               
 		   route.WithTags("Failed: 403 Forbidden")
-				.Produces(StatusCodes.Status403Forbidden);
+				.ProducesProblem(StatusCodes.Status403Forbidden);
 	}
 }

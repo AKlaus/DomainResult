@@ -35,13 +35,13 @@ internal static partial class RoutesExtension
 												problemDetails.Title = "D'oh!";
 												problemDetails.Detail = "I wish devs put more efforts into it...";
 											}))
-				   .Produces(StatusCodes.Status422UnprocessableEntity),
+				   .ProducesProblem(StatusCodes.Status422UnprocessableEntity),
 				
 				app.MapGet("GetErrorWithCustomTitleAndOriginalMessage",
 					   () => service.GetFailedWithMessageTask()
 											.ToResult((problemDetails, _) => { problemDetails.Title = "D'oh!"; })
 						  )
-				   .Produces(StatusCodes.Status400BadRequest),
+				   .ProducesProblem(StatusCodes.Status400BadRequest),
 				
 				app.MapGet("GetErrorWithCustomStatusAndMessageWhenExpectedNumber", 
 					() => service.GetFailedWithNoMessageWhenExpectedNumber()
@@ -54,13 +54,13 @@ internal static partial class RoutesExtension
 											problemDetails.Detail = "I wish devs put more efforts into it...";
 										})
 						  )
-				   .Produces(StatusCodes.Status422UnprocessableEntity),
+				   .ProducesProblem(StatusCodes.Status422UnprocessableEntity),
 				
 				app.MapGet("GetErrorWithCustomTitleAndOriginalMessageWhenExpectedNumber", 
 					() => service.GetFailedWithMessageWhenExpectedNumberTask()
 										.ToResult((problemDetails, _) => { problemDetails.Title = "D'oh!"; })
 						  )
-				   .Produces(StatusCodes.Status400BadRequest),
+				   .ProducesProblem(StatusCodes.Status400BadRequest),
 				
 				app.MapGet("GetErrorWithCustomStatusAndMessageWhenExpectedNumberAsTuple", 
 					() => service.GetFailedWithNoMessageWhenExpectedNumberTuple()
@@ -73,19 +73,19 @@ internal static partial class RoutesExtension
 											problemDetails.Detail = "I wish devs put more efforts into it...";
 										})
 						  )
-				   .Produces(StatusCodes.Status422UnprocessableEntity),
+				   .ProducesProblem(StatusCodes.Status422UnprocessableEntity),
 				
 				app.MapGet("GetErrorWithCustomTitleAndOriginalMessageWhenExpectedNumberAsTuple", 
 					() => service.GetFailedWithMessageWhenExpectedNumberTupleTask()
 										.ToResult((problemDetails, _) => { problemDetails.Title = "D'oh!"; })
 						  )
-				   .Produces(StatusCodes.Status400BadRequest),
+				   .ProducesProblem(StatusCodes.Status400BadRequest),
 				
 				app.MapGet("GetErrorOfTWithCustomTitleAndOriginalMessageWhenExpectedNumberAsTuple", 
 					() => service.GetFailedWithMessageWhenExpectedNumberTupleTask()
 										.ToResult((problemDetails, _) => { problemDetails.Title = "D'oh!"; })
 						  )
-				   .Produces(StatusCodes.Status400BadRequest)
+				   .ProducesProblem(StatusCodes.Status400BadRequest)
 			};
 		
 		foreach (var route in routes)                               

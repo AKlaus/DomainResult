@@ -39,6 +39,6 @@ internal static partial class RoutesExtension
 		
 		foreach (var route in routes)                               
 		   route.WithTags("Failed: 400 BadRequest")
-				.Produces(StatusCodes.Status400BadRequest);
+				.ProducesProblem(StatusCodes.Status400BadRequest);
 	}
 }
