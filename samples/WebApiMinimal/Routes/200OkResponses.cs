@@ -18,18 +18,18 @@ internal static partial class RoutesExtension
 		
 		app.MapGet("200OkWithNumber", () => service.GetSuccessWithNumericValue().ToResult())
 		   .WithTags("Success: 200 Ok")
-		   .Produces(StatusCodes.Status200OK, typeof(int));
+		   .Produces<int>();
 		
 		app.MapGet("Get200OkWithNumberTask", () => service.GetSuccessWithNumericValueTask().ToResult())
 		   .WithTags("Success: 200 Ok")
-		   .Produces(StatusCodes.Status200OK, typeof(int));
+		   .Produces<int>();
 		
 		app.MapGet("Get200OkTupleWithNumber", () => service.GetSuccessWithNumericValueTuple().ToResult())
 		   .WithTags("Success: 200 Ok")
-		   .Produces(StatusCodes.Status200OK, typeof(int));
+		   .Produces<int>();
 				
 		app.MapGet("Get200OkTupleWithNumberTask", () => service.GetSuccessWithNumericValueTupleTask().ToResult())
 		   .WithTags("Success: 200 Ok")
-		   .Produces(StatusCodes.Status200OK, typeof(int));
+		   .Produces<int>();
 	}
 }

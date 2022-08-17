@@ -1,4 +1,6 @@
-﻿using DomainResults.Examples.Domain;
+﻿using System.Net.Mime;
+
+using DomainResults.Examples.Domain;
 using DomainResults.Mvc;
 
 using Microsoft.AspNetCore.Builder;
@@ -22,7 +24,7 @@ internal static partial class RoutesExtension
 			                .ToCustomResult(val => Results.CreatedAtRoute("GetById", new { id = val }, val))
 				   )
 		   .WithTags("Success: 201 Created")
-		   .Produces(StatusCodes.Status201Created, typeof(int));
+		   .Produces<int>(StatusCodes.Status201Created);
 		
 		app.MapPost("Post201CreatedFromTupleTask", 
 			   () => service
@@ -30,7 +32,7 @@ internal static partial class RoutesExtension
 							.ToCustomResult(val => Results.CreatedAtRoute("GetById", new { id = val }, val))
 					)
 		   .WithTags("Success: 201 Created")
-		   .Produces(StatusCodes.Status201Created, typeof(int));
+		   .Produces<int>(StatusCodes.Status201Created);
 		
 		app.MapPost("Post201Created", 
 			   () => service
@@ -38,7 +40,7 @@ internal static partial class RoutesExtension
 							.ToCustomResult(val => Results.CreatedAtRoute("GetById", new { id = val }, val))
 			   )
 		   .WithTags("Success: 201 Created")
-		   .Produces(StatusCodes.Status201Created, typeof(int));
+		   .Produces<int>(StatusCodes.Status201Created);
 				
 		app.MapPost("Post201CreatedTask", 
 			   () => service
@@ -46,11 +48,11 @@ internal static partial class RoutesExtension
 							.ToCustomResult(val => Results.CreatedAtRoute("GetById", new { id = val }, val))
 			   )
 		   .WithTags("Success: 201 Created")
-		   .Produces(StatusCodes.Status201Created, typeof(int));
+		   .Produces<int>(StatusCodes.Status201Created);
 		
-		app.MapGet("{id}", (int id) => Results.Ok(new { id }))
+		app.MapGet("{id}", (int id) => Results.Ok($"Sample properties of #{id} record"))
 		   .WithTags("Success: 201 Created")
-		   .WithMetadata(new RouteNameMetadata("GetById"))
-		   .Produces(StatusCodes.Status200OK, typeof(int));
+		   .WithName("GetById")
+		   .Produces<string>(StatusCodes.Status200OK, MediaTypeNames.Text.Plain);
 	}
 }
