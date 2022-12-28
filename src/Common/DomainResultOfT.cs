@@ -69,11 +69,11 @@ namespace DomainResults.Common
 		public static implicit operator DomainResult<TValue>(TValue value) => new (value);
 		
 		/// <summary>
-		///		Implicitly converts a <typeparam name="(TValue value, IDomainResult domainResult)"/> tuple to an <see cref="DomainResult{TValue}"/>
+		///		Implicitly converts a <code>(TValue value, IDomainResult domainResult)</code> tuple to an <see cref="DomainResult{TValue}"/>
 		/// </summary>
 		/// <param name="domainResultWithValue"> The value and domain operation result for conversion </param>
 		public static implicit operator DomainResult<TValue>((TValue value, IDomainResult domainResult) domainResultWithValue) => new (domainResultWithValue.value, domainResultWithValue.domainResult);
-
+		
 		// TODO: Consider to deprecate the extension methods in this class (below) in favour of ones in 'DomainResult'
 
 		#region Extensions of 'IDomainResult<T>' [STATIC, PUBLIC] -------------
