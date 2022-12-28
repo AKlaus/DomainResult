@@ -100,4 +100,18 @@ public class DomainResult_Conversion_Extensions_Tests
 		Assert.Equal("Bla", domainResultOfT.Errors.Single());
 	}
 	#endregion
+	
+	#region Tests of converting (TValue, IDomainResult) tuple to IDomainResult<T>
+	
+	[Fact]
+	public void IDomainResult_and_Value_Tuple_Implicitly_Converted_To_IDomainResultOfT()
+	{
+		var domainResult = DomainResult.Failed("Bla");
+		DomainResult<int> domainResultOfT = (default, domainResult);
+		
+		Assert.False(domainResultOfT.IsSuccess);
+		Assert.Equal("Bla", domainResultOfT.Errors.Single());
+		Assert.Equal(0, domainResultOfT.Value);
+	}
+	#endregion
 }
