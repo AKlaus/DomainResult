@@ -9,7 +9,7 @@ using DomainResults.Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 
-// ReSharper disable once CheckNamespace
+// ReSharper disable InconsistentNaming
 namespace DomainResults.Mvc;
 
 //
@@ -44,7 +44,7 @@ public static partial class DomainResultExtensions
 			DomainOperationStatus.CriticalDependencyError
 												=> SadResult(HttpCodeConvention.CriticalDependencyErrorHttpCode,	HttpCodeConvention.CriticalDependencyErrorProblemDetailsTitle,	errorDetails, errorAction),
 			DomainOperationStatus.Success		=> EqualityComparer<V>.Default.Equals(value!, default!)
-																	? Results.NoContent()			// No value, means returning HTTP status 204
+																	? Results.NoContent()			// No value, means returning HTTP status 204. For .NET 7 `Results.NoContent` will return `TypedResults.NoContent`
 																	: valueToResultFunc(value),
 			_ => throw new ArgumentOutOfRangeException(),
 		};
@@ -65,6 +65,7 @@ public static partial class DomainResultExtensions
 			};
 		errorAction?.Invoke(problemDetails, errorDetails!);
 
+		// For .NET 7 `Results.Problem` will return `TypedResults.Problem` 
 		return Results.Problem(
 			problemDetails.Detail,
 			null,

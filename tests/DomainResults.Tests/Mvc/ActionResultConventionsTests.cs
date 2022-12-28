@@ -39,8 +39,7 @@ public class ActionResult_Conventions_Tests
 		Assert.Equal(expectedFailedHttpCode, (actionRes.Value as ProblemDetails)!.Status);
 #if NET6_0_OR_GREATER
 		//		for the IResult (minimal API) conversion
-		res.AssertObjectResultType();
-		Assert.Equal(expectedFailedHttpCode, res.GetProblemDetails()!.Status);
+		res.AssertObjectResultTypeWithProblemDetails(expectedFailedHttpCode);
 #endif
 
 		HttpCodeConvention.FailedHttpCode = defaultValue;
@@ -72,8 +71,7 @@ public class ActionResult_Conventions_Tests
 		Assert.Equal(expectedFailedTitle, problemDetails!.Title);
 #if NET6_0_OR_GREATER
 		//		for the IResult (minimal API) conversion
-		res.AssertObjectResultType();
-		Assert.Equal(expectedFailedTitle, res.GetProblemDetails()!.Title);
+		res.AssertObjectResultTypeWithProblemDetails(HttpCodeConvention.FailedHttpCode, expectedFailedTitle);
 #endif
 
 		HttpCodeConvention.FailedProblemDetailsTitle = defaultValue;
@@ -105,8 +103,7 @@ public class ActionResult_Conventions_Tests
 		Assert.Equal(expectedNotFoundHttpCode, (actionRes.Value as ProblemDetails)!.Status);
 #if NET6_0_OR_GREATER
 		//		for the IResult (minimal API) conversion
-		res.AssertObjectResultType();
-		Assert.Equal(expectedNotFoundHttpCode, res.GetProblemDetails()!.Status);
+		res.AssertObjectResultTypeWithProblemDetails(expectedNotFoundHttpCode);
 #endif
 
 		HttpCodeConvention.NotFoundHttpCode = defaultValue;
@@ -137,8 +134,7 @@ public class ActionResult_Conventions_Tests
 		Assert.Equal(expectedNotFoundTitle, problemDetails!.Title);
 #if NET6_0_OR_GREATER
 		//		for the IResult (minimal API) conversion
-		res.AssertObjectResultType();
-		Assert.Equal(expectedNotFoundTitle, res.GetProblemDetails()!.Title);
+		res.AssertObjectResultTypeWithProblemDetails(HttpCodeConvention.NotFoundHttpCode, expectedNotFoundTitle);
 #endif
 
 		HttpCodeConvention.NotFoundProblemDetailsTitle = defaultValue;

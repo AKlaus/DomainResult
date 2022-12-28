@@ -144,14 +144,8 @@ public class To_4xx_ActionResult_Tests
 	/// <param name="expectedErrorMsg"> The expected description messages in the <see cref="ProblemDetails"/> </param>
 	private void Then_Response_Is_IResult_Type_And_ProblemDetails_StatusAndText_Correct(IResult res, int expectedCode, string expectedTitle, string expectedErrorMsg)
 	{
-		// THEN the response type is correct
-		res.AssertObjectResultType();
-
-		// and the ProblemDetails properties are as expected
-		var problemDetails = res.GetProblemDetails();
-		Assert.Equal(expectedCode, problemDetails!.Status);
-		Assert.Equal(expectedTitle, problemDetails.Title);
-		Assert.Equal(expectedErrorMsg, problemDetails.Detail);
+		// THEN the response type is correct and the ProblemDetails properties are as expected
+		res.AssertObjectResultTypeWithProblemDetails(expectedCode, expectedTitle, expectedErrorMsg);
 	}
 #endif
 
