@@ -40,11 +40,8 @@ public class To_200_OkResult_DomainResult_Tests
 		// WHEN convert a value to IResult
 		var res = domainValue.ToResult();
 
-		// THEN the response type is correct
-		res.AssertOkObjectResultType();
-
-		// and value remains there
-		Assert.Equal(domainValue.Value!, res.GetPropValue());
+		// THEN the response type OK with correct value 
+		res.AssertOkObjectResultTypeAndValue(domainValue.Value!);
 	}
 #endif
 	public static readonly IEnumerable<object[]> SuccessfulTestCases = GetTestCases(false);
@@ -79,11 +76,8 @@ public class To_200_OkResult_DomainResult_Tests
 		// WHEN convert a value to IResult
 		var res = await domainValueTask.ToResult();
 
-		// THEN the response type is correct
-		res.AssertOkObjectResultType();
-
-		// and value remains there
-		Assert.Equal((await domainValueTask).Value!, res.GetPropValue());
+		// THEN the response type OK with correct value 
+		res.AssertOkObjectResultTypeAndValue((await domainValueTask).Value!);
 	}
 #endif
 	public static readonly IEnumerable<object[]> SuccessfulTaskTestCases = GetTestCases(true);

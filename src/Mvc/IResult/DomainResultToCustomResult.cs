@@ -7,7 +7,8 @@ using DomainResults.Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 
-// ReSharper disable once CheckNamespace
+// ReSharper disable InconsistentNaming
+
 namespace DomainResults.Mvc;
 
 public static partial class DomainResultExtensions
@@ -30,7 +31,10 @@ public static partial class DomainResultExtensions
 	                                                    Action<ProblemDetails, R>? errorAction = null)
 													where R : IDomainResultBase
 													where TResult : IResult
-		=> ToResult(domainResult.Item1, domainResult.Item2, errorAction, valueToResultFunc);
+	{
+		var (value, res) = domainResult;
+		return ToResult(value, res, errorAction, valueToResultFunc);
+	}
 
 	/// <summary>
 	///		Custom conversion of successful and unsuccessful domain results to <see cref="IResult"/> types
@@ -47,8 +51,8 @@ public static partial class DomainResultExtensions
 													where R : IDomainResultBase
 													where TResult : IResult
 	{
-		var domainResult = await domainResultTask;
-		return ToResult(domainResult.Item1, domainResult.Item2, errorAction, valueToResultFunc); 
+		var (value, res) = await domainResultTask;
+		return ToResult(value, res, errorAction, valueToResultFunc); 
 	}
 
 	/// <summary>
