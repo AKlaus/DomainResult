@@ -66,7 +66,13 @@ namespace DomainResults.Common
 		///		Implicitly converts the specified <paramref name="value"/> to an <see cref="DomainResult{TValue}"/>
 		/// </summary>
 		/// <param name="value"> The parameter for conversion </param>
-		public static implicit operator DomainResult<TValue>(TValue value) => new DomainResult<TValue>(value);
+		public static implicit operator DomainResult<TValue>(TValue value) => new (value);
+		
+		/// <summary>
+		///		Implicitly converts a <code>(TValue value, IDomainResult domainResult)</code> tuple to an <see cref="DomainResult{TValue}"/>
+		/// </summary>
+		/// <param name="domainResultWithValue"> The value and domain operation result for conversion </param>
+		public static implicit operator DomainResult<TValue>((TValue value, IDomainResult domainResult) domainResultWithValue) => new (domainResultWithValue.value, domainResultWithValue.domainResult);
 		
 		// TODO: Consider to deprecate the extension methods in this class (below) in favour of ones in 'DomainResult'
 

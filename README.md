@@ -19,7 +19,8 @@ Two tiny NuGet packages addressing challenges in the [ASP.NET Web API](https://d
 - [Basic use-case](#basic-use-case)
 - [Quick start](#quick-start)
 - ['DomainResult.Common' package. Returning result from Domain Layer method](#domainresultcommon-package-returning-result-from-domain-layer-method)
-  - [Examples (Domain)](#examples-domain)
+  - [Examples (Domain layer)](#examples-domain-layer)
+  - [Type conversion](#type-conversion)
 - ['DomainResult' package](#domainresult-package)
   - [Conversion to IActionResult](#conversion-to-iactionresult)
     - [Examples (IActionResult conversion)](#examples-iactionresult-conversion)
@@ -154,7 +155,7 @@ It has **50+ static extension methods** to return a successful or unsuccessful r
 | `IDomainResult<T>`   | `Task<IDomainResult<T>>`        |
 | `(T, IDomainResult)` | `Task<(T, IDomainResult)>`      |
 
-### Examples (Domain):
+### Examples (Domain layer):
 
 ```cs
 // Successful result with no value
@@ -183,6 +184,22 @@ _Notes_:
 
 - The `Task` suffix on the extension methods indicates that the returned type is wrapped in a `Task` (e.g. `SuccessTask()`, `FailedTask()`, `NotFoundTask()`, `UnauthorizedTask()`).
 - The `Failed()` and `NotFound()` methods take as input parameters: `string`, `string[]`. `Failed()` can also take [ValidationResult](https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.dataannotations.validationresult).
+
+### Type conversion
+Type conversion comes in handy for propagating errors from nested method calls, e.g. from `IDomainResult` to `IDomainResult<T>`, or the other way around, etc.
+
+```cs
+IDomainResult failedResult = IDomainResult.Failed("Ahh!");
+
+IDomainResult<int>  resOfInt  = failedResult.To<int>();             // from IDomainResult to IDomainResult<T>
+IDomainResult<long> resOfLong = resOfInt.To<long>();                // from IDomainResult<T> to IDomainResult<V>
+
+DomainResult<int> resFromTuple = (default, failedResult);           // from IDomainResult to DomainResult<T>
+
+Task<IDomainResult> failedResultTask = IDomainResult.FailedTask("Ahh!");
+Task<IDomainResult<int>>    resOfInt = failedResultTask.To<int>();  // from Task<IDomainResult> to Task<IDomainResult<T>>
+```
+Note that returning [Tuple](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/value-tuples) types drastically simplifies type conversions. 
 
 ## 'DomainResult' package
 

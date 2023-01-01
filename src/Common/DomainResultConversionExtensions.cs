@@ -17,8 +17,7 @@ namespace DomainResults.Common
 		}
 
 		/// <summary>
-		///     Convert to a <see cref="Task" /> of <see cref="IDomainResult{T}" /> (the domain operation result with a returned
-		///     value)
+		///     Convert to a <see cref="Task" /> of <see cref="IDomainResult{T}" /> (the domain operation result with a returned value)
 		/// </summary>
 		/// <typeparam name="T"> Value type of returned by the domain operation </typeparam>
 		public static async Task<IDomainResult<T>> To<T>(this Task<IDomainResult> domainResult)

@@ -37,14 +37,13 @@ public class To_200_OkResult_TupleValue_Tests
 	[MemberData(nameof(SuccessfulTestCases))]
 	public void ValueResult_Converted_ToIResult_Test<TValue>((TValue, IDomainResult) tupleValue)
 	{
+		var (value, _) = tupleValue;
+		
 		// WHEN convert a value to IResult
 		var res = tupleValue.ToResult();
 
-		// THEN the response type is correct
-		res.AssertOkObjectResultType();
-
-		// and value remains there
-		Assert.Equal(tupleValue.Item1!, res.GetPropValue());
+		// THEN the response type OK with correct value 
+		res.AssertOkObjectResultTypeAndValue(value);
 	}
 #endif
 
@@ -82,14 +81,13 @@ public class To_200_OkResult_TupleValue_Tests
 	[MemberData(nameof(SuccessfulTaskTestCases))]
 	public async Task ValueResult_Task_Converted_ToIResult_Test<TValue>(Task<(TValue, IDomainResult)> tupleValueTask)
 	{
+		var (value, _) = await tupleValueTask;
+		
 		// WHEN convert a value to IResult
 		var res = await tupleValueTask.ToResult();
 
-		// THEN the response type is correct
-		res.AssertOkObjectResultType();
-
-		// and value remains there
-		Assert.Equal((await tupleValueTask).Item1!, res.GetPropValue());
+		// THEN the response type OK with correct value 
+		res.AssertOkObjectResultTypeAndValue(value);
 	}
 #endif
 

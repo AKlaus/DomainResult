@@ -143,15 +143,7 @@ public class To_Custom_ActionResult_Success_Tests
 	/// </summary>
 	private void Then_Response_Is_IResult_Type_And_Value_And_Url_Are_Correct<TValue>(IResult res, TValue expectedValue)
 	{
-		// THEN the response type is correct
-		res.AssertCreatedResultType();
-
-		// and the HTTP code is 201
-		Assert.Equal(201, res.GetPropValue("StatusCode"));
-		// and the value remains there
-		Assert.Equal(expectedValue, res.GetPropValue());
-		// and the location URL is correct
-		Assert.Equal(ExpectedUrl, res.GetPropValue("Location"));
+		res.AssertCreatedResultTypeAndValueAndLocation(expectedValue, ExpectedUrl);
 	}
 #endif
 
