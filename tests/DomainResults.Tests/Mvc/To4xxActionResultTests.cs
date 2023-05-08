@@ -27,7 +27,7 @@ public class To_4xx_ActionResult_Tests
 		Then_Response_Is_IResult_Type_And_ProblemDetails_StatusAndText_Correct(res, expectedCode, expectedTitle, expectedErrorMsg);
 #endif		
 	}		
-	public static readonly IEnumerable<object[]> FailedResultWithValueCases = TestCases(DomainResult.Failed<int>, DomainResult.NotFound<int>, DomainResult.Unauthorized<int>, DomainResult.Conflict<int>, DomainResult.CriticalDependencyError<int>);
+	public static readonly IEnumerable<object[]> FailedResultWithValueCases = TestCases(DomainResult.Failed<int>, DomainResult.NotFound<int>, DomainResult.Unauthorized<int>, DomainResult.Conflict<int>, DomainResult.ContentTooLarge<int>, DomainResult.CriticalDependencyError<int>);
 
 	[Theory]
 	[MemberData(nameof(FailedResultWithValueTaskCases))]
@@ -41,7 +41,7 @@ public class To_4xx_ActionResult_Tests
 		Then_Response_Is_IResult_Type_And_ProblemDetails_StatusAndText_Correct(res, expectedCode, expectedTitle, expectedErrorMsg);
 #endif		
 	}
-	public static readonly IEnumerable<object[]> FailedResultWithValueTaskCases = TestCases(DomainResult.FailedTask<int>, DomainResult.NotFoundTask<int>, DomainResult.UnauthorizedTask<int>, DomainResult.ConflictTask<int>, DomainResult.CriticalDependencyErrorTask<int>);
+	public static readonly IEnumerable<object[]> FailedResultWithValueTaskCases = TestCases(DomainResult.FailedTask<int>, DomainResult.NotFoundTask<int>, DomainResult.UnauthorizedTask<int>, DomainResult.ConflictTask<int>, DomainResult.ContentTooLargeTask<int>, DomainResult.CriticalDependencyErrorTask<int>);
 
 	[Theory]
 	[MemberData(nameof(FailedResultCases))]
@@ -55,7 +55,7 @@ public class To_4xx_ActionResult_Tests
 		Then_Response_Is_IResult_Type_And_ProblemDetails_StatusAndText_Correct(res, expectedCode, expectedTitle, expectedErrorMsg);
 #endif		
 	}
-	public static readonly IEnumerable<object[]> FailedResultCases = TestCases(DomainResult.Failed, DomainResult.NotFound, DomainResult.Unauthorized, DomainResult.Conflict, DomainResult.CriticalDependencyError);
+	public static readonly IEnumerable<object[]> FailedResultCases = TestCases(DomainResult.Failed, DomainResult.NotFound, DomainResult.Unauthorized, DomainResult.Conflict, DomainResult.ContentTooLarge, DomainResult.CriticalDependencyError);
 
 	[Theory]
 	[MemberData(nameof(FailedResultTaskCases))]
@@ -69,7 +69,7 @@ public class To_4xx_ActionResult_Tests
 		Then_Response_Is_IResult_Type_And_ProblemDetails_StatusAndText_Correct(res, expectedCode, expectedTitle, expectedErrorMsg);
 #endif		
 	}
-	public static readonly IEnumerable<object[]> FailedResultTaskCases = TestCases(DomainResult.FailedTask, DomainResult.NotFoundTask, DomainResult.UnauthorizedTask, DomainResult.ConflictTask, DomainResult.CriticalDependencyErrorTask);
+	public static readonly IEnumerable<object[]> FailedResultTaskCases = TestCases(DomainResult.FailedTask, DomainResult.NotFoundTask, DomainResult.UnauthorizedTask, DomainResult.ConflictTask, DomainResult.ContentTooLargeTask, DomainResult.CriticalDependencyErrorTask);
 
 	[Theory]
 	[MemberData(nameof(FailedValueTestCases))]
@@ -83,7 +83,7 @@ public class To_4xx_ActionResult_Tests
 		Then_Response_Is_IResult_Type_And_ProblemDetails_StatusAndText_Correct(res, expectedCode, expectedTitle, expectedErrorMsg);
 #endif		
 	}
-	public static readonly IEnumerable<object[]> FailedValueTestCases = TestCases(DomainResult.Failed, DomainResult.NotFound, DomainResult.Unauthorized, DomainResult.Conflict, DomainResult.CriticalDependencyError, v => (10, v));
+	public static readonly IEnumerable<object[]> FailedValueTestCases = TestCases(DomainResult.Failed, DomainResult.NotFound, DomainResult.Unauthorized, DomainResult.Conflict, DomainResult.ContentTooLarge, DomainResult.CriticalDependencyError, v => (10, v));
 
 	[Theory]
 	[MemberData(nameof(FailedValueTaskTestCases))]
@@ -109,7 +109,7 @@ public class To_4xx_ActionResult_Tests
 		Then_Response_Is_IResult_Type_And_ProblemDetails_StatusAndText_Correct(resTask.Result, expectedCode, expectedTitle, expectedErrorMsg);
 #endif		
 	}
-	public static readonly IEnumerable<object[]> FailedValueTaskTestCases = TestCases(DomainResult.Failed, DomainResult.NotFound, DomainResult.Unauthorized, DomainResult.Conflict, DomainResult.CriticalDependencyError, v => Task.FromResult((10, v)));
+	public static readonly IEnumerable<object[]> FailedValueTaskTestCases = TestCases(DomainResult.Failed, DomainResult.NotFound, DomainResult.Unauthorized, DomainResult.Conflict, DomainResult.ContentTooLarge, DomainResult.CriticalDependencyError, v => Task.FromResult((10, v)));
 
 	#region Auxiliary methods [PRIVATE] -----------------------------------
 
@@ -156,6 +156,7 @@ public class To_4xx_ActionResult_Tests
 	/// <param name="domainNotFoundFunc"> The <see cref="DomainOperationStatus.NotFound"/> function </param>
 	/// <param name="domainUnauthFunc"> The <see cref="DomainOperationStatus.Unauthorized"/> function </param>
 	/// <param name="domainConflictFunc"> The <see cref="DomainOperationStatus.Conflict"/> function </param>
+	/// <param name="domainContentTooLargeFunc"> The <see cref="DomainOperationStatus.ContentTooLarge"/> function </param>
 	/// <param name="domainCriticalFunc"> The <see cref="DomainOperationStatus.CriticalDependencyError"/> function </param>
 	/// <param name="wrapInFunc"> Optional wrapper <see cref="ValueTuple"/> of the Domain result method </param>
 	/// <returns> Input test parameters </returns>
@@ -164,6 +165,7 @@ public class To_4xx_ActionResult_Tests
 		Func<IEnumerable<string>, T> domainNotFoundFunc, 
 		Func<string, T> domainUnauthFunc,  
 		Func<string, T> domainConflictFunc,  
+		Func<string, T> domainContentTooLargeFunc,  
 		Func<string, T> domainCriticalFunc, 
 		Func<T, object>? wrapInFunc = null)
 	{
@@ -177,6 +179,7 @@ public class To_4xx_ActionResult_Tests
 				new[] { OptionalWrapper(domainNotFoundFunc(new[] { "1", "2" })),HttpCodeConvention.NotFoundHttpCode, "Not Found",   "1, 2" },
 				new[] { OptionalWrapper(domainUnauthFunc("1")),					HttpCodeConvention.UnauthorizedHttpCode, "Unauthorized access",   "1" },
 				new[] { OptionalWrapper(domainConflictFunc("1")),				HttpCodeConvention.ConflictHttpCode, "Conflict with the current state",   "1" },
+				new[] { OptionalWrapper(domainContentTooLargeFunc("1")),		HttpCodeConvention.ConflictHttpCode, "Content exceeds file size limit",   "1" },
 				new[] { OptionalWrapper(domainCriticalFunc("1")),				HttpCodeConvention.CriticalDependencyErrorHttpCode, "External service unavailable",   "1" },
 			};
 		foreach (var val in returnValues)

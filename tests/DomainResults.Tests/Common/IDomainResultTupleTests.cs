@@ -53,6 +53,9 @@ public class IDomainResult_Tuple_Tests
 		new object[] { (Func<(int, IDomainResult)>)(() => IDomainResult.Conflict<int>()),				DomainOperationStatus.Conflict, new string[0] },
 		new object[] { (Func<(int, IDomainResult)>)(() => IDomainResult.Conflict<int>("1")),	DomainOperationStatus.Conflict, new [] { "1" } },
 
+		new object[] { (Func<(int, IDomainResult)>)(() => IDomainResult.ContentTooLarge<int>()),				DomainOperationStatus.ContentTooLarge, new string[0] },
+		new object[] { (Func<(int, IDomainResult)>)(() => IDomainResult.ContentTooLarge<int>("1")),	DomainOperationStatus.ContentTooLarge, new [] { "1" } },
+
 		new object[] { (Func<(int, IDomainResult)>)(() => IDomainResult.Failed<int>("1")), DomainOperationStatus.Failed, new[] { "1" } },
 		new object[] { (Func<(int, IDomainResult)>)(() => IDomainResult.Failed<int>(new[] { "1", "2" })), DomainOperationStatus.Failed, new[] { "1", "2" } },
 		new object[] { (Func<(int, IDomainResult)>)(() => IDomainResult.Failed<int>(new[] { new ValidationResult("1") })), DomainOperationStatus.Failed, new[] { "1" } },
@@ -101,6 +104,9 @@ public class IDomainResult_Tuple_Tests
 
 		new object[] { (Func<Task<(int, IDomainResult)>>)(() => IDomainResult.ConflictTask<int>()),				DomainOperationStatus.Conflict, new string[0] },
 		new object[] { (Func<Task<(int, IDomainResult)>>)(() => IDomainResult.ConflictTask<int>("1")),	DomainOperationStatus.Conflict, new [] { "1" } },
+
+		new object[] { (Func<Task<(int, IDomainResult)>>)(() => IDomainResult.ContentTooLargeTask<int>()),				DomainOperationStatus.ContentTooLarge, new string[0] },
+		new object[] { (Func<Task<(int, IDomainResult)>>)(() => IDomainResult.ContentTooLargeTask<int>("1")),	DomainOperationStatus.ContentTooLarge, new [] { "1" } },
 
 		new object[] { (Func<Task<(int, IDomainResult)>>)(() => IDomainResult.FailedTask<int>("1")), DomainOperationStatus.Failed, new [] { "1" } },
 		new object[] { (Func<Task<(int, IDomainResult)>>)(() => IDomainResult.FailedTask<int>(new [] { "1", "2" })), DomainOperationStatus.Failed, new [] { "1", "2" } },
