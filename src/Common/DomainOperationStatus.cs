@@ -26,7 +26,7 @@ namespace DomainResults.Common
 		/// </summary>
 		Conflict,
 		/// <summary>
-		///		Client request size exceeded the file size limit set on server (gets converted to HTTP code 413 on the API)
+		///		The requested entity is larger than limits defined by server (gets converted to HTTP code 413 on the API)
 		/// </summary>
 		ContentTooLarge,
 		/// <summary>

@@ -51,14 +51,14 @@ public static class HttpCodeConvention
 	public static string ConflictProblemDetailsTitle { get; set; } = "Conflict with the current state";
 
 	/// <summary>
-	///		The HTTP code to return when failed due to a conflict with the current state of the target resource (<see cref="DomainOperationStatus.Conflict"/> status). The default value: 409
+	///		The HTTP code to return when the requested entity is larger than limits defined by server (<see cref="DomainOperationStatus.ContentTooLarge"/> status). The default value: 413
 	/// </summary>
 	public static int ContentTooLargeHttpCode { get; set; } = 413;
 	/// <summary>
 	///		The title in the returned JSON accompanying the <see cref="ContentTooLargeHttpCode"/> response (ContentTooLarge)
-	///		The default value: "Conflict with the current state of the target resource"
+	///		The default value: "The requested entity is larger than limits defined by server"
 	/// </summary>
-	public static string ContentTooLargeProblemDetailsTitle { get; set; } = "Client request is too large";
+	public static string ContentTooLargeProblemDetailsTitle { get; set; } = "The requested entity is larger than limits defined by server";
 
 	/// <summary>
 	///		The HTTP code to return when an external service call failed (<see cref="DomainOperationStatus.CriticalDependencyError"/> status). The default value: 503
