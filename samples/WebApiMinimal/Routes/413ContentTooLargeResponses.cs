@@ -36,6 +36,6 @@ internal static partial class RoutesExtension
 		
 		foreach (var route in routes)                               
 		   route.WithTags("Failed: 413 ContentTooLarge")
-				.ProducesProblem(StatusCodes.Status413ContentTooLarge);
+				.ProducesProblem(StatusCodes.Status413PayloadTooLarge);
 	}
 }

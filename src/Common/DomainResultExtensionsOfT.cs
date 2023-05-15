@@ -123,7 +123,7 @@ namespace DomainResults.Common
 		/// </summary>
 		/// <typeparam name="TValue"> The expected value type if the operation was successful </typeparam>
 		/// <param name="message"> Optional message </param>
-		public static Task<IDomainResult<TValue>> ContentTooLargeTask<TValue>(string? message = null)	=> DomainResult<TValue>.ContentTooLarge(message);
+		public static Task<IDomainResult<TValue>> ContentTooLargeTask<TValue>(string? message = null)	=> DomainResult<TValue>.ContentTooLargeTask(message);
 		
 		/// <summary>
 		///		Returns <see cref="DomainOperationStatus.Failed"/> status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 400/422
