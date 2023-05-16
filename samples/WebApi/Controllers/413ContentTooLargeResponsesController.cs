@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DomainResults.Examples.WebApi.Controllers;
+// BONUS ff
 
 /// <summary>
-/// BONUS df
 ///		Converts <see cref="IDomainResult"/>, <see cref="IDomainResult{T}"/> and `(T, <see cref="IDomainResult"/>)` responses with <see cref="IDomainResult.Status"/>='ContentTooLarge' to <see cref="ContentTooLargeResult"/>
 /// </summary>
 [ApiController]

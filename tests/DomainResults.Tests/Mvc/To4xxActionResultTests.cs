@@ -179,7 +179,7 @@ public class To_4xx_ActionResult_Tests
 				new[] { OptionalWrapper(domainNotFoundFunc(new[] { "1", "2" })),HttpCodeConvention.NotFoundHttpCode, "Not Found",   "1, 2" },
 				new[] { OptionalWrapper(domainUnauthFunc("1")),					HttpCodeConvention.UnauthorizedHttpCode, "Unauthorized access",   "1" },
 				new[] { OptionalWrapper(domainConflictFunc("1")),				HttpCodeConvention.ConflictHttpCode, "Conflict with the current state",   "1" },
-				new[] { OptionalWrapper(domainContentTooLargeFunc("1")),		HttpCodeConvention.ConflictHttpCode, "Content exceeds file size limit",   "1" },
+				new[] { OptionalWrapper(domainContentTooLargeFunc("1")),		HttpCodeConvention.ContentTooLargeHttpCode, "The requested entity is larger than limits defined by server",   "1" },
 				new[] { OptionalWrapper(domainCriticalFunc("1")),				HttpCodeConvention.CriticalDependencyErrorHttpCode, "External service unavailable",   "1" },
 			};
 		foreach (var val in returnValues)
