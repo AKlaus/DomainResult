@@ -27,7 +27,7 @@ app.MapNotFoundResponses();
 // All routes for HTTP 409 status
 app.MapConflictResponses();
 // All routes for HTTP 413 status
-app.MapContentTooLargeResponses();
+app.MapPayloadTooLargeResponses();
 // All routes for HTTP 503 status
 app.MapServiceUnavailableResponses();
 

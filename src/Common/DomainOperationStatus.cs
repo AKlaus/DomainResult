@@ -28,7 +28,7 @@ namespace DomainResults.Common
 		/// <summary>
 		///		The requested entity is larger than limits defined by server (gets converted to HTTP code 413 on the API)
 		/// </summary>
-		ContentTooLarge,
+		PayloadTooLarge,
 		/// <summary>
 		///		External service call failed (gets converted to HTTP code 503 'Service Unavailable' on the API)
 		/// </summary>

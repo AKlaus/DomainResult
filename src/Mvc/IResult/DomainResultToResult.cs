@@ -40,7 +40,7 @@ public static partial class DomainResultExtensions
 			DomainOperationStatus.NotFound		=> SadResult(HttpCodeConvention.NotFoundHttpCode,	HttpCodeConvention.NotFoundProblemDetailsTitle,		errorDetails, errorAction),
 			DomainOperationStatus.Unauthorized	=> SadResult(HttpCodeConvention.UnauthorizedHttpCode,HttpCodeConvention.UnauthorizedProblemDetailsTitle,errorDetails, errorAction),
 			DomainOperationStatus.Conflict		=> SadResult(HttpCodeConvention.ConflictHttpCode,	HttpCodeConvention.ConflictProblemDetailsTitle,		errorDetails, errorAction),
-			DomainOperationStatus.ContentTooLarge	=> SadResult(HttpCodeConvention.ContentTooLargeHttpCode,	HttpCodeConvention.ContentTooLargeProblemDetailsTitle,	errorDetails, errorAction),
+			DomainOperationStatus.PayloadTooLarge	=> SadResult(HttpCodeConvention.PayloadTooLargeHttpCode,	HttpCodeConvention.PayloadTooLargeProblemDetailsTitle,	errorDetails, errorAction),
 			DomainOperationStatus.Failed		=> SadResult(HttpCodeConvention.FailedHttpCode,		HttpCodeConvention.FailedProblemDetailsTitle,		errorDetails, errorAction),
 			DomainOperationStatus.CriticalDependencyError
 												=> SadResult(HttpCodeConvention.CriticalDependencyErrorHttpCode,	HttpCodeConvention.CriticalDependencyErrorProblemDetailsTitle,	errorDetails, errorAction),
