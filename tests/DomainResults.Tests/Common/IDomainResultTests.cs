@@ -49,6 +49,9 @@ public class IDomainResult_Tests
 		new object[] { (Func<IDomainResult>)(() => DomainResult.Conflict()),			DomainOperationStatus.Conflict, new string[0] },
 		new object[] { (Func<IDomainResult>)(() =>IDomainResult.Conflict("1")),	DomainOperationStatus.Conflict, new [] { "1" } },
 
+		new object[] { (Func<IDomainResult>)(() => DomainResult.PayloadTooLarge()),			DomainOperationStatus.PayloadTooLarge, new string[0] },
+		new object[] { (Func<IDomainResult>)(() =>IDomainResult.PayloadTooLarge("1")),	DomainOperationStatus.PayloadTooLarge, new [] { "1" } },
+
 		new object[] { (Func<IDomainResult>)(() => DomainResult.Failed("1")), DomainOperationStatus.Failed, new[] { "1" } },
 		new object[] { (Func<IDomainResult>)(() => DomainResult.Failed(new[] { "1", "2" })), DomainOperationStatus.Failed, new[] { "1", "2" } },
 		new object[] { (Func<IDomainResult>)(() =>IDomainResult.Failed(new[] { new ValidationResult("1") })), DomainOperationStatus.Failed, new[] { "1" } },
@@ -93,7 +96,10 @@ public class IDomainResult_Tests
 		new object[] { (Func<Task<IDomainResult>>)(() =>IDomainResult.UnauthorizedTask("1")),	DomainOperationStatus.Unauthorized, new [] { "1" } },
 
 		new object[] { (Func<Task<IDomainResult>>)(() => DomainResult.ConflictTask()),				DomainOperationStatus.Conflict, new string[0] },
-		new object[] { (Func<Task<IDomainResult>>)(() =>IDomainResult.ConflictTask("1")),	DomainOperationStatus.Conflict, new [] { "1" } },
+		new object[] { (Func<Task<IDomainResult>>)(() => IDomainResult.ConflictTask("1")),	DomainOperationStatus.Conflict, new [] { "1" } },
+
+		new object[] { (Func<Task<IDomainResult>>)(() => DomainResult.PayloadTooLargeTask()),				DomainOperationStatus.PayloadTooLarge, new string[0] },
+		new object[] { (Func<Task<IDomainResult>>)(() => IDomainResult.PayloadTooLargeTask("1")),	DomainOperationStatus.PayloadTooLarge, new [] { "1" } },
 
 		new object[] { (Func<Task<IDomainResult>>)(() => DomainResult.FailedTask("1")), DomainOperationStatus.Failed, new [] { "1" } },
 		new object[] { (Func<Task<IDomainResult>>)(() => DomainResult.FailedTask(new [] { "1", "2" })), DomainOperationStatus.Failed, new [] { "1", "2" } },

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
@@ -106,6 +106,12 @@ namespace DomainResults.Common
 		/// </summary>
 		/// <param name="message"> Optional message </param>
 		public static IDomainResult<TValue> Conflict(string? message = null)	=> new DomainResult<TValue>(DomainResult.Conflict(message));
+
+		/// <summary>
+		///		Returns <see cref="DomainOperationStatus.PayloadTooLarge"/> status. Gets converted to HTTP code 413 (PayloadTooLarge)
+		/// </summary>
+		/// <param name="message"> Optional message </param>
+		public static IDomainResult<TValue> PayloadTooLarge(string? message = null)	=> new DomainResult<TValue>(DomainResult.PayloadTooLarge(message));
 		
 		/// <summary>
 		///		Returns <see cref="DomainOperationStatus.Failed"/> status. Gets be converted to HTTP code 400/422
@@ -172,6 +178,12 @@ namespace DomainResults.Common
 		/// </summary>
 		/// <param name="message"> Optional message </param>
 		public static Task<IDomainResult<TValue>> ConflictTask(string? message = null)	=> Task.FromResult(Conflict(message));
+
+		/// <summary>
+		///		Returns <see cref="DomainOperationStatus.PayloadTooLarge"/> status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 413 (PayloadTooLarge)
+		/// </summary>
+		/// <param name="message"> Optional message </param>
+		public static Task<IDomainResult<TValue>> PayloadTooLargeTask(string? message = null)	=> Task.FromResult(PayloadTooLarge(message));
 
 		/// <summary>
 		///		Returns <see cref="DomainOperationStatus.Failed"/> status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 400/422

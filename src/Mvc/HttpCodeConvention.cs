@@ -1,4 +1,4 @@
-﻿using DomainResults.Common;
+using DomainResults.Common;
 
 namespace DomainResults.Mvc;
 
@@ -49,6 +49,16 @@ public static class HttpCodeConvention
 	///		The default value: "Conflict with the current state of the target resource"
 	/// </summary>
 	public static string ConflictProblemDetailsTitle { get; set; } = "Conflict with the current state";
+
+	/// <summary>
+	///		The HTTP code to return when the requested entity is larger than limits defined by server (<see cref="DomainOperationStatus.PayloadTooLarge"/> status). The default value: 413
+	/// </summary>
+	public static int PayloadTooLargeHttpCode { get; set; } = 413;
+	/// <summary>
+	///		The title in the returned JSON accompanying the <see cref="PayloadTooLargeHttpCode"/> response (PayloadTooLarge)
+	///		The default value: "The requested entity is larger than limits defined by server"
+	/// </summary>
+	public static string PayloadTooLargeProblemDetailsTitle { get; set; } = "The requested entity is larger than limits defined by server";
 
 	/// <summary>
 	///		The HTTP code to return when an external service call failed (<see cref="DomainOperationStatus.CriticalDependencyError"/> status). The default value: 503

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
@@ -43,6 +43,13 @@ namespace DomainResults.Common
 		/// <typeparam name="TValue"> The expected value type if the operation was successful </typeparam>
 		/// <param name="message"> Optional message </param>
 		public static IDomainResult<TValue> Conflict<TValue>(string? message = null)		=> DomainResult<TValue>.Conflict(message);
+
+		/// <summary>
+		///		Returns <see cref="DomainOperationStatus.PayloadTooLarge"/> status. Gets converted to HTTP code 413 (PayloadTooLarge)
+		/// </summary>
+		/// <typeparam name="TValue"> The expected value type if the operation was successful </typeparam>
+		/// <param name="message"> Optional message </param>
+		public static IDomainResult<TValue> PayloadTooLarge<TValue>(string? message = null)		=> DomainResult<TValue>.PayloadTooLarge(message);
 
 		/// <summary>
 		///		Returns <see cref="DomainOperationStatus.Failed"/> status. Gets converted to HTTP code 400/422
@@ -110,6 +117,13 @@ namespace DomainResults.Common
 		/// <typeparam name="TValue"> The expected value type if the operation was successful </typeparam>
 		/// <param name="message"> Optional message </param>
 		public static Task<IDomainResult<TValue>> ConflictTask<TValue>(string? message = null)	=> DomainResult<TValue>.ConflictTask(message);
+
+		/// <summary>
+		///		Returns <see cref="DomainOperationStatus.PayloadTooLarge"/> status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 413 (PayloadTooLarge)
+		/// </summary>
+		/// <typeparam name="TValue"> The expected value type if the operation was successful </typeparam>
+		/// <param name="message"> Optional message </param>
+		public static Task<IDomainResult<TValue>> PayloadTooLargeTask<TValue>(string? message = null)	=> DomainResult<TValue>.PayloadTooLargeTask(message);
 		
 		/// <summary>
 		///		Returns <see cref="DomainOperationStatus.Failed"/> status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 400/422

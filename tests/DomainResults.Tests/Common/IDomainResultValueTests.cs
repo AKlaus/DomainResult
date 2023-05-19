@@ -68,6 +68,8 @@ public class IDomainResult_Value_Tests
 
 		new object[] { (Func<IDomainResult<int>>)(() => DomainResult.Conflict<int>("1")), DomainOperationStatus.Conflict, new [] { "1" } },
 
+		new object[] { (Func<IDomainResult<int>>)(() => DomainResult.PayloadTooLarge<int>("1")), DomainOperationStatus.PayloadTooLarge, new [] { "1" } },
+
 		new object[] { (Func<IDomainResult<int>>)(() => DomainResult.Failed<int>("1")), DomainOperationStatus.Failed, new[] { "1" } },
 		new object[] { (Func<IDomainResult<int>>)(() => DomainResult.Failed<int>(new[] { "1", "2" })), DomainOperationStatus.Failed, new[] { "1", "2" } },
 		new object[] { (Func<IDomainResult<int>>)(() => DomainResult.Failed<int>(new[] { new ValidationResult("1") })), DomainOperationStatus.Failed, new[] { "1" } },
@@ -82,6 +84,8 @@ public class IDomainResult_Value_Tests
 		new object[] { (Func<IDomainResult<int>>)(() => DomainResult<int>.Unauthorized("1")), DomainOperationStatus.Unauthorized, new [] { "1" } },
 
 		new object[] { (Func<IDomainResult<int>>)(() => DomainResult<int>.Conflict("1")), DomainOperationStatus.Conflict, new [] { "1" } },
+
+		new object[] { (Func<IDomainResult<int>>)(() => DomainResult<int>.PayloadTooLarge("1")), DomainOperationStatus.PayloadTooLarge, new [] { "1" } },
 
 		new object[] { (Func<IDomainResult<int>>)(() => DomainResult<int>.Failed("1")), DomainOperationStatus.Failed, new[] { "1" } },
 		new object[] { (Func<IDomainResult<int>>)(() => DomainResult<int>.Failed(new[] { "1", "2" })), DomainOperationStatus.Failed, new[] { "1", "2" } },
@@ -129,6 +133,8 @@ public class IDomainResult_Value_Tests
 
 		new object[] { (Func<Task<IDomainResult<int>>>)(() => DomainResult.ConflictTask<int>("1")), DomainOperationStatus.Conflict, new [] { "1" } },
 
+		new object[] { (Func<Task<IDomainResult<int>>>)(() => DomainResult.PayloadTooLargeTask<int>("1")), DomainOperationStatus.PayloadTooLarge, new [] { "1" } },
+
 		new object[] { (Func<Task<IDomainResult<int>>>)(() => DomainResult.FailedTask<int>("1")), DomainOperationStatus.Failed, new [] { "1" } },
 		new object[] { (Func<Task<IDomainResult<int>>>)(() => DomainResult.FailedTask<int>(new [] { "1", "2" })), DomainOperationStatus.Failed, new [] { "1", "2" } },
 		new object[] { (Func<Task<IDomainResult<int>>>)(() => DomainResult.FailedTask<int>(new[] { new ValidationResult("1") })), DomainOperationStatus.Failed, new [] { "1" } },
@@ -143,6 +149,8 @@ public class IDomainResult_Value_Tests
 		new object[] { (Func<Task<IDomainResult<int>>>)(() => DomainResult<int>.UnauthorizedTask("1")), DomainOperationStatus.Unauthorized, new [] { "1" } },
 
 		new object[] { (Func<Task<IDomainResult<int>>>)(() => DomainResult<int>.ConflictTask("1")), DomainOperationStatus.Conflict, new [] { "1" } },
+
+		new object[] { (Func<Task<IDomainResult<int>>>)(() => DomainResult<int>.PayloadTooLargeTask("1")), DomainOperationStatus.PayloadTooLarge, new [] { "1" } },
 
 		new object[] { (Func<Task<IDomainResult<int>>>)(() => DomainResult<int>.FailedTask("1")), DomainOperationStatus.Failed, new [] { "1" } },
 		new object[] { (Func<Task<IDomainResult<int>>>)(() => DomainResult<int>.FailedTask(new [] { "1", "2" })), DomainOperationStatus.Failed, new [] { "1", "2" } },
