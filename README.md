@@ -214,6 +214,7 @@ The mapping rules are built around `IDomainResult.Status`:
 | `Failed`                  | HTTP code `400` (default) or can be configured to `422` or any other code                                        |
 | `Unauthorized`            | HTTP code `403 Forbidden` (default)                                                                              |
 | `Conflict`                | HTTP code `409 Conflict` (default)                                                                               |
+| `PayloadTooLarge`         | HTTP code `413 Payload Too Large` (default)                                                                      |
 | `CriticalDependencyError` | HTTP code `503 Service Unavailable` (default)                                                                    |
 
 <sub><sup>Note: `DomainResult` package has dependency on `Microsoft.AspNetCore.*` namespace and `DomainResult.Common` package.</sup></sub>
@@ -339,7 +340,7 @@ int NotFoundHttpCode { get; set; }                = 404;
 // The 'title' property of the returned JSON on HTTP code 404
 string NotFoundProblemDetailsTitle { get; set; }  = "Not Found";
 
-// ...and so on for `Unauthorized` (403), `Conflict` (409), `CriticalDependencyError` (503)
+// ...and so on for `Unauthorized` (403), `Conflict` (409), `PayloadTooLarge` (413), `CriticalDependencyError` (503)
 ```
 
 Feel free to change them (hmm... remember they're static, with all the pros and cons). The reasons you may want it:
