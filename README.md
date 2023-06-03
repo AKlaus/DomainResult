@@ -207,14 +207,15 @@ Note that returning [Tuple](https://learn.microsoft.com/en-us/dotnet/csharp/lang
 
 The mapping rules are built around `IDomainResult.Status`:
 
-| `IDomainResult.Status`    | Returned `IActionResult` or `IResult`-based type                                                                 |
-|---------------------------|------------------------------------------------------------------------------------------------------------------|
-| `Success`                 | If no value is returned then `204 NoContent`, otherwise - `200 OK`<br>Supports custom codes (e.g. `201 Created`) |
-| `NotFound`                | HTTP code `404 NotFound` (default)                                                                               |
-| `Failed`                  | HTTP code `400` (default) or can be configured to `422` or any other code                                        |
-| `Unauthorized`            | HTTP code `403 Forbidden` (default)                                                                              |
-| `Conflict`                | HTTP code `409 Conflict` (default)                                                                               |
-| `CriticalDependencyError` | HTTP code `503 Service Unavailable` (default)                                                                    |
+| `IDomainResult.Status`    | Returned `IActionResult`/`IResult` type with default HTTP code                                                                                                                                                                                                 |
+|---------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `Success`                 | If no value is returned then `204 NoContent` ([docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/204)), otherwise - `200 OK` ([docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/200))<br>Supports custom codes (e.g. `201 Created`) |
+| `NotFound`                | HTTP code `404 NotFound` ([docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404))                                                                                                                                                                |
+| `Failed`                  | HTTP code `400` ([docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400)) or can be configured to `422` ([docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/422)) or any other code                                                  |
+| `Unauthorized`            | HTTP code `403 Forbidden` ([docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/403))                                                                                                                                                               |
+| `Conflict`                | HTTP code `409 Conflict` ([docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/409))                                                                                                                                                                |
+| `ContentTooLarge`         | HTTP code `413 Content Too Large` ([docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/413))                                                                                                                                                       |
+| `CriticalDependencyError` | HTTP code `503 Service Unavailable` ([docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/503))                                                                                                                                                     |
 
 <sub><sup>Note: `DomainResult` package has dependency on `Microsoft.AspNetCore.*` namespace and `DomainResult.Common` package.</sup></sub>
 

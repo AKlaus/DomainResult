@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -36,14 +36,14 @@ public static partial class DomainResultExtensions
 																where TResult : ActionResult
 		=> errorDetails.Status switch
 		{
-			DomainOperationStatus.NotFound		=> SadResponse(HttpCodeConvention.NotFoundHttpCode,	HttpCodeConvention.NotFoundProblemDetailsTitle,		errorDetails, errorAction),
-			DomainOperationStatus.Unauthorized	=> SadResponse(HttpCodeConvention.UnauthorizedHttpCode,HttpCodeConvention.UnauthorizedProblemDetailsTitle,	errorDetails, errorAction),
-			DomainOperationStatus.Conflict		=> SadResponse(HttpCodeConvention.ConflictHttpCode,	HttpCodeConvention.ConflictProblemDetailsTitle,		errorDetails, errorAction),
-			DomainOperationStatus.PayloadTooLarge	=> SadResponse(HttpCodeConvention.PayloadTooLargeHttpCode,	HttpCodeConvention.PayloadTooLargeProblemDetailsTitle,		errorDetails, errorAction),
-			DomainOperationStatus.Failed		=> SadResponse(HttpCodeConvention.FailedHttpCode,		HttpCodeConvention.FailedProblemDetailsTitle,			errorDetails, errorAction),
+			DomainOperationStatus.NotFound		 => SadResponse(HttpCodeConvention.NotFoundHttpCode,	HttpCodeConvention.NotFoundProblemDetailsTitle,		errorDetails, errorAction),
+			DomainOperationStatus.Unauthorized	 => SadResponse(HttpCodeConvention.UnauthorizedHttpCode,HttpCodeConvention.UnauthorizedProblemDetailsTitle,	errorDetails, errorAction),
+			DomainOperationStatus.Conflict		 => SadResponse(HttpCodeConvention.ConflictHttpCode,	HttpCodeConvention.ConflictProblemDetailsTitle,		errorDetails, errorAction),
+			DomainOperationStatus.ContentTooLarge=> SadResponse(HttpCodeConvention.ContentTooLargeHttpCode,	HttpCodeConvention.ContentTooLargeProblemDetailsTitle,		errorDetails, errorAction),
+			DomainOperationStatus.Failed		 => SadResponse(HttpCodeConvention.FailedHttpCode,		HttpCodeConvention.FailedProblemDetailsTitle,			errorDetails, errorAction),
 			DomainOperationStatus.CriticalDependencyError
-												=> SadResponse(HttpCodeConvention.CriticalDependencyErrorHttpCode,	HttpCodeConvention.CriticalDependencyErrorProblemDetailsTitle,	errorDetails, errorAction),
-			DomainOperationStatus.Success		=> EqualityComparer<V>.Default.Equals(value!, default!)
+												 => SadResponse(HttpCodeConvention.CriticalDependencyErrorHttpCode,	HttpCodeConvention.CriticalDependencyErrorProblemDetailsTitle,	errorDetails, errorAction),
+			DomainOperationStatus.Success		 => EqualityComparer<V>.Default.Equals(value!, default!)
 																	? new NoContentResult() as ActionResult // No value, means returning HTTP status 204
 																	: valueToActionResultFunc(value),
 			_ => throw new ArgumentOutOfRangeException(),

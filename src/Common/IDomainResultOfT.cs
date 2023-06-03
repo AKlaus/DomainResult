@@ -67,10 +67,10 @@ namespace DomainResults.Common
 		static IDomainResult<T> Conflict(string? message = null)	=> DomainResult<T>.Conflict(message);
 
 		/// <summary>
-		///		Returns <see cref="DomainOperationStatus.PayloadTooLarge"/> status. Gets converted to HTTP code 413 (PayloadTooLarge)
+		///		Returns <see cref="DomainOperationStatus.ContentTooLarge"/> status. Gets converted to HTTP code 413 (ContentTooLarge)
 		/// </summary>
 		/// <param name="message"> Optional message </param>
-		static IDomainResult<T> PayloadTooLarge(string? message = null)	=> DomainResult<T>.PayloadTooLarge(message);
+		static IDomainResult<T> ContentTooLarge(string? message = null)	=> DomainResult<T>.ContentTooLarge(message);
 
 		/// <summary>
 		///		Returns <see cref="DomainOperationStatus.Failed"/> status. Gets converted to HTTP code 400/422
@@ -135,10 +135,10 @@ namespace DomainResults.Common
 		static Task<IDomainResult<T>> ConflictTask(string? message = null)	=> DomainResult<T>.ConflictTask(message);
 
 		/// <summary>
-		///		Returns <see cref="DomainOperationStatus.PayloadTooLarge"/> status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 413 (PayloadTooLarge)
+		///		Returns <see cref="DomainOperationStatus.ContentTooLarge"/> status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 413 (ContentTooLarge)
 		/// </summary>
 		/// <param name="message"> Optional message </param>
-		static Task<IDomainResult<T>> PayloadTooLargeTask(string? message = null)	=> DomainResult<T>.PayloadTooLargeTask(message);
+		static Task<IDomainResult<T>> ContentTooLargeTask(string? message = null)	=> DomainResult<T>.ContentTooLargeTask(message);
 
 		/// <summary>
 		///		Returns <see cref="DomainOperationStatus.Failed"/> status wrapped in a <see cref="Task{T}"/>. Gets converted to HTTP code 400/422

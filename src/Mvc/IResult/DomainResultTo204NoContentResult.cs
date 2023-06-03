@@ -7,8 +7,7 @@ using DomainResults.Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 
-// ReSharper disable InconsistentNaming
-
+// ReSharper disable once CheckNamespace
 namespace DomainResults.Mvc;
 
 public static partial class DomainResultExtensions
