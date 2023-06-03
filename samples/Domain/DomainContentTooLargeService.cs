@@ -6,7 +6,7 @@ namespace DomainResults.Examples.Domain;
 
 public class DomainContentTooLargeService
 {
-	private const string Message = "The request entity is larger than limits defined by server";
+	private const string Message = "Additional message when the requested entity is larger than limits defined by server";
 	
 	public IDomainResult GetContentTooLargeWithNoMessage()	=> DomainResult.ContentTooLarge();
 	public IDomainResult GetContentTooLargeWithMessage()	=> DomainResult.ContentTooLarge(Message);

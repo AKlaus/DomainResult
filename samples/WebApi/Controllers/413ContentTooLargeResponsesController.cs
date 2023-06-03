@@ -16,24 +16,24 @@ public class ContentTooLarge : ControllerBase
 {
 	private readonly DomainContentTooLargeService _service = new ();
 
-	[HttpPut("[action]")]
+	[HttpGet("[action]")]
 	[ProducesResponseType(StatusCodes.Status413PayloadTooLarge)]
 	public IActionResult GetContentTooLargeWithNoMessage()=> _service.GetContentTooLargeWithNoMessage().ToActionResult();
-	[HttpPut("[action]")]
+	[HttpGet("[action]")]
 	[ProducesResponseType(StatusCodes.Status413PayloadTooLarge)]
 	public IActionResult GetContentTooLargeWithMessage()	=> _service.GetContentTooLargeWithMessage().ToActionResult();
 
-	[HttpPut("[action]")]
+	[HttpGet("[action]")]
 	[ProducesResponseType(StatusCodes.Status413PayloadTooLarge)]
 	public IActionResult GetContentTooLargeWithNoMessageWhenExpectedNumber()	=> _service.GetContentTooLargeWithNoMessageWhenExpectedNumber().ToActionResult();
-	[HttpPut("[action]")]
+	[HttpGet("[action]")]
 	[ProducesResponseType(StatusCodes.Status413PayloadTooLarge)]
 	public IActionResult GetContentTooLargeWithMessageWhenExpectedNumber()	=> _service.GetContentTooLargeWithMessageWhenExpectedNumber().ToActionResult();
 
-	[HttpPut("[action]")]
+	[HttpGet("[action]")]
 	[ProducesResponseType(StatusCodes.Status413PayloadTooLarge)]
 	public IActionResult GetContentTooLargeWithNoMessageWhenExpectedNumberTuple()	=> _service.GetContentTooLargeWithNoMessageWhenExpectedNumberTuple().ToActionResult();
-	[HttpPut("[action]")]
+	[HttpGet("[action]")]
 	[ProducesResponseType(StatusCodes.Status413PayloadTooLarge)]
 	public IActionResult GetContentTooLargeWithMessageWhenExpectedNumberTuple()	=> _service.GetContentTooLargeWithMessageWhenExpectedNumberTuple().ToActionResult();
 }
