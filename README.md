@@ -340,7 +340,7 @@ int NotFoundHttpCode { get; set; }                = 404;
 // The 'title' property of the returned JSON on HTTP code 404
 string NotFoundProblemDetailsTitle { get; set; }  = "Not Found";
 
-// ...and so on for `Unauthorized` (403), `Conflict` (409), `CriticalDependencyError` (503)
+// ...and so on for `Unauthorized` (403), `Conflict` (409), `Content Too Large` (413), `CriticalDependencyError` (503), etc.
 ```
 
 Feel free to change them (hmm... remember they're static, with all the pros and cons). The reasons you may want it:
