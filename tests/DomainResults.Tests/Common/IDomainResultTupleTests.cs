@@ -57,7 +57,7 @@ public class IDomainResult_Tuple_Tests
 		new object[] { (Func<(int, IDomainResult)>)(() => IDomainResult.ContentTooLarge<int>("1")),	DomainOperationStatus.ContentTooLarge, new [] { "1" } },
 
 		new object[] { (Func<(int, IDomainResult)>)(() => IDomainResult.Failed<int>("1")), 				DomainOperationStatus.Failed, new[] { "1" } },
-		new object[] { (Func<(int, IDomainResult)>)(() => IDomainResult.Failed<int>(new[] { "1", "2" })), DomainOperationStatus.Failed, new[] { "1", "2" } },
+		new object[] { (Func<(int, IDomainResult)>)(() => IDomainResult.Failed<int>(new[] { "1", "2" })),	DomainOperationStatus.Failed, new[] { "1", "2" } },
 		new object[] { (Func<(int, IDomainResult)>)(() => IDomainResult.Failed<int>(new[] { new ValidationResult("1") })), DomainOperationStatus.Failed, new[] { "1" } },
 
 		new object[] { (Func<(int, IDomainResult)>)(() => IDomainResult.CriticalDependencyError<int>()),	DomainOperationStatus.CriticalDependencyError, new string[0] },
