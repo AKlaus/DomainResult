@@ -9,7 +9,9 @@ using DomainResults.Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 
+// ReSharper disable CheckNamespace
 // ReSharper disable InconsistentNaming
+
 namespace DomainResults.Mvc;
 
 //
@@ -37,13 +39,14 @@ public static partial class DomainResultExtensions
 														where TResult : IResult
 		=> errorDetails.Status switch
 		{
-			DomainOperationStatus.NotFound		=> SadResult(HttpCodeConvention.NotFoundHttpCode,	HttpCodeConvention.NotFoundProblemDetailsTitle,		errorDetails, errorAction),
-			DomainOperationStatus.Unauthorized	=> SadResult(HttpCodeConvention.UnauthorizedHttpCode,HttpCodeConvention.UnauthorizedProblemDetailsTitle,errorDetails, errorAction),
-			DomainOperationStatus.Conflict		=> SadResult(HttpCodeConvention.ConflictHttpCode,	HttpCodeConvention.ConflictProblemDetailsTitle,		errorDetails, errorAction),
-			DomainOperationStatus.Failed		=> SadResult(HttpCodeConvention.FailedHttpCode,		HttpCodeConvention.FailedProblemDetailsTitle,		errorDetails, errorAction),
+			DomainOperationStatus.NotFound		 => SadResult(HttpCodeConvention.NotFoundHttpCode,		HttpCodeConvention.NotFoundProblemDetailsTitle,		errorDetails, errorAction),
+			DomainOperationStatus.Unauthorized	 => SadResult(HttpCodeConvention.UnauthorizedHttpCode,	HttpCodeConvention.UnauthorizedProblemDetailsTitle,errorDetails, errorAction),
+			DomainOperationStatus.Conflict		 => SadResult(HttpCodeConvention.ConflictHttpCode,		HttpCodeConvention.ConflictProblemDetailsTitle,		errorDetails, errorAction),
+			DomainOperationStatus.ContentTooLarge=> SadResult(HttpCodeConvention.ContentTooLargeHttpCode,HttpCodeConvention.ContentTooLargeProblemDetailsTitle,	errorDetails, errorAction),
+			DomainOperationStatus.Failed		 => SadResult(HttpCodeConvention.FailedHttpCode,		HttpCodeConvention.FailedProblemDetailsTitle,		errorDetails, errorAction),
 			DomainOperationStatus.CriticalDependencyError
-												=> SadResult(HttpCodeConvention.CriticalDependencyErrorHttpCode,	HttpCodeConvention.CriticalDependencyErrorProblemDetailsTitle,	errorDetails, errorAction),
-			DomainOperationStatus.Success		=> EqualityComparer<V>.Default.Equals(value!, default!)
+												 => SadResult(HttpCodeConvention.CriticalDependencyErrorHttpCode,	HttpCodeConvention.CriticalDependencyErrorProblemDetailsTitle,	errorDetails, errorAction),
+			DomainOperationStatus.Success		 => EqualityComparer<V>.Default.Equals(value!, default!)
 																	? Results.NoContent()			// No value, means returning HTTP status 204. For .NET 7 `Results.NoContent` will return `TypedResults.NoContent`
 																	: valueToResultFunc(value),
 			_ => throw new ArgumentOutOfRangeException(),

@@ -23,6 +23,9 @@ public static class HttpCodeConvention
 	/// <summary>
 	///		The HTTP code to return when a record not found (<see cref="DomainOperationStatus.NotFound"/> status). The default value: 404
 	/// </summary>
+	/// <remarks>
+	///		See <see href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404">the docs</see>.
+	/// </remarks>
 	public static int NotFoundHttpCode { get; set; } = 404;
 	/// <summary>
 	///		The title in the returned JSON accompanying the <see cref="NotFoundHttpCode"/> response (Not Found)
@@ -33,6 +36,9 @@ public static class HttpCodeConvention
 	/// <summary>
 	///		The HTTP code to return when a access is forbidden (<see cref="DomainOperationStatus.Unauthorized"/> status). The default value: 403
 	/// </summary>
+	/// <remarks>
+	///		See <see href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/403">the docs</see>.
+	/// </remarks>
 	public static int UnauthorizedHttpCode { get; set; } = 403;
 	/// <summary>
 	///		The title in the returned JSON accompanying the <see cref="UnauthorizedHttpCode"/> response (Forbidden)
@@ -43,6 +49,9 @@ public static class HttpCodeConvention
 	/// <summary>
 	///		The HTTP code to return when failed due to a conflict with the current state of the target resource (<see cref="DomainOperationStatus.Conflict"/> status). The default value: 409
 	/// </summary>
+	/// <remarks>
+	///		See <see href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/409">the docs</see>.
+	/// </remarks>
 	public static int ConflictHttpCode { get; set; } = 409;
 	/// <summary>
 	///		The title in the returned JSON accompanying the <see cref="ConflictHttpCode"/> response (Conflict)
@@ -51,8 +60,25 @@ public static class HttpCodeConvention
 	public static string ConflictProblemDetailsTitle { get; set; } = "Conflict with the current state";
 
 	/// <summary>
+	///		The HTTP code to return when the requested entity is larger than limits defined by server (<see cref="DomainOperationStatus.ContentTooLarge"/> status). The default value: 413
+	/// </summary>
+	/// <remarks>
+	///		See <see href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/413">the docs</see>.
+	///		Note: Prior to RFC 9110 the response phrase for the status was "Payload Too Large". That name is still widely used.
+	/// </remarks>
+	public static int ContentTooLargeHttpCode { get; set; } = 413;
+	/// <summary>
+	///		The title in the returned JSON accompanying the <see cref="ContentTooLargeHttpCode"/> response (ContentTooLarge)
+	///		The default value: "The requested entity is larger than limits defined by server"
+	/// </summary>
+	public static string ContentTooLargeProblemDetailsTitle { get; set; } = "The requested entity is larger than limits defined by server";
+
+	/// <summary>
 	///		The HTTP code to return when an external service call failed (<see cref="DomainOperationStatus.CriticalDependencyError"/> status). The default value: 503
 	/// </summary>
+	/// <remarks>
+	///		See <see href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/503">the docs</see>.
+	/// </remarks>
 	public static int CriticalDependencyErrorHttpCode { get; set; } = 503;
 	/// <summary>
 	///		The title in the returned JSON accompanying the <see cref="CriticalDependencyErrorHttpCode"/> response (Service Unavailable)
