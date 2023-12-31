@@ -12,6 +12,7 @@ using Xunit;
 namespace DomainResults.Tests.Mvc;
 
 [SuppressMessage("ReSharper", "InconsistentNaming")]
+[SuppressMessage("Usage", "xUnit1031:Do not use blocking task operations in test method")]
 [Collection("Sequential")]
 public class To_4xx_ActionResult_Tests
 {

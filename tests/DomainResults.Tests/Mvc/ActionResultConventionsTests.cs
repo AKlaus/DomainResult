@@ -10,6 +10,7 @@ using Xunit;
 namespace DomainResults.Tests.Mvc;
 
 [SuppressMessage("ReSharper", "InconsistentNaming")]
+[SuppressMessage("Usage", "xUnit1031:Do not use blocking task operations in test method")]
 [Collection("Sequential")]
 public class ActionResult_Conventions_Tests
 {
@@ -48,7 +49,7 @@ public class ActionResult_Conventions_Tests
 	[Theory]
 	[InlineData(null, "Bad Request")]
 	[InlineData("1", "1")]
-	public void FailedProblemDetailsTitle_Is_Honoured_in_Error_Response_Test(string failedTitle, string expectedFailedTitle)
+	public void FailedProblemDetailsTitle_Is_Honoured_in_Error_Response_Test(string? failedTitle, string expectedFailedTitle)
 	{
 		var defaultValue = HttpCodeConvention.FailedProblemDetailsTitle;
 
@@ -112,7 +113,7 @@ public class ActionResult_Conventions_Tests
 	[Theory]
 	[InlineData(null, "Not Found")]
 	[InlineData("1", "1")]
-	public void NotFoundHttpDetailsTitle_Is_Honoured_in_NotFound_Response_Test(string notFoundTitle, string expectedNotFoundTitle)
+	public void NotFoundHttpDetailsTitle_Is_Honoured_in_NotFound_Response_Test(string? notFoundTitle, string expectedNotFoundTitle)
 	{
 		var defaultValue = HttpCodeConvention.NotFoundProblemDetailsTitle;
 
