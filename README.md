@@ -39,7 +39,7 @@ Two tiny NuGet packages addressing challenges in the [ASP.NET Web API](https://d
 
 For a _Domain Layer_ method like this:
 
-```cs
+```csharp
 public async Task<(InvoiceResponseDto, IDomainResult)> GetInvoice(int invoiceId)
 {
     if (invoiceId < 0)
@@ -59,7 +59,7 @@ public async Task<(InvoiceResponseDto, IDomainResult)> GetInvoice(int invoiceId)
 
 or if you're against [ValueTuple](https://docs.microsoft.com/en-us/dotnet/api/system.valuetuple) or static methods on interfaces ([added in C# 8](https://docs.microsoft.com/en-us/dotnet/csharp/tutorials/default-interface-methods-versions#provide-parameterization)), then a more traditional method signature:
 
-```cs
+```csharp
 public async Task<IDomainResult<InvoiceResponseDto>> GetInvoice(int invoiceId)
 {
     if (invoiceId < 0)
@@ -79,7 +79,7 @@ public async Task<IDomainResult<InvoiceResponseDto>> GetInvoice(int invoiceId)
 
 The _Web API_ controller method would look like:
 
-```cs
+```csharp
 [ProducesResponseType(typeof(InvoiceResponseDto), StatusCodes.Status200OK)]
 [ProducesResponseType(StatusCodes.Status400BadRequest)]
 [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -91,7 +91,7 @@ public Task<IActionResult> GetInvoice()
 
 or leverage [ActionResult&lt;T&gt;](https://docs.microsoft.com/en-us/aspnet/core/web-api/action-return-types#actionresultt-type) (see [comparison with IActionResult](https://stackoverflow.com/a/54371053/968003))
 
-```cs
+```csharp
 [ProducesResponseType(StatusCodes.Status200OK)]
 [ProducesResponseType(StatusCodes.Status400BadRequest)]
 [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -103,9 +103,9 @@ public Task<ActionResult<InvoiceResponseDto>> GetInvoice()
 
 or for the _Minimal APIs_ ([added in .NET 6](https://devblogs.microsoft.com/dotnet/asp-net-core-updates-in-net-6-preview-4/#introducing-minimal-apis)) convert to [IResult](https://devblogs.microsoft.com/dotnet/asp-net-core-updates-in-net-6-preview-7/#added-iresult-implementations-for-producing-common-http-responses):
 
-```cs
+```csharp
 app.MapGet("Invoice", () => _service.GetInvoice().ToResult())
-   .Produces(StatusCodes.Status200OK, typeof(InvoiceResponseDto))
+   .Produces<InvoiceResponseDto>()
    .ProducesProblem(StatusCodes.Status400BadRequest)
    .ProducesProblem(StatusCodes.Status404NotFound);
 ```
@@ -134,7 +134,7 @@ A tiny package with no dependency on `Microsoft.AspNetCore.*` namespaces that pr
 
 It's built around `IDomainResult` interface that has 3 properties:
 
-```cs
+```csharp
 IReadOnlyCollection<string> Errors { get; } // Collection of error messages if any
 bool IsSuccess { get; }                     // Flag, whether the current status is successful or not
 DomainOperationStatus Status { get; }       // Current status of the domain operation: Success, Failed, NotFound, Unauthorized, etc.
@@ -142,7 +142,7 @@ DomainOperationStatus Status { get; }       // Current status of the domain oper
 
 And `IDomainResult<T>` interface that also adds
 
-```cs
+```csharp
 // Value returned by the domain operation
 T Value { get; }
 ```
@@ -157,7 +157,7 @@ It has **50+ static extension methods** to return a successful or unsuccessful r
 
 ### Examples (Domain layer):
 
-```cs
+```csharp
 // Successful result with no value
 IDomainResult res = IDomainResult.Success();        // res.Status is 'Success'
 // Successful result with an int
@@ -188,7 +188,7 @@ _Notes_:
 ### Type conversion
 Type conversion comes in handy for propagating errors from nested method calls, e.g. from `IDomainResult` to `IDomainResult<T>`, or the other way around, etc.
 
-```cs
+```csharp
 IDomainResult failedResult = IDomainResult.Failed("Ahh!");
 
 IDomainResult<int>  resOfInt  = failedResult.To<int>();             // from IDomainResult to IDomainResult<T>
@@ -230,7 +230,7 @@ For classic Web API controllers, call the following extension methods on a `IDom
 
 #### Examples (IActionResult conversion)
 
-```cs
+```csharp
 // Returns `IActionResult` with HTTP code `204 NoContent` on success
 IDomainResult.ToActionResult();
 // The same as above, but returns `Task<IActionResult>` with no need in 'await'
@@ -257,7 +257,7 @@ For the modern [minimal API](https://docs.microsoft.com/en-us/aspnet/core/fundam
 
 #### Examples (IResult conversion)
 
-```cs
+```csharp
 // Returns `IResult` with HTTP code `204 NoContent` on success
 IDomainResult.ToResult();
 // The same as above, but returns `Task<IResult>` with no need in 'await'
@@ -285,7 +285,7 @@ Examples of returning [201 Created](https://httpstatuses.com/201) along with a l
 
 #### Example (custom response for IActionResult)
 
-```cs
+```csharp
 [HttpPost]
 [ProducesResponseType(StatusCodes.Status201Created)]
 public ActionResult<int> CreateItem(CreateItemDto dto)
@@ -318,7 +318,7 @@ It works with any of extensions in `Microsoft.AspNetCore.Mvc.ControllerBase`. He
 
 A similar example for a custom response with the minimal API would look like this
 
-```cs
+```csharp
 app.MapPost("/", 
             () => _service.CreateItem(dto)
                           .ToCustomResult(val => Results.CreatedAtRoute("GetById", new { id = val }, val))
@@ -329,7 +329,7 @@ app.MapPost("/",
 
 The default HTTP codes for the supported statuses (`Failed`, `NotFound`, etc.) are defined in `ActionResultConventions` class. The default values are:
 
-```cs
+```csharp
 // The HTTP code to return when a request 'failed' (also can be 422)
 int FailedHttpCode { get; set; }                  = 400;
 // The 'title' property of the returned JSON on HTTP code 400
@@ -351,7 +351,7 @@ Feel free to change them (hmm... remember they're static, with all the pros and 
 The extension methods also support a custom response for special cases when the `IDomainResult.Status` requires a different handler:
 
 For the classic controllers:
-```cs
+```csharp
 [HttpGet("[action]")]
 [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
 public Task<ActionResult<int>> GetFailedWithCustomStatusAndMessage()
@@ -369,7 +369,7 @@ public Task<ActionResult<int>> GetFailedWithCustomStatusAndMessage()
 }
 ```
 The same for the minimal API:
-```cs
+```csharp
 app.MapGet("/", 
            () => _service.GetFailedWithNoMessage()
                          .ToResult((problemDetails, state) =>
