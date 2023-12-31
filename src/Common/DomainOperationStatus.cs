@@ -1,4 +1,4 @@
-﻿namespace DomainResults.Common
+namespace DomainResults.Common
 {
 	/// <summary>
 	///		Status of the domain operation
@@ -35,3 +35,4 @@
 		CriticalDependencyError,
 	}
 }
+//Mimic PR
