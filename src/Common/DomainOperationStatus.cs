@@ -35,4 +35,3 @@ namespace DomainResults.Common
 		CriticalDependencyError,
 	}
 }
-//Mimic PR

@@ -12,6 +12,7 @@ using Xunit;
 namespace DomainResults.Tests.Mvc;
 
 [SuppressMessage("ReSharper", "InconsistentNaming")]
+[SuppressMessage("Usage", "xUnit1031:Do not use blocking task operations in test method")]
 public class To_Custom_ActionResult_Success_Tests
 {
 	[Theory]

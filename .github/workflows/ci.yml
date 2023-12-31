@@ -17,10 +17,6 @@ jobs:
         fetch-depth: 100
 
     # Install all SDK versions targeted in the Test project
-    - name: Setup .NET Core 3.1
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 3.1.x
     - name: Setup .NET 5
       uses: actions/setup-dotnet@v1
       with:
@@ -33,6 +29,10 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 7.x
+    - name: Setup .NET 8
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 8.x
 
     - name: Install dependencies
       run: dotnet restore
@@ -42,14 +42,14 @@ jobs:
 
     # Test each targeted framework independently to spot errors faster
     # Generate coverage report for the latest framework only, as coverage on multiple is not supported   
+    - name: Test on .NET 8
+      run: dotnet test --no-restore --verbosity normal --framework net8.0 /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
     - name: Test on .NET 7
       run: dotnet test --no-restore --verbosity normal --framework net7.0 /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
     - name: Test on .NET 6
       run: dotnet test --no-restore --verbosity normal --framework net6.0 /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
     - name: Test on .NET 5
       run: dotnet test --no-restore --verbosity normal --framework net5.0
-    - name: Test on .NET Core 3.1
-      run: dotnet test --no-restore --verbosity normal --framework netcoreapp3.1
 
     - name: Publish coverage report to coveralls.io
       uses: coverallsapp/github-action@master
