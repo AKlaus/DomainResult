@@ -2,7 +2,7 @@
 
 **NuGet for decoupling domain operation results from IActionResult and IResult types of ASP.NET Web API**
 
-![CI](https://github.com/AKlaus/DomainResult/workflows/CI/badge.svg)
+![CI](https://github.com/AKlaus/DomainResult/workflows/CI/badge.svg?branch=master)
 [![Test Coverage](https://coveralls.io/repos/github/AKlaus/DomainResult/badge.svg?branch=master)](https://coveralls.io/github/AKlaus/DomainResult?branch=master)
 [![DomainResult NuGet version](https://img.shields.io/nuget/v/DomainResult.svg?style=flat&label=nuget%3A%20DomainResult)](https://www.nuget.org/packages/DomainResult)
 [![DomainResult.Common NuGet version](https://img.shields.io/nuget/v/DomainResult.Common.svg?style=flat&label=nuget%3A%20DomainResult.Common)](https://www.nuget.org/packages/DomainResult.Common)
