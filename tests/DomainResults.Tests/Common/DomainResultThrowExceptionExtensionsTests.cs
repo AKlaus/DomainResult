@@ -66,6 +66,17 @@ public class DomainResult_Throw_Exception_Extensions_Tests
 		Assert.Equal(["Bla"], exc.DomainResult.Errors);
 	}
 	[Fact]
+	public async void Failed_IDomainResult_Task_Throws_Exception_On_Check()
+	{
+		var domainResult = DomainResult.FailedTask("Bla");
+		var exc = await Assert.ThrowsAsync<DomainResultException>(
+			() => domainResult.ThrowIfNoSuccess("Error Message")
+		);
+		Assert.Equal("Error Message", exc.Message);
+		Assert.Equal(DomainOperationStatus.Failed, exc.DomainResult.Status);
+		Assert.Equal(["Bla"], exc.DomainResult.Errors);
+	}
+	[Fact]
 	public async void Failed_IDomainResultOfT_Task_Throws_Exception_On_Check()
 	{
 		var domainResult = DomainResult.FailedTask<int>("Bla");
