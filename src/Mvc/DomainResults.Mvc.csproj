@@ -6,7 +6,7 @@ To be used in Web API projects to accompany 'DomainResult.Common' package used i
 		</Description>
 
 		<!-- Can't target .NET Standard as the Microsoft.AspNetCore.XXX dependency is .NET Core specific. Hence target each main version independently. -->
-		<TargetFrameworks>net5.0;net6.0;net7.0;net8.0</TargetFrameworks>
+		<TargetFrameworks>net6.0;net7.0;net8.0;net9.0</TargetFrameworks>
 		
 		<AssemblyName>DomainResults.Mvc</AssemblyName>
 		<RootNamespace>DomainResults.Mvc</RootNamespace>
