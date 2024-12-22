@@ -147,7 +147,7 @@ And `IDomainResult<T>` interface that also adds
 T Value { get; }
 ```
 
-It has **50+ static extension methods** to return a successful or unsuccessful result from the domain method with one of the following types:
+It has **60+ static extension methods** to return a successful or unsuccessful result from the domain method with one of the following types:
 
 | Returned type        | Returned type wrapped in `Task` |
 |----------------------|---------------------------------|
@@ -201,6 +201,14 @@ Task<IDomainResult<int>>    resOfInt = failedResultTask.To<int>();  // from Task
 ```
 Note that returning [Tuple](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/value-tuples) types drastically simplifies type conversions. 
 
+### Throwing exceptions on failures
+In some cases, throwing an exception on failed statuses is the desired behaviour. Use `ThrowIfNoSuccess()` extension method to interrupt the flow with `DomainResultException` exception if the `IDomainResult.IsSuccess == false`:
+
+```csharp
+var failedResult = IDomainResult.Failed("Ahh!");
+failedResult.ThrowIfNoSuccess();    // DomainResultException is thrown here 
+```
+
 ## 'DomainResult' package
 
 **Converts a `IDomainResult`-based object to various `IActionResult` and `IResult`-based types providing 40+ static extension methods.**
@@ -228,7 +236,7 @@ For classic Web API controllers, call the following extension methods on a `IDom
 | `IActionResult`   | `Task<IActionResult>`           | `ToActionResult()`<br>`ToCustomActionResult()`       |
 | `ActionResult<T>` | `Task<ActionResult<T>>`         | `ToActionResultOfT()`<br>`ToCustomActionResultOfT()` |
 
-#### Examples (IActionResult conversion)
+**Examples (IActionResult conversion)**
 
 ```csharp
 // Returns `IActionResult` with HTTP code `204 NoContent` on success
@@ -255,7 +263,7 @@ Task<(T, IDomainResult)>.ToActionResultOfT();
 
 For the modern [minimal API](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis) (for .NET 6+), call `ToResult()` extension method on a `IDomainResult` value to return the corresponding `IResult` instance.
 
-#### Examples (IResult conversion)
+**Examples (IResult conversion)**
 
 ```csharp
 // Returns `IResult` with HTTP code `204 NoContent` on success
@@ -283,7 +291,7 @@ When returning a standard `200` or `204` HTTP code is not enough, there are exte
 
 Examples of returning [201 Created](https://httpstatuses.com/201) along with a location header field pointing to the created resource (as per [RFC7231](https://tools.ietf.org/html/rfc7231#section-7.2)):
 
-#### Example (custom response for IActionResult)
+**Example (custom response for IActionResult)**
 
 ```csharp
 [HttpPost]
@@ -314,7 +322,7 @@ It works with any of extensions in `Microsoft.AspNetCore.Mvc.ControllerBase`. He
 - [File](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.controllerbase.File) or [PhysicalFile](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.controllerbase.PhysicalFile) for returning `200 OK` with the specified `Content-Type`, and the specified file name;
 - [Redirect](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.controllerbase.Redirect), [RedirectToRoute](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.controllerbase.RedirectToRoute), [RedirectToAction](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.controllerbase.RedirectToAction) for returning [302 Found](https://httpstatuses.com/302) with various details.
 
-#### Example (custom response for IResult)
+**Example (custom response for IResult)**
 
 A similar example for a custom response with the minimal API would look like this
 
