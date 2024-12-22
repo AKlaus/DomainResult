@@ -36,7 +36,7 @@ namespace DomainResults.Common.Exceptions
 		/// <param name="domainResultTask"> The IDomainResult to check </param>
 		/// <param name="errMsg"> The error message </param>
 		/// <exception cref="DomainResultException"> The thrown exception if the <see cref="DomainResult.IsSuccess"/> is <value>false</value> </exception>
-		public static async void ThrowIfNoSuccess(this Task<IDomainResult> domainResultTask, string? errMsg = null)
+		public static async Task ThrowIfNoSuccess(this Task<IDomainResult> domainResultTask, string? errMsg = null)
 		{		
 			var domainResult = await domainResultTask.ConfigureAwait(true);
 			if (!domainResult.IsSuccess)
@@ -48,7 +48,7 @@ namespace DomainResults.Common.Exceptions
 		/// <param name="domainResultTask"> The IDomainResult to check </param>
 		/// <param name="errMsg"> The error message </param>
 		/// <exception cref="DomainResultException"> The thrown exception if the <see cref="DomainResult.IsSuccess"/> is <value>false</value> </exception>
-		public static async void ThrowIfNoSuccess<T>(this Task<IDomainResult<T>> domainResultTask, string? errMsg = null)
+		public static async Task ThrowIfNoSuccess<T>(this Task<IDomainResult<T>> domainResultTask, string? errMsg = null)
 		{
 			var domainResult = await domainResultTask.ConfigureAwait(true);
 			if (!domainResult.IsSuccess)
