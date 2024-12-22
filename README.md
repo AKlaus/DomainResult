@@ -21,11 +21,10 @@ Two tiny NuGet packages addressing challenges in the [ASP.NET Web API](https://d
 - ['DomainResult.Common' package. Returning result from Domain Layer method](#domainresultcommon-package-returning-result-from-domain-layer-method)
   - [Examples (Domain layer)](#examples-domain-layer)
   - [Type conversion](#type-conversion)
+  - [Throwing exceptions on failures](#throwing-exceptions-on-failures)
 - ['DomainResult' package](#domainresult-package)
   - [Conversion to IActionResult](#conversion-to-iactionresult)
-    - [Examples (IActionResult conversion)](#examples-iactionresult-conversion)
   - [Conversion to IResult (minimal API)](#conversion-to-iresult-minimal-api)
-    - [Examples (IResult conversion)](#examples-iresult-conversion)
 - [Custom Problem Details output](#custom-problem-details-output)
   - [Custom response for 2xx HTTP codes](#custom-response-for-2xx-http-codes)
     - [Example (custom response for IActionResult)](#example-custom-response-for-iactionresult)
@@ -147,7 +146,7 @@ And `IDomainResult<T>` interface that also adds
 T Value { get; }
 ```
 
-It has **50+ static extension methods** to return a successful or unsuccessful result from the domain method with one of the following types:
+It has **60+ static extension methods** to return a successful or unsuccessful result from the domain method with one of the following types:
 
 | Returned type        | Returned type wrapped in `Task` |
 |----------------------|---------------------------------|
@@ -200,6 +199,14 @@ Task<IDomainResult> failedResultTask = IDomainResult.FailedTask("Ahh!");
 Task<IDomainResult<int>>    resOfInt = failedResultTask.To<int>();  // from Task<IDomainResult> to Task<IDomainResult<T>>
 ```
 Note that returning [Tuple](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/value-tuples) types drastically simplifies type conversions. 
+
+### Throwing exceptions on failures
+In some cases, throwing an exception on failed statuses is the desired behaviour. Use `ThrowIfNoSuccess()` extension method to interrupt the flow with `DomainResultException` exception if the `IDomainResult.IsSuccess == false`:
+
+```csharp
+var failedResult = IDomainResult.Failed("Ahh!");
+failedResult.ThrowIfNoSuccess();    // DomainResultException is thrown here 
+```
 
 ## 'DomainResult' package
 
