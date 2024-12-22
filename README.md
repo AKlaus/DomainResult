@@ -246,7 +246,7 @@ Task<(T, IDomainResult)>.ToActionResult();
 // Returns `ActionResult<T>` with HTTP code `200 Ok` along with the value
 IDomainResult<T>.ToActionResultOfT();
 (T, IDomainResult).ToActionResultOfT();
-// As above, but returns `Task<ActionResult<T>>` with no ~~~~need in 'await'
+// As above, but returns `Task<ActionResult<T>>` with no need in 'await'
 Task<IDomainResult<T>>.ToActionResultOfT();
 Task<(T, IDomainResult)>.ToActionResultOfT();
 ```
