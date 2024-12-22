@@ -21,11 +21,10 @@ Two tiny NuGet packages addressing challenges in the [ASP.NET Web API](https://d
 - ['DomainResult.Common' package. Returning result from Domain Layer method](#domainresultcommon-package-returning-result-from-domain-layer-method)
   - [Examples (Domain layer)](#examples-domain-layer)
   - [Type conversion](#type-conversion)
+  - [Throwing exceptions on failures](#throwing-exceptions-on-failures)
 - ['DomainResult' package](#domainresult-package)
   - [Conversion to IActionResult](#conversion-to-iactionresult)
-    - [Examples (IActionResult conversion)](#examples-iactionresult-conversion)
   - [Conversion to IResult (minimal API)](#conversion-to-iresult-minimal-api)
-    - [Examples (IResult conversion)](#examples-iresult-conversion)
 - [Custom Problem Details output](#custom-problem-details-output)
   - [Custom response for 2xx HTTP codes](#custom-response-for-2xx-http-codes)
     - [Example (custom response for IActionResult)](#example-custom-response-for-iactionresult)
@@ -236,7 +235,7 @@ For classic Web API controllers, call the following extension methods on a `IDom
 | `IActionResult`   | `Task<IActionResult>`           | `ToActionResult()`<br>`ToCustomActionResult()`       |
 | `ActionResult<T>` | `Task<ActionResult<T>>`         | `ToActionResultOfT()`<br>`ToCustomActionResultOfT()` |
 
-**Examples (IActionResult conversion)**
+#### Examples (IActionResult conversion)
 
 ```csharp
 // Returns `IActionResult` with HTTP code `204 NoContent` on success
@@ -263,7 +262,7 @@ Task<(T, IDomainResult)>.ToActionResultOfT();
 
 For the modern [minimal API](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis) (for .NET 6+), call `ToResult()` extension method on a `IDomainResult` value to return the corresponding `IResult` instance.
 
-**Examples (IResult conversion)**
+#### Examples (IResult conversion)
 
 ```csharp
 // Returns `IResult` with HTTP code `204 NoContent` on success
@@ -291,7 +290,7 @@ When returning a standard `200` or `204` HTTP code is not enough, there are exte
 
 Examples of returning [201 Created](https://httpstatuses.com/201) along with a location header field pointing to the created resource (as per [RFC7231](https://tools.ietf.org/html/rfc7231#section-7.2)):
 
-**Example (custom response for IActionResult)**
+#### Example (custom response for IActionResult)
 
 ```csharp
 [HttpPost]
@@ -322,7 +321,7 @@ It works with any of extensions in `Microsoft.AspNetCore.Mvc.ControllerBase`. He
 - [File](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.controllerbase.File) or [PhysicalFile](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.controllerbase.PhysicalFile) for returning `200 OK` with the specified `Content-Type`, and the specified file name;
 - [Redirect](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.controllerbase.Redirect), [RedirectToRoute](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.controllerbase.RedirectToRoute), [RedirectToAction](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.controllerbase.RedirectToAction) for returning [302 Found](https://httpstatuses.com/302) with various details.
 
-**Example (custom response for IResult)**
+#### Example (custom response for IResult)
 
 A similar example for a custom response with the minimal API would look like this
 
