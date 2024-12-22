@@ -31,28 +31,28 @@ namespace DomainResults.Common.Exceptions
 		}
 		
 		/// <summary>
-		///		Throw <see cref="DomainResultException"/> if <paramref name="domainResult"/>'s <see cref="DomainResult.IsSuccess"/> is <value>false</value> 
+		///		Throw <see cref="DomainResultException"/> if <paramref name="domainResultTask"/>'s <see cref="DomainResult.IsSuccess"/> is <value>false</value> 
 		/// </summary>
-		/// <param name="domainResult"> The IDomainResult to check </param>
+		/// <param name="domainResultTask"> The IDomainResult to check </param>
 		/// <param name="errMsg"> The error message </param>
 		/// <exception cref="DomainResultException"> The thrown exception if the <see cref="DomainResult.IsSuccess"/> is <value>false</value> </exception>
-		public static async void ThrowIfNoSuccess(this Task<IDomainResult> domainResult, string? errMsg = null)
+		public static async void ThrowIfNoSuccess(this Task<IDomainResult> domainResultTask, string? errMsg = null)
 		{		
-			var dr = await domainResult;
-			if (!dr.IsSuccess)
-				throw new DomainResultException(dr, errMsg);
+			var domainResult = await domainResultTask.ConfigureAwait(true);
+			if (!domainResult.IsSuccess)
+				throw new DomainResultException(domainResult, errMsg);
 		}
 		/// <summary>
-		///		Throw <see cref="DomainResultException"/> if <paramref name="domainResult"/>'s <see cref="DomainResult.IsSuccess"/> is <value>false</value> 
+		///		Throw <see cref="DomainResultException"/> if <paramref name="domainResultTask"/>'s <see cref="DomainResult.IsSuccess"/> is <value>false</value> 
 		/// </summary>
-		/// <param name="domainResult"> The IDomainResult to check </param>
+		/// <param name="domainResultTask"> The IDomainResult to check </param>
 		/// <param name="errMsg"> The error message </param>
 		/// <exception cref="DomainResultException"> The thrown exception if the <see cref="DomainResult.IsSuccess"/> is <value>false</value> </exception>
-		public static async void ThrowIfNoSuccess<T>(this Task<IDomainResult<T>> domainResult, string? errMsg = null)
+		public static async void ThrowIfNoSuccess<T>(this Task<IDomainResult<T>> domainResultTask, string? errMsg = null)
 		{
-			var (_, result) = await domainResult;
-			if (!result.IsSuccess)
-				throw new DomainResultException(result, errMsg);
+			var domainResult = await domainResultTask.ConfigureAwait(true);
+			if (!domainResult.IsSuccess)
+				throw new DomainResultException(domainResult, errMsg);
 		}
 	}
 }
