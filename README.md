@@ -33,6 +33,7 @@ Two tiny NuGet packages addressing challenges in the [ASP.NET Web API](https://d
 - [Alternative solutions](#alternative-solutions)
   - [Why not FluentResults?](#why-not-fluentresults)
   - [Why not Hellang's ProblemDetails?](#why-not-fluentresults)
+  - [Why not Ardalis.Result?](#why-not-ardalis.result)
 
 ## Basic use-case
 
@@ -416,3 +417,15 @@ Main distinctive features of _DomainResult_ are
 - Allows simpler nested calls of the domain logic (no exceptions handlers when severity of their "sad" path is not exception-worthy).
 - Provides a predefined set of responses for main execution paths ("_bad request_", "_not found_", etc.). Works out-of-the-box.
 - Has an option to tune each output independently.
+
+### Why not Ardalis.Result?
+
+[Ardalis.Result](https://github.com/ardalis/Result) is a popular, feature-rich tool. It was pretty close ideologically at the start but later grew towards supporting adjoined use-cases (like a paginated output) and implicit conversion of results to the HTTP output. The latter feature might look tempting at first glance but might pose an obstacle when using Swagger or other tools relying on the traditional method signature. 
+
+You may like the _DomainResult_ more due to
+
+- Simpler library with narrow focus.
+- An option to use `ValueTuple` as return parameters.
+- Cool extensions for conversion to HTTP output (e.g. ad-hoc conversion to a customised _201 Created_ result).
+
+Many men, many minds. Make a conscious choice.
