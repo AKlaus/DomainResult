@@ -420,7 +420,7 @@ Main distinctive features of _DomainResult_ are
 
 ### Why not Ardalis.Result?
 
-[Ardalis.Result](https://github.com/ardalis/Result) is a popular, feature-rich tool. It was pretty close ideologically at the start but later grew towards supporting adjoined use-cases (like a paginated output) and implicit conversion of results to the HTTP output. The latter feature might look tempting at first glance but might pose an obstacle when using Swagger or other tools relying on the traditional method signature. 
+[Ardalis.Result](https://github.com/ardalis/Result) is a popular, feature-rich tool. It was pretty close ideologically at the start but later grew towards supporting adjoined use-cases and implicit conversion of results to the HTTP output. The latter feature might look tempting at first glance but can also pose an obstacle when using Swagger or other tools relying on the traditional method signature. 
 
 You may like the _DomainResult_ more due to
 
