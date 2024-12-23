@@ -32,8 +32,8 @@ Two tiny NuGet packages addressing challenges in the [ASP.NET Web API](https://d
   - [Custom error handling](#custom-error-handling)
 - [Alternative solutions](#alternative-solutions)
   - [Why not FluentResults?](#why-not-fluentresults)
-  - [Why not Hellang's ProblemDetails?](#why-not-fluentresults)
-  - [Why not Ardalis.Result?](#why-not-ardalis.result)
+  - [Why not Hellang's ProblemDetails?](#why-not-hellangs-problemdetails)
+  - [Why not Ardalis.Result?](#why-not-ardalisresult)
 
 ## Basic use-case
 
