@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace DomainResults.Common
 {
@@ -11,6 +12,12 @@ namespace DomainResults.Common
 		///		Collection of error messages if any
 		/// </summary>
 		IReadOnlyCollection<string> Errors { get; }
+		
+		/// <summary>
+		///		Error messages joined into a single line ('.'-separated messages)
+		/// </summary>
+		string Error => !Errors.Any() ? string.Empty : string.Join(". ", Errors);
+		
 		/// <summary>
 		///		Flag, whether the current status is successful or not
 		/// </summary>
