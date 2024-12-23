@@ -17,7 +17,7 @@ public class IDomainResult_Tests
 
 	[Theory]
 	[MemberData(nameof(TestCasesWithNoValue))]
-	public void IDomainResult_Response_Test(Func<IDomainResult> method, DomainOperationStatus expectedStatus, IEnumerable<string> expectedErrMessages)
+	public void IDomainResult_Response_Test(Func<IDomainResult> method, DomainOperationStatus expectedStatus, string[] expectedErrMessages)
 	{
 		var domainResult = method();
 
@@ -26,6 +26,7 @@ public class IDomainResult_Tests
 
 		Assert.Equal(expectedStatus, domainResult.Status);
 		Assert.Equal(expectedErrMessages, domainResult.Errors);
+		Assert.Equal(string.Join(". ", expectedErrMessages), domainResult.Error);
 	}
 
 	public static IEnumerable<object[]> TestCasesWithNoValue
