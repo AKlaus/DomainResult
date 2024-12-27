@@ -207,7 +207,8 @@ In some cases, throwing an exception on failed statuses is the desired behaviour
 
 ```csharp
 var failedResult = IDomainResult.Failed("Ahh!");
-failedResult.ThrowIfNoSuccess();    // DomainResultException is thrown here 
+failedResult.ThrowIfNoSuccess();                    // DomainResultException is thrown here 
+failedResult.ThrowIfNoSuccess<CustomException>();   // CustomException is thrown here 
 ```
 
 ## 'DomainResult' package
