@@ -84,6 +84,14 @@ public partial class DomainResult_Throw_Exception_Extensions_Tests
 		);
 	}
 	[Fact]
+	public void Failed_DomainResultOfT_Throws_Custom_Exception_With_No_Msg_On_Check()
+	{
+		var domainResult = DomainResult.Failed<int>("Bla");
+		Assert.Throws<CustomNoMsgException>(
+			() => domainResult.ThrowIfNoSuccess<int,CustomNoMsgException>("Error Message")
+		);
+	}
+	[Fact]
 	public async void Failed_DomainResultOfT_Task_Throws_Custom_Exception_With_No_Msg_On_Check()
 	{
 		var domainResult = DomainResult.FailedTask<int>("Bla");
