@@ -18,12 +18,12 @@ namespace DomainResults.Common.Exceptions
 		{
 			if (domainResult.IsSuccess) 
 				return;
-			try { throw (TE)Activator.CreateInstance(typeof(TE), errMsg); }
+			try { throw (TE)Activator.CreateInstance(typeof(TE), ConcatenateErrors(domainResult, errMsg)); }
 			catch (MissingMethodException) { throw new TE(); }
 		}
 		
 		///  <summary>
-		/// 		Throw <typeparamref name="TE"/> if <paramref name="domainResult"/>'s <see cref="DomainResult.IsSuccess"/> is <value>false</value> 
+		/// 	Throw <typeparamref name="TE"/> if <paramref name="domainResult"/>'s <see cref="DomainResult.IsSuccess"/> is <value>false</value> 
 		///  </summary>
 		///  <param name="domainResult"> The IDomainResult to check </param>
 		///  <param name="errMsg"> The error message </param>
@@ -34,7 +34,7 @@ namespace DomainResults.Common.Exceptions
 		{
 			if (domainResult.IsSuccess)
 				return domainResult.Value;
-			try { throw (TE)Activator.CreateInstance(typeof(TE), errMsg); }
+			try { throw (TE)Activator.CreateInstance(typeof(TE), ConcatenateErrors(domainResult, errMsg)); }
 			catch (MissingMethodException) { throw new TE(); }
 		}
 		/// <summary>
@@ -50,7 +50,7 @@ namespace DomainResults.Common.Exceptions
 			var (result, status) = domainResult;
 			if (status.IsSuccess)
 				return result;
-			try { throw (TE)Activator.CreateInstance(typeof(TE), errMsg); }
+			try { throw (TE)Activator.CreateInstance(typeof(TE), ConcatenateErrors(status, errMsg)); }
 			catch (MissingMethodException) { throw new TE(); }
 		}
 		
@@ -66,7 +66,7 @@ namespace DomainResults.Common.Exceptions
 			var domainResult = await domainResultTask.ConfigureAwait(true);
 			if (domainResult.IsSuccess)
 				return;
-			try { throw (TE)Activator.CreateInstance(typeof(TE), errMsg); }
+			try { throw (TE)Activator.CreateInstance(typeof(TE), ConcatenateErrors(domainResult, errMsg)); }
 			catch (MissingMethodException) { throw new TE(); }
 		}
 		/// <summary>
@@ -82,7 +82,7 @@ namespace DomainResults.Common.Exceptions
 			var domainResult = await domainResultTask.ConfigureAwait(true);
 			if (domainResult.IsSuccess)
 				return domainResult.Value;
-			try { throw (TE)Activator.CreateInstance(typeof(TE), errMsg); }
+			try { throw (TE)Activator.CreateInstance(typeof(TE), ConcatenateErrors(domainResult, errMsg)); }
 			catch (MissingMethodException) { throw new TE(); }
 		}
 		/// <summary>
@@ -98,8 +98,11 @@ namespace DomainResults.Common.Exceptions
 			var (result, status) = await domainResultTask.ConfigureAwait(true);
 			if (status.IsSuccess)
 				return result;
-			try { throw (TE)Activator.CreateInstance(typeof(TE), errMsg); }
+			try { throw (TE)Activator.CreateInstance(typeof(TE), ConcatenateErrors(status, errMsg)); }
 			catch (MissingMethodException) { throw new TE(); }
 		}
+		
+		private static string ConcatenateErrors(IDomainResultBase result, string? baseErrMsg = null)
+			=> result.Error + (!string.IsNullOrWhiteSpace(baseErrMsg) ? ". "+baseErrMsg : "");
 	}
 }
