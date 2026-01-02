@@ -23,7 +23,7 @@ public static partial class DomainResultExtensions
 	/// <param name="errorAction"> Optional processing in case of an error </param>
 	public static IResult ToResult<T>(this IDomainResult<T> domainResult,
 									  Action<ProblemDetails, IDomainResult<T>>? errorAction = null)
-		=> ToResult(domainResult.Value, domainResult, errorAction, value => Results.Ok(value));
+		=> ToResult(domainResult.Value, domainResult, errorAction, value => TypedResults.Ok(value));
 
 	/// <summary>
 	///		Returns HTTP code 200 (OK) with a value or a 4xx code in case of an error.
@@ -37,7 +37,7 @@ public static partial class DomainResultExtensions
 	                                              Action<ProblemDetails, IDomainResult<T>>? errorAction = null)
 	{
 		var domainResult = await domainResultTask;
-		return ToResult(domainResult.Value, domainResult, errorAction, value => Results.Ok(value));
+		return ToResult(domainResult.Value, domainResult, errorAction, value => TypedResults.Ok(value));
 	}
 
 	/// <summary>
@@ -51,7 +51,7 @@ public static partial class DomainResultExtensions
 	public static IResult ToResult<V, R>(this (V, R) domainResult,
 										 Action<ProblemDetails, R>? errorAction = null)
 										 where R : IDomainResult
-		=> domainResult.ToCustomResult(value => Results.Ok(value), errorAction);
+		=> domainResult.ToCustomResult(value => TypedResults.Ok(value), errorAction);
 
 	/// <summary>
 	///		Returns HTTP code 200 (OK) with a value or a 4xx code in case of an error.
@@ -67,6 +67,6 @@ public static partial class DomainResultExtensions
 													 where R : IDomainResult
 	{
 		var domainResult = await domainResultTask;
-		return domainResult.ToCustomResult(value => Results.Ok(value), errorAction);
+		return domainResult.ToCustomResult(value => TypedResults.Ok(value), errorAction);
 	}
 }
