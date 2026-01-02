@@ -34,7 +34,7 @@ public static class HttpCodeConvention
 	public static string NotFoundProblemDetailsTitle { get; set; } = "Not Found";
 
 	/// <summary>
-	///		The HTTP code to return when a access is forbidden (<see cref="DomainOperationStatus.Unauthorized"/> status). The default value: 403
+	///		The HTTP code to return when access is forbidden (<see cref="DomainOperationStatus.Unauthorized"/> status). The default value: 403
 	/// </summary>
 	/// <remarks>
 	///		See <see href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/403">the docs</see>.

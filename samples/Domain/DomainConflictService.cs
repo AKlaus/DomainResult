@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-using DomainResults.Common;
+﻿using DomainResults.Common;
 
 namespace DomainResults.Examples.Domain;
 

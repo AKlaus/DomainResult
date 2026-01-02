@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-
 using DomainResults.Common;
 
 namespace DomainResults.Examples.Domain;

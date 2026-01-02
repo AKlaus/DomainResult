@@ -1,4 +1,3 @@
-using System;
 using System.Runtime.InteropServices;
 
 [assembly: CLSCompliant(true)]	// Ensure it can be used by any other .NET language

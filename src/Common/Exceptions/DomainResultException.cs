@@ -1,5 +1,3 @@
-using System;
-
 namespace DomainResults.Common.Exceptions;
 
 public class DomainResultException : Exception

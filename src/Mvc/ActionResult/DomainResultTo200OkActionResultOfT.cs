@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-
-using DomainResults.Common;
+﻿using DomainResults.Common;
 
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,7 +22,7 @@ public static partial class DomainResultExtensions
 
 	/// <summary>
 	///		Returns HTTP code 200 (OK) with a value or a 4xx code in case of an error.
-	///		The reesult is wrapped in a <see cref="Task{V}"/>
+	///		The result is wrapped in a <see cref="Task{V}"/>
 	/// </summary>
 	/// <typeparam name="T"> The returned value type from the domain operation in <paramref name="domainResultTask"/> </typeparam>
 	/// <param name="domainResultTask"> Details of the operation results (<see cref="DomainResult{T}"/>) </param>
@@ -51,7 +48,7 @@ public static partial class DomainResultExtensions
 
 	/// <summary>
 	///		Returns HTTP code 200 (OK) with a value or a 4xx code in case of an error.
-	///		The reesult is wrapped in a <see cref="Task{T}"/>
+	///		The result is wrapped in a <see cref="Task{T}"/>
 	/// </summary>
 	/// <typeparam name="V"> The value type returned in a successful response </typeparam>
 	/// <typeparam name="R"> The type derived from <see cref="IDomainResult"/>, e.g. <see cref="DomainResult"/> </typeparam>

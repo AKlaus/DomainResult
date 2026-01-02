@@ -3,6 +3,7 @@
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
 		<Features>strict</Features>
+        <ImplicitUsings>enable</ImplicitUsings>
 
 		<Authors>Alex Klaus</Authors>
 		<Copyright>Copyright Alex Klaus</Copyright>

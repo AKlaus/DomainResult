@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-using DomainResults.Common;
+﻿using DomainResults.Common;
 
 using Microsoft.AspNetCore.Mvc;
 

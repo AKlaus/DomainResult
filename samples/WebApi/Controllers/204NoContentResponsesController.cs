@@ -1,9 +1,6 @@
-﻿using System.Threading.Tasks;
-
-using DomainResults.Examples.Domain;
+﻿using DomainResults.Examples.Domain;
 using DomainResults.Mvc;
 
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DomainResults.Examples.WebApi.Controllers;

@@ -1,6 +1,5 @@
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
+
 using DomainResults.Common;
 using DomainResults.Mvc;
 using Microsoft.AspNetCore.Mvc;
@@ -32,7 +31,6 @@ public class To_200_OkResult_TupleValue_Tests
 		Assert.Equal(tupleValue.Item1, actionResOfT.Value);
 	}
 
-#if NET6_0_OR_GREATER
 	[Theory]
 	[MemberData(nameof(SuccessfulTestCases))]
 	public void ValueResult_Converted_ToIResult_Test<TValue>((TValue, IDomainResult) tupleValue)
@@ -45,7 +43,6 @@ public class To_200_OkResult_TupleValue_Tests
 		// THEN the response type OK with correct value 
 		res.AssertOkObjectResultTypeAndValue(value);
 	}
-#endif
 
 	public static readonly IEnumerable<object[]> SuccessfulTestCases = new List<object[]>
 	{
@@ -76,7 +73,6 @@ public class To_200_OkResult_TupleValue_Tests
 		Assert.Equal((await tupleValueTask).Item1, actionResOfT.Value);
 	}
 
-#if NET6_0_OR_GREATER
 	[Theory]
 	[MemberData(nameof(SuccessfulTaskTestCases))]
 	public async Task ValueResult_Task_Converted_ToIResult_Test<TValue>(Task<(TValue, IDomainResult)> tupleValueTask)
@@ -86,10 +82,9 @@ public class To_200_OkResult_TupleValue_Tests
 		// WHEN convert a value to IResult
 		var res = await tupleValueTask.ToResult();
 
-		// THEN the response type OK with correct value 
+		// THEN the response type OK with the correct value 
 		res.AssertOkObjectResultTypeAndValue(value);
 	}
-#endif
 
 	public static readonly IEnumerable<object[]> SuccessfulTaskTestCases = new List<object[]>
 	{

@@ -1,8 +1,4 @@
-﻿#if NET6_0_OR_GREATER
-using System;
-using System.Threading.Tasks;
-
-using DomainResults.Common;
+﻿using DomainResults.Common;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
@@ -42,4 +38,3 @@ public static partial class DomainResultExtensions
 												  where R : IDomainResult
 		=> ToResult<object, R, IResult>(null, await domainResultTask, errorAction, _ => Results.NoContent());
 }
-#endif

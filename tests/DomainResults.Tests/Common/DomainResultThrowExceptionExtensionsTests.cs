@@ -36,7 +36,7 @@ public partial class DomainResult_Throw_Exception_Extensions_Tests
 		Assert.Equal(10, value);
 	}
 	[Fact]
-	public async void Successful_IDomainResult_Task_Doesnt_Throw_Exception_On_Check()
+	public async Task Successful_IDomainResult_Task_Doesnt_Throw_Exception_On_Check()
 	{
 		var domainResult = IDomainResult.SuccessTask();
 		await domainResult.ThrowIfNoSuccess();
