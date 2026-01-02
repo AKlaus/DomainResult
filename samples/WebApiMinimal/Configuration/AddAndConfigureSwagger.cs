@@ -18,6 +18,6 @@ internal static class ServiceCollectionExtensions
 	public static void ConfigureSwagger(this IApplicationBuilder app)
 	{
 		app.UseOpenApi();
-		app.UseSwaggerUi3();
+		app.UseSwaggerUi();
 	}
 }

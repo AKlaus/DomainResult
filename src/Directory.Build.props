@@ -41,8 +41,10 @@
 
 	<ItemGroup>
 		<!-- SourceLink settings (source debugging experiences) -->
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-		<PackageReference Include="MinVer" Version="4.2.0" PrivateAssets="All" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" Condition="'$(TargetFramework)'=='net7.0'" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" Condition="'$(TargetFramework)'!='net7.0'" />
+		<PackageReference Include="MinVer" Version="4.2.0" PrivateAssets="All" Condition="'$(TargetFramework)'=='net7.0'" />
+        <PackageReference Include="MinVer" Version="6.1.0" PrivateAssets="All" Condition="'$(TargetFramework)'!='net7.0'" />
 		<!-- Reference README file for nuget.org (https://devblogs.microsoft.com/nuget/add-a-readme-to-your-nuget-package/)-->
 		<None Include="./../../README.md" Pack="true" PackagePath="\" />
 	</ItemGroup>

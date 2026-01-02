@@ -11,6 +11,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="NSwag.AspNetCore" Version="13.20.0" />
+	  <PackageReference Include="NSwag.AspNetCore" Version="14.6.3" />
 	</ItemGroup>
 </Project>
