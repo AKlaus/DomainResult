@@ -101,7 +101,7 @@ public Task<ActionResult<InvoiceResponseDto>> GetInvoice()
 }
 ```
 
-or for the _Minimal APIs_ ([added in .NET 6](https://devblogs.microsoft.com/dotnet/asp-net-core-updates-in-net-6-preview-4/#introducing-minimal-apis)) convert to [IResult](https://devblogs.microsoft.com/dotnet/asp-net-core-updates-in-net-6-preview-7/#added-iresult-implementations-for-producing-common-http-responses):
+or for the _Minimal APIs_ convert to [IResult](https://devblogs.microsoft.com/dotnet/asp-net-core-updates-in-net-6-preview-7/#added-iresult-implementations-for-producing-common-http-responses):
 
 ```csharp
 app.MapGet("Invoice", () => _service.GetInvoice().ToResult())
@@ -263,7 +263,7 @@ Task<(T, IDomainResult)>.ToActionResultOfT();
 
 ### Conversion to IResult (minimal API)
 
-For the modern [minimal API](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis) (for .NET 6+), call `ToResult()` extension method on a `IDomainResult` value to return the corresponding `IResult` instance.
+For the modern [minimal API](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis), call `ToResult()` extension method on a `IDomainResult` value to return the corresponding `IResult` instance.
 
 #### Examples (IResult conversion)
 

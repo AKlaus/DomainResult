@@ -65,7 +65,7 @@ public class DomainResult_Conversion_Extensions_Tests
 		var domainResultOfT = domainResult.To<char>();
 		
 		Assert.True(domainResultOfT.IsSuccess);
-		Assert.Equal(default(char), domainResultOfT.Value);
+		Assert.Equal('\0' /* aka `default(char)` */, domainResultOfT.Value);
 	}
 	
 	[Fact]
@@ -75,7 +75,7 @@ public class DomainResult_Conversion_Extensions_Tests
 		var domainResultOfT = domainResult.To<char>();
 		
 		Assert.False(domainResultOfT.IsSuccess);
-		Assert.Equal(default(char), domainResultOfT.Value);
+		Assert.Equal('\0' /* aka `default(char)` */, domainResultOfT.Value);
 		Assert.Equal("Bla", domainResultOfT.Errors.Single());
 	}
 	
@@ -86,7 +86,7 @@ public class DomainResult_Conversion_Extensions_Tests
 		var domainResultOfT = await domainResult.To<int, char>();
 		
 		Assert.True(domainResultOfT.IsSuccess);
-		Assert.Equal(default(char), domainResultOfT.Value);
+		Assert.Equal('\0' /* aka `default(char)` */, domainResultOfT.Value);
 	}
 	
 	[Fact]
@@ -96,7 +96,7 @@ public class DomainResult_Conversion_Extensions_Tests
 		var domainResultOfT = await domainResult.To<int,char>();
 		
 		Assert.False(domainResultOfT.IsSuccess);
-		Assert.Equal(default(char), domainResultOfT.Value);
+		Assert.Equal('\0' /* aka `default(char)` */, domainResultOfT.Value);
 		Assert.Equal("Bla", domainResultOfT.Errors.Single());
 	}
 	#endregion
@@ -107,7 +107,7 @@ public class DomainResult_Conversion_Extensions_Tests
 	public void IDomainResult_and_Value_Tuple_Implicitly_Converted_To_IDomainResultOfT()
 	{
 		var domainResult = DomainResult.Failed("Bla");
-		DomainResult<int> domainResultOfT = (default, domainResult);
+		DomainResult<int> domainResultOfT = (0 /* aka `default` */, domainResult);
 		
 		Assert.False(domainResultOfT.IsSuccess);
 		Assert.Equal("Bla", domainResultOfT.Errors.Single());
