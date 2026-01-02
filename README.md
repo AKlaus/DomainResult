@@ -1,6 +1,6 @@
 # DomainResult
 
-**NuGet for decoupling domain operation results from IActionResult and IResult types of ASP.NET Web API**
+**NuGet for decoupling domain operation results from IActionResult and IResult types of ASP.NET Web API (the Result Pattern implementation for ASP.NET).**
 
 ![CI](https://github.com/AKlaus/DomainResult/workflows/CI/badge.svg)
 [![Test Coverage](https://coveralls.io/repos/github/AKlaus/DomainResult/badge.svg?branch=master)](https://coveralls.io/github/AKlaus/DomainResult?branch=master)
@@ -9,7 +9,7 @@
 [![Downloads](https://img.shields.io/nuget/dt/DomainResult.Common.svg?style=flat)](https://www.nuget.org/packages/DomainResult.Common)
 
 
-Two tiny NuGet packages addressing challenges in the [ASP.NET Web API](https://dotnet.microsoft.com/apps/aspnet/apis) realm posed by separation of the _Domain Layer_ (aka _Business Layer_) from the _Application Layer_:
+Two tiny NuGet packages for applying the _Result Pattern_ to [ASP.NET Web API](https://dotnet.microsoft.com/apps/aspnet/apis) apps, helping with separation of the services in the _Domain Layer_ (aka _Business Layer_) from the _Application Layer_:
 
 - eliminating dependency on _Microsoft.AspNetCore.*_ ([IActionResult](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.iactionresult) and [IResult](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.http.iresult) in particular) in the _Domain Layer_ (usually a separate project);
 - mapping various of responses from the _Domain Layer_ to appropriate [ActionResult](https://docs.microsoft.com/en-us/aspnet/core/web-api/action-return-types) in classic Web API controllers or [IResult](https://devblogs.microsoft.com/dotnet/asp-net-core-updates-in-net-6-preview-7/#added-iresult-implementations-for-producing-common-http-responses) in the [minimal API](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis).
