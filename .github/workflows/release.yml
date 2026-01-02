@@ -15,10 +15,6 @@ jobs:
         fetch-depth: 100
 
       # Install all SDK versions targeted in DomainResults.MVC project
-    - name: Setup .NET 6
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 6.x
     - name: Setup .NET 7
       uses: actions/setup-dotnet@v1
       with:
@@ -31,6 +27,10 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 9.x
+    - name: Setup .NET 10
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 10.x
 
     - name: Install dependencies
       run: dotnet restore
