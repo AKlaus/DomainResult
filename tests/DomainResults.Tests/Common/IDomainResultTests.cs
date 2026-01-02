@@ -1,8 +1,5 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
 
 using DomainResults.Common;
 
@@ -32,7 +29,8 @@ public class IDomainResult_Tests
 	public static IEnumerable<object[]> TestCasesWithNoValue
 	{
 		get
-		{	foreach (var t in testCasesWithNoValue)
+		{	// ReSharper disable once LoopCanBeConvertedToQuery as the 'yield return' is vital to do the trick
+			foreach (var t in testCasesWithNoValue)
 				yield return t;
 		}
 	}
@@ -80,7 +78,7 @@ public class IDomainResult_Tests
 	public static IEnumerable<object[]> TestCasesWithNoValueWrappedInTask
 	{
 		get
-		{
+		{	// ReSharper disable once LoopCanBeConvertedToQuery as the 'yield return' is vital to do the trick
 			foreach (var t in testCasesWithNoValueWrappedInTask)
 				yield return t;
 		}

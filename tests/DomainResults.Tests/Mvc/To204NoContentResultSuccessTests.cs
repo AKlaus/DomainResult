@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
 using DomainResults.Common;
 using DomainResults.Mvc;
 using Microsoft.AspNetCore.Mvc;
@@ -23,7 +22,6 @@ public class To_204_NoContentResult_Success_Tests
 		Assert.IsType<NoContentResult>(actionRes);
 	}
 	
-#if NET6_0_OR_GREATER	
 	[Fact]
 	public void DomainResultConverted_To_NoContent_of_IResult()
 	{
@@ -36,7 +34,6 @@ public class To_204_NoContentResult_Success_Tests
 		// THEN the response type is NoContent
 		res.AssertNoContentResultType();
 	}
-#endif
 	
 	[Fact]
 	public async Task DomainResult_Task_Converted_To_NoContent()
@@ -51,7 +48,6 @@ public class To_204_NoContentResult_Success_Tests
 		Assert.IsType<NoContentResult>(actionRes);
 	}
 	
-#if NET6_0_OR_GREATER	
 	[Fact]
 	public async Task DomainResult_Task_Converted_To_NoContent_of_IResult()
 	{
@@ -64,5 +60,4 @@ public class To_204_NoContentResult_Success_Tests
 		// THEN the response type is NoContent
 		res.AssertNoContentResultType();
 	}
-#endif
 }

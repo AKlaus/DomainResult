@@ -1,11 +1,9 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace DomainResults.Common;
 
 /// <summary>
-///		Defines a status of the domain operation (e.g. 'success', 'not found', etc.)
+///		Defines the status of the domain operation (e.g. 'success', 'not found', etc.)
 /// </summary>
 public interface IDomainResult: IDomainResultBase
 {

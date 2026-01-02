@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.OpenApi;
+﻿using Microsoft.OpenApi;
 
 namespace DomainResults.Examples.WebApi.Configuration;
 

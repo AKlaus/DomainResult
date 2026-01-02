@@ -44,7 +44,7 @@ public partial class DomainResult_Throw_Exception_Extensions_Tests
 		Assert.Equal(["Bla"], exc.DomainResult.Errors);
 	}
 	[Fact]
-	public async void Failed_DomainResult_Task_Throws_Exception_On_Check()
+	public async Task Failed_DomainResult_Task_Throws_Exception_On_Check()
 	{
 		var domainResult = DomainResult.FailedTask("Bla");
 		var exc = await Assert.ThrowsAsync<DomainResultException>(
@@ -55,7 +55,7 @@ public partial class DomainResult_Throw_Exception_Extensions_Tests
 		Assert.Equal(["Bla"], exc.DomainResult.Errors);
 	}
 	[Fact]
-	public async void Failed_IDomainResult_Task_Throws_Exception_On_Check()
+	public async Task Failed_IDomainResult_Task_Throws_Exception_On_Check()
 	{
 		var domainResult = IDomainResult.FailedTask("Bla");
 		var exc = await Assert.ThrowsAsync<DomainResultException>(
@@ -66,7 +66,7 @@ public partial class DomainResult_Throw_Exception_Extensions_Tests
 		Assert.Equal(["Bla"], exc.DomainResult.Errors);
 	}
 	[Fact]
-	public async void Failed_DomainResultOfT_Task_Throws_Exception_On_Check()
+	public async Task Failed_DomainResultOfT_Task_Throws_Exception_On_Check()
 	{
 		var domainResult = DomainResult.FailedTask<int>("Bla");
 		var exc = await Assert.ThrowsAsync<DomainResultException>(
@@ -77,7 +77,7 @@ public partial class DomainResult_Throw_Exception_Extensions_Tests
 		Assert.Equal(["Bla"], exc.DomainResult.Errors);
 	}
 	[Fact]
-	public async void Failed_IDomainResultOfT_Task_Throws_Exception_On_Check()
+	public async Task Failed_IDomainResultOfT_Task_Throws_Exception_On_Check()
 	{
 		var domainResult = IDomainResult.FailedTask<int>("Bla");
 		var exc = await Assert.ThrowsAsync<DomainResultException>(

@@ -1,13 +1,8 @@
 <Project>
-	<!-- Import common poperties from a folder up (see https://github.com/dotnet/msbuild/issues/2456) -->
-	<Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+    <!-- Import common poperties from a folder up -->
+    <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 
 	<PropertyGroup>
-		<LangVersion>latest</LangVersion>
-		<Nullable>enable</Nullable>
-		<Features>strict</Features>
-
-		<Authors>Alex Klaus</Authors>
 		<SignAssembly>true</SignAssembly>
 		<AssemblyOriginatorKeyFile>..\..\DomainResult.snk</AssemblyOriginatorKeyFile>
 
@@ -18,8 +13,8 @@
 		<!-- Generate XML docs for all targets https://stackoverflow.com/a/47118584/968003 -->
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 
-		<!-- Below is commented out till https://github.com/coverlet-coverage/coverlet/issues/900 is fixed -->
-		<!-- <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>  -->
+		<!-- Enable deterministic CI builds to strengthen the security: https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/DeterministicBuild.md -->
+		<ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>
 
 		<!-- SourceLink settings (source debugging experiences) -->
 		<!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->

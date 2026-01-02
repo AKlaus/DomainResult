@@ -1,8 +1,4 @@
-﻿#if NET6_0_OR_GREATER
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
+﻿using System.Diagnostics.CodeAnalysis;
 
 using DomainResults.Common;
 
@@ -76,4 +72,3 @@ public static partial class DomainResultExtensions
 			problemDetails.Title);
 	}
 }
-#endif

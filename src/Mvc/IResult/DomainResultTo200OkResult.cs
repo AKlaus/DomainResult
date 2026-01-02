@@ -1,8 +1,4 @@
-﻿#if NET6_0_OR_GREATER
-using System;
-using System.Threading.Tasks;
-
-using DomainResults.Common;
+﻿using DomainResults.Common;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
@@ -74,4 +70,3 @@ public static partial class DomainResultExtensions
 		return domainResult.ToCustomResult(value => Results.Ok(value), errorAction);
 	}
 }
-#endif

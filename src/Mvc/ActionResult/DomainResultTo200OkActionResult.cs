@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-
-using DomainResults.Common;
+﻿using DomainResults.Common;
 
 using Microsoft.AspNetCore.Mvc;
 

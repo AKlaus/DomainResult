@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Builder;
-
 using DomainResults.Examples.WebApiMinimal.Configuration;
 using DomainResults.Examples.WebApiMinimal.Routes;
 

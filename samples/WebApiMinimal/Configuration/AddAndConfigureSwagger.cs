@@ -1,6 +1,3 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-
 namespace DomainResults.Examples.WebApiMinimal.Configuration;
 
 internal static class ServiceCollectionExtensions

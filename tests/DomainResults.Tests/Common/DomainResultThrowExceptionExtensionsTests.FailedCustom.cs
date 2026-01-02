@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 
 using DomainResults.Common;
 using DomainResults.Common.Exceptions;
@@ -39,7 +38,7 @@ public partial class DomainResult_Throw_Exception_Extensions_Tests
 		Assert.Equal("Bla. Error Message", exc.Message);
 	}
 	[Fact]
-	public async void Failed_DomainResult_Task_Throws_Custom_Exception_On_Check()
+	public async Task Failed_DomainResult_Task_Throws_Custom_Exception_On_Check()
 	{
 		var domainResult = DomainResult.FailedTask("Bla");
 		var exc = await Assert.ThrowsAsync<CustomException>(
@@ -48,7 +47,7 @@ public partial class DomainResult_Throw_Exception_Extensions_Tests
 		Assert.Equal("Bla. Error Message", exc.Message);
 	}
 	[Fact]
-	public async void Failed_IDomainResult_Task_Throws_Custom_Exception_On_Check()
+	public async Task Failed_IDomainResult_Task_Throws_Custom_Exception_On_Check()
 	{
 		var domainResult = IDomainResult.FailedTask("Bla");
 		var exc = await Assert.ThrowsAsync<CustomException>(
@@ -57,7 +56,7 @@ public partial class DomainResult_Throw_Exception_Extensions_Tests
 		Assert.Equal("Bla. Error Message", exc.Message);
 	}
 	[Fact]
-	public async void Failed_DomainResultOfT_Task_Throws_Custom_Exception_On_Check()
+	public async Task Failed_DomainResultOfT_Task_Throws_Custom_Exception_On_Check()
 	{
 		var domainResult = DomainResult.FailedTask<int>("Bla");
 		var exc = await Assert.ThrowsAsync<CustomException>(
@@ -66,7 +65,7 @@ public partial class DomainResult_Throw_Exception_Extensions_Tests
 		Assert.Equal("Bla. Error Message", exc.Message);
 	}
 	[Fact]
-	public async void Failed_IDomainResultOfT_Task_Throws_Custom_Exception_On_Check()
+	public async Task Failed_IDomainResultOfT_Task_Throws_Custom_Exception_On_Check()
 	{
 		var domainResult = IDomainResult.FailedTask<int>("Bla");
 		var exc = await Assert.ThrowsAsync<CustomException>(
@@ -92,7 +91,7 @@ public partial class DomainResult_Throw_Exception_Extensions_Tests
 		);
 	}
 	[Fact]
-	public async void Failed_DomainResultOfT_Task_Throws_Custom_Exception_With_No_Msg_On_Check()
+	public async Task Failed_DomainResultOfT_Task_Throws_Custom_Exception_With_No_Msg_On_Check()
 	{
 		var domainResult = DomainResult.FailedTask<int>("Bla");
 		await Assert.ThrowsAsync<CustomNoMsgException>(
@@ -100,7 +99,7 @@ public partial class DomainResult_Throw_Exception_Extensions_Tests
 		);
 	}
 	[Fact]
-	public async void Failed_IDomainResultOfT_Task_Throws_Custom_Exception_With_No_Msg_On_Check()
+	public async Task Failed_IDomainResultOfT_Task_Throws_Custom_Exception_With_No_Msg_On_Check()
 	{
 		var domainResult = IDomainResult.FailedTask<int>("Bla");
 		await Assert.ThrowsAsync<CustomNoMsgException>(

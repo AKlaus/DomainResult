@@ -1,10 +1,6 @@
 ﻿using DomainResults.Examples.Domain;
 using DomainResults.Mvc;
 
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
-
 namespace DomainResults.Examples.WebApiMinimal.Routes;
 
 internal static partial class RoutesExtension 

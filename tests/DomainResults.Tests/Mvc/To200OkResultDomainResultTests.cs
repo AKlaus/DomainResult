@@ -1,6 +1,5 @@
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
+
 using DomainResults.Common;
 using DomainResults.Mvc;
 using Microsoft.AspNetCore.Mvc;
@@ -32,7 +31,6 @@ public class To_200_OkResult_DomainResult_Tests
 		Assert.Equal(domainValue.Value, actionResOfT.Value);
 	}
 	
-#if NET6_0_OR_GREATER
 	[Theory]
 	[MemberData(nameof(SuccessfulTestCases))]
 	public void DomainResult_With_Value_Converted_ToIResult_Test<TValue>(IDomainResult<TValue> domainValue)
@@ -43,12 +41,12 @@ public class To_200_OkResult_DomainResult_Tests
 		// THEN the response type OK with correct value 
 		res.AssertOkObjectResultTypeAndValue(domainValue.Value!);
 	}
-#endif
 	public static readonly IEnumerable<object[]> SuccessfulTestCases = GetTestCases(false);
 	
 	#endregion // Test of successful 'IDomainResult<TValue>' response conversion
 
 	#region Test of successful 'Task<IDomainResult<TValue>>' response conversion
+	
 	[Theory]
 	[MemberData(nameof(SuccessfulTaskTestCases))]
 	public async Task DomainResult_With_Value_Task_Converted_ToActionResult_Test<TValue>(Task<IDomainResult<TValue>> domainValueTask)
@@ -68,7 +66,7 @@ public class To_200_OkResult_DomainResult_Tests
 		Assert.Equal(domainValue.Value!, okResult!.Value);
 		Assert.Equal(domainValue.Value, actionResOfT.Value);
 	}
-#if NET6_0_OR_GREATER
+	
 	[Theory]
 	[MemberData(nameof(SuccessfulTaskTestCases))]
 	public async Task DomainResult_With_Value_Task_Converted_ToIResult_Test<TValue>(Task<IDomainResult<TValue>> domainValueTask)
@@ -76,10 +74,9 @@ public class To_200_OkResult_DomainResult_Tests
 		// WHEN convert a value to IResult
 		var res = await domainValueTask.ToResult();
 
-		// THEN the response type OK with correct value 
+		// THEN the response type OK with the correct value 
 		res.AssertOkObjectResultTypeAndValue((await domainValueTask).Value!);
 	}
-#endif
 	public static readonly IEnumerable<object[]> SuccessfulTaskTestCases = GetTestCases(true);
 
 	#endregion // Test of successful 'Task<IDomainResult<TValue>>' response conversion
@@ -87,7 +84,7 @@ public class To_200_OkResult_DomainResult_Tests
 	private static IEnumerable<object[]> GetTestCases(bool wrapInTask)
 		=> new List<object[]> 
 			{ 
-				GetTestCase(10,  true, wrapInTask),							// E.g. { DomainResult.Success(10), res => res.Value }
+				GetTestCase(10,  true, wrapInTask),			// E.g. { DomainResult.Success(10), res => res.Value }
 				GetTestCase(10,  false, wrapInTask),
 				GetTestCase("1", true, wrapInTask),
 				GetTestCase("1", false, wrapInTask),
@@ -96,10 +93,6 @@ public class To_200_OkResult_DomainResult_Tests
 
 	private static object[] GetTestCase<T>(T domainValue, bool genericClass, bool wrapInTask = false)
 		=> wrapInTask 
-			? new object[] {
-				genericClass ? DomainResult<T>.SuccessTask(domainValue) : DomainResult.SuccessTask(domainValue)
-			 }
-			: new object[] {
-				genericClass ? DomainResult<T>.Success(domainValue) : DomainResult.Success(domainValue)
-			 };
+			? [ genericClass ? DomainResult<T>.SuccessTask(domainValue)	: DomainResult.SuccessTask(domainValue) ]
+			: [ genericClass ? DomainResult<T>.Success(domainValue)		: DomainResult.Success(domainValue) ];
 }

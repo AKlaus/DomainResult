@@ -1,7 +1,5 @@
-using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
+
 using DomainResults.Common;
 using DomainResults.Mvc;
 
@@ -23,10 +21,8 @@ public class To_4xx_ActionResult_Tests
 		var actionRes = domainValue.ToActionResult();
 		Then_Response_Is_ActionResult_Type_And_ProblemDetails_StatusAndText_Correct(actionRes, expectedCode, expectedTitle, expectedErrorMsg);
 		
-#if NET6_0_OR_GREATER
 		var res = domainValue.ToResult();
 		Then_Response_Is_IResult_Type_And_ProblemDetails_StatusAndText_Correct(res, expectedCode, expectedTitle, expectedErrorMsg);
-#endif		
 	}		
 	public static readonly IEnumerable<object[]> FailedResultWithValueCases = TestCases(DomainResult.Failed<int>, DomainResult.NotFound<int>, DomainResult.Unauthorized<int>, DomainResult.Conflict<int>, DomainResult.ContentTooLarge<int>, DomainResult.CriticalDependencyError<int>);
 
@@ -37,10 +33,8 @@ public class To_4xx_ActionResult_Tests
 		var actionRes = await domainValueTask.ToActionResult();
 		Then_Response_Is_ActionResult_Type_And_ProblemDetails_StatusAndText_Correct(actionRes, expectedCode, expectedTitle, expectedErrorMsg);
 
-#if NET6_0_OR_GREATER
 		var res = await domainValueTask.ToResult();
 		Then_Response_Is_IResult_Type_And_ProblemDetails_StatusAndText_Correct(res, expectedCode, expectedTitle, expectedErrorMsg);
-#endif		
 	}
 	public static readonly IEnumerable<object[]> FailedResultWithValueTaskCases = TestCases(DomainResult.FailedTask<int>, DomainResult.NotFoundTask<int>, DomainResult.UnauthorizedTask<int>, DomainResult.ConflictTask<int>, DomainResult.ContentTooLargeTask<int>, DomainResult.CriticalDependencyErrorTask<int>);
 
@@ -51,10 +45,8 @@ public class To_4xx_ActionResult_Tests
 		var actionRes = domainValue.ToActionResult();
 		Then_Response_Is_ActionResult_Type_And_ProblemDetails_StatusAndText_Correct(actionRes, expectedCode, expectedTitle, expectedErrorMsg);
 
-#if NET6_0_OR_GREATER
 		var res = domainValue.ToResult();
 		Then_Response_Is_IResult_Type_And_ProblemDetails_StatusAndText_Correct(res, expectedCode, expectedTitle, expectedErrorMsg);
-#endif		
 	}
 	public static readonly IEnumerable<object[]> FailedResultCases = TestCases(DomainResult.Failed, DomainResult.NotFound, DomainResult.Unauthorized, DomainResult.Conflict, DomainResult.ContentTooLarge, DomainResult.CriticalDependencyError);
 
@@ -65,10 +57,8 @@ public class To_4xx_ActionResult_Tests
 		var actionRes = await domainValueTask.ToActionResult();
 		Then_Response_Is_ActionResult_Type_And_ProblemDetails_StatusAndText_Correct(actionRes, expectedCode, expectedTitle, expectedErrorMsg);
 
-#if NET6_0_OR_GREATER
 		var res = await domainValueTask.ToResult();
 		Then_Response_Is_IResult_Type_And_ProblemDetails_StatusAndText_Correct(res, expectedCode, expectedTitle, expectedErrorMsg);
-#endif		
 	}
 	public static readonly IEnumerable<object[]> FailedResultTaskCases = TestCases(DomainResult.FailedTask, DomainResult.NotFoundTask, DomainResult.UnauthorizedTask, DomainResult.ConflictTask, DomainResult.ContentTooLargeTask, DomainResult.CriticalDependencyErrorTask);
 
@@ -79,10 +69,8 @@ public class To_4xx_ActionResult_Tests
 		var actionRes = domainValue.ToActionResult();
 		Then_Response_Is_ActionResult_Type_And_ProblemDetails_StatusAndText_Correct(actionRes, expectedCode, expectedTitle, expectedErrorMsg);
 
-#if NET6_0_OR_GREATER
 		var res = domainValue.ToResult();
 		Then_Response_Is_IResult_Type_And_ProblemDetails_StatusAndText_Correct(res, expectedCode, expectedTitle, expectedErrorMsg);
-#endif		
 	}
 	public static readonly IEnumerable<object[]> FailedValueTestCases = TestCases(DomainResult.Failed, DomainResult.NotFound, DomainResult.Unauthorized, DomainResult.Conflict, DomainResult.ContentTooLarge, DomainResult.CriticalDependencyError, v => (10, v));
 
@@ -93,10 +81,8 @@ public class To_4xx_ActionResult_Tests
 		var actionRes = await domainValueTask.ToActionResult();
 		Then_Response_Is_ActionResult_Type_And_ProblemDetails_StatusAndText_Correct(actionRes, expectedCode, expectedTitle, expectedErrorMsg);
 
-#if NET6_0_OR_GREATER
 		var res = await domainValueTask.ToResult();
 		Then_Response_Is_IResult_Type_And_ProblemDetails_StatusAndText_Correct(res, expectedCode, expectedTitle, expectedErrorMsg);
-#endif		
 	}
 	[Theory]
 	[MemberData(nameof(FailedValueTaskTestCases))]
@@ -105,10 +91,8 @@ public class To_4xx_ActionResult_Tests
 		var actionResTask = domainValueTask.ToActionResult();
 		Then_Response_Is_ActionResult_Type_And_ProblemDetails_StatusAndText_Correct(actionResTask.Result, expectedCode, expectedTitle, expectedErrorMsg);
 
-#if NET6_0_OR_GREATER
 		var resTask = domainValueTask.ToResult();
 		Then_Response_Is_IResult_Type_And_ProblemDetails_StatusAndText_Correct(resTask.Result, expectedCode, expectedTitle, expectedErrorMsg);
-#endif		
 	}
 	public static readonly IEnumerable<object[]> FailedValueTaskTestCases = TestCases(DomainResult.Failed, DomainResult.NotFound, DomainResult.Unauthorized, DomainResult.Conflict, DomainResult.ContentTooLarge, DomainResult.CriticalDependencyError, v => Task.FromResult((10, v)));
 
@@ -121,7 +105,7 @@ public class To_4xx_ActionResult_Tests
 	/// <param name="expectedCode"> The expected HTTP code </param>
 	/// <param name="expectedTitle"> The expected title in the <see cref="ProblemDetails"/> </param>
 	/// <param name="expectedErrorMsg"> The expected description messages in the <see cref="ProblemDetails"/> </param>
-	private void Then_Response_Is_ActionResult_Type_And_ProblemDetails_StatusAndText_Correct(IActionResult actionResult, int expectedCode, string expectedTitle, string expectedErrorMsg)
+	private static void Then_Response_Is_ActionResult_Type_And_ProblemDetails_StatusAndText_Correct(IActionResult actionResult, int expectedCode, string expectedTitle, string expectedErrorMsg)
 	{
 		// THEN the response type is correct
 		var objResult = actionResult as ObjectResult;
@@ -135,7 +119,6 @@ public class To_4xx_ActionResult_Tests
 		Assert.Equal(expectedErrorMsg, problemDetails.Detail);
 	}
 
-#if NET6_0_OR_GREATER
 	/// <summary>
 	///		The 'THEN' section of the tests, checking the Response type (<see cref="IResult"/>) and the nested <see cref="ProblemDetails"/>
 	/// </summary>
@@ -148,7 +131,6 @@ public class To_4xx_ActionResult_Tests
 		// THEN the response type is correct and the ProblemDetails properties are as expected
 		res.AssertObjectResultTypeWithProblemDetails(expectedCode, expectedTitle, expectedErrorMsg);
 	}
-#endif
 
 	/// <summary>
 	///		Get test cases (input test parameters for the <see cref="MemberDataAttribute"/>)
