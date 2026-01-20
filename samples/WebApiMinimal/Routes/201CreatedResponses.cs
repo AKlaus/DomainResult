@@ -14,39 +14,39 @@ internal static partial class RoutesExtension
 	{
 		DomainSuccessService service = new();
 		
-		app.MapPost("Post201CreatedFromTuple", 
+		app.MapPost("Post201CreatedFromTuple",
 			   () => service
 							.GetSuccessWithNumericValueTuple()
-			                .ToCustomResult(val => Results.CreatedAtRoute("GetById", new { id = val }, val))
+			                .ToCustomResult(val => TypedResults.CreatedAtRoute(val, "GetById", new { id = val }))
 				   )
 		   .WithTags("Success: 201 Created")
 		   .Produces<int>(StatusCodes.Status201Created);
-		
-		app.MapPost("Post201CreatedFromTupleTask", 
+
+		app.MapPost("Post201CreatedFromTupleTask",
 			   () => service
 							.GetSuccessWithNumericValueTupleTask()
-							.ToCustomResult(val => Results.CreatedAtRoute("GetById", new { id = val }, val))
+							.ToCustomResult(val => TypedResults.CreatedAtRoute(val, "GetById", new { id = val }))
 					)
 		   .WithTags("Success: 201 Created")
 		   .Produces<int>(StatusCodes.Status201Created);
-		
-		app.MapPost("Post201Created", 
+
+		app.MapPost("Post201Created",
 			   () => service
 							.GetSuccessWithNumericValue()
-							.ToCustomResult(val => Results.CreatedAtRoute("GetById", new { id = val }, val))
+							.ToCustomResult(val => TypedResults.CreatedAtRoute(val, "GetById", new { id = val }))
 			   )
 		   .WithTags("Success: 201 Created")
 		   .Produces<int>(StatusCodes.Status201Created);
-				
-		app.MapPost("Post201CreatedTask", 
+
+		app.MapPost("Post201CreatedTask",
 			   () => service
 							.GetSuccessWithNumericValueTask()
-							.ToCustomResult(val => Results.CreatedAtRoute("GetById", new { id = val }, val))
+							.ToCustomResult(val => TypedResults.CreatedAtRoute(val, "GetById", new { id = val }))
 			   )
 		   .WithTags("Success: 201 Created")
 		   .Produces<int>(StatusCodes.Status201Created);
-		
-		app.MapGet("{id}", (int id) => Results.Ok($"Sample properties of #{id} record"))
+
+		app.MapGet("{id}", (int id) => TypedResults.Ok($"Sample properties of #{id} record"))
 		   .WithTags("Success: 201 Created")
 		   .WithName("GetById")
 		   .Produces<string>(StatusCodes.Status200OK, MediaTypeNames.Text.Plain);

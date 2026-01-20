@@ -24,7 +24,7 @@ public static partial class DomainResultExtensions
 	public static IResult ToResult<R>(this R domainResult,
 									  Action<ProblemDetails, R>? errorAction = null)
 									  where R : IDomainResult
-		=> ToResult<object, R, IResult>(null, domainResult, errorAction, _ => Results.NoContent());
+		=> ToResult<object, R, IResult>(null, domainResult, errorAction, _ => TypedResults.NoContent());
 
 	/// <summary>
 	///		Returns a task with HTTP code 204 (NoContent) or a 4xx code in case of an error
@@ -36,5 +36,5 @@ public static partial class DomainResultExtensions
 	public static async Task<IResult> ToResult<R>(this Task<R> domainResultTask,
 												  Action<ProblemDetails, R>? errorAction = null)
 												  where R : IDomainResult
-		=> ToResult<object, R, IResult>(null, await domainResultTask, errorAction, _ => Results.NoContent());
+		=> ToResult<object, R, IResult>(null, await domainResultTask, errorAction, _ => TypedResults.NoContent());
 }

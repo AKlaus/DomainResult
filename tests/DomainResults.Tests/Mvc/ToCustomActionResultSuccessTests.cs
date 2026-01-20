@@ -21,7 +21,7 @@ public class To_Custom_ActionResult_Success_Tests
 
 		Then_Response_Is_ActionResult_Type_And_Value_And_Url_Are_Correct(actionResult, getValueFunc(domainValue));
 
-		var res = domainValue.ToCustomResult(val => Results.Created(urlUri, val));
+		var res = domainValue.ToCustomResult(val => TypedResults.Created(urlUri, val));
 		Then_Response_Is_IResult_Type_And_Value_And_Url_Are_Correct(res, getValueFunc(domainValue));
 	}
 	
@@ -43,7 +43,7 @@ public class To_Custom_ActionResult_Success_Tests
 
 		Then_Response_Is_ActionResult_Type_And_Value_And_Url_Are_Correct(actionResult, getValueFunc(domainValueTask));
 
-		var res = await domainValueTask.ToCustomResult(val => Results.Created(urlUri, val));
+		var res = await domainValueTask.ToCustomResult(val => TypedResults.Created(urlUri, val));
 		Then_Response_Is_IResult_Type_And_Value_And_Url_Are_Correct(res, getValueFunc(domainValueTask));
 	}
 	
@@ -65,7 +65,7 @@ public class To_Custom_ActionResult_Success_Tests
 
 		Then_Response_Is_ActionResult_Type_And_Value_And_Url_Are_Correct(actionResult, domainValue.Item1);
 
-		var res = domainValue.ToCustomResult(val => Results.Created(urlUri, val));
+		var res = domainValue.ToCustomResult(val => TypedResults.Created(urlUri, val));
 		Then_Response_Is_IResult_Type_And_Value_And_Url_Are_Correct(res, domainValue.Item1);
 	}
 	
@@ -87,7 +87,7 @@ public class To_Custom_ActionResult_Success_Tests
 
 		Then_Response_Is_ActionResult_Type_And_Value_And_Url_Are_Correct(actionResult, domainValueTask.Result.Item1);
 
-		var res = await domainValueTask.ToCustomResult(val => Results.Created(urlUri, val));
+		var res = await domainValueTask.ToCustomResult(val => TypedResults.Created(urlUri, val));
 		Then_Response_Is_IResult_Type_And_Value_And_Url_Are_Correct(res, domainValueTask.Result.Item1);
 	}
 	
