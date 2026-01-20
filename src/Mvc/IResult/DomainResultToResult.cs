@@ -64,11 +64,7 @@ public static partial class DomainResultExtensions
 			};
 		errorAction?.Invoke(problemDetails, errorDetails!);
 
-		// Since .NET 7 `TypedResults.Problem` is preferred over a more generic `Results.Problem` 
-		return TypedResults.Problem(
-			problemDetails.Detail,
-			null,
-			problemDetails.Status,
-			problemDetails.Title);
+		// Since .NET 7 `TypedResults.Problem` is preferred over a more generic `Results.Problem`
+		return TypedResults.Problem(problemDetails);
 	}
 }
