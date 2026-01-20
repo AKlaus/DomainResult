@@ -43,7 +43,7 @@ public static partial class DomainResultExtensions
 			DomainOperationStatus.CriticalDependencyError
 												 => SadResult(HttpCodeConvention.CriticalDependencyErrorHttpCode,	HttpCodeConvention.CriticalDependencyErrorProblemDetailsTitle,	errorDetails, errorAction),
 			DomainOperationStatus.Success		 => EqualityComparer<V>.Default.Equals(value!, default!)
-																	? TypedResults.NoContent()			// No value, means returning HTTP status 204. Since .NET 7 `Results.NoContent` is preferred over a more generic `TypedResults.NoContent`
+																	? TypedResults.NoContent()			// No value, means returning HTTP status 204. Since .NET 7 `TypedResults` provides better type safety
 																	: valueToResultFunc(value),
 			_ => throw new ArgumentOutOfRangeException(),
 		};
