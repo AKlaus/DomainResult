@@ -329,9 +329,9 @@ It works with any of extensions in `Microsoft.AspNetCore.Mvc.ControllerBase`. He
 A similar example for a custom response with the minimal API would look like this
 
 ```csharp
-app.MapPost("/", 
+app.MapPost("/",
             () => _service.CreateItem(dto)
-                          .ToCustomResult(val => Results.CreatedAtRoute("GetById", new { id = val }, val))
+                          .ToCustomResult(val => TypedResults.CreatedAtRoute(val, "GetById", new { id = val }))
            )
 ```
 

@@ -33,13 +33,13 @@ public static partial class DomainResultExtensions
 																where TResult : ActionResult
 		=> errorDetails.Status switch
 		{
-			DomainOperationStatus.NotFound		 => SadResponse(HttpCodeConvention.NotFoundHttpCode,	HttpCodeConvention.NotFoundProblemDetailsTitle,		errorDetails, errorAction),
-			DomainOperationStatus.Unauthorized	 => SadResponse(HttpCodeConvention.UnauthorizedHttpCode,HttpCodeConvention.UnauthorizedProblemDetailsTitle,	errorDetails, errorAction),
-			DomainOperationStatus.Conflict		 => SadResponse(HttpCodeConvention.ConflictHttpCode,	HttpCodeConvention.ConflictProblemDetailsTitle,		errorDetails, errorAction),
-			DomainOperationStatus.ContentTooLarge=> SadResponse(HttpCodeConvention.ContentTooLargeHttpCode,	HttpCodeConvention.ContentTooLargeProblemDetailsTitle,		errorDetails, errorAction),
-			DomainOperationStatus.Failed		 => SadResponse(HttpCodeConvention.FailedHttpCode,		HttpCodeConvention.FailedProblemDetailsTitle,			errorDetails, errorAction),
+			DomainOperationStatus.NotFound		 => CreateProblemResponse(HttpCodeConvention.NotFoundHttpCode,	 	 HttpCodeConvention.NotFoundProblemDetailsTitle,		errorDetails, errorAction),
+			DomainOperationStatus.Unauthorized	 => CreateProblemResponse(HttpCodeConvention.UnauthorizedHttpCode,	 HttpCodeConvention.UnauthorizedProblemDetailsTitle,	errorDetails, errorAction),
+			DomainOperationStatus.Conflict		 => CreateProblemResponse(HttpCodeConvention.ConflictHttpCode,	 	 HttpCodeConvention.ConflictProblemDetailsTitle,		errorDetails, errorAction),
+			DomainOperationStatus.ContentTooLarge=> CreateProblemResponse(HttpCodeConvention.ContentTooLargeHttpCode,HttpCodeConvention.ContentTooLargeProblemDetailsTitle,	errorDetails, errorAction),
+			DomainOperationStatus.Failed		 => CreateProblemResponse(HttpCodeConvention.FailedHttpCode,	 	 HttpCodeConvention.FailedProblemDetailsTitle,			errorDetails, errorAction),
 			DomainOperationStatus.CriticalDependencyError
-												 => SadResponse(HttpCodeConvention.CriticalDependencyErrorHttpCode,	HttpCodeConvention.CriticalDependencyErrorProblemDetailsTitle,	errorDetails, errorAction),
+												 => CreateProblemResponse(HttpCodeConvention.CriticalDependencyErrorHttpCode,	HttpCodeConvention.CriticalDependencyErrorProblemDetailsTitle,	errorDetails, errorAction),
 			DomainOperationStatus.Success		 => EqualityComparer<V>.Default.Equals(value!, default!)
 																	? new NoContentResult() as ActionResult // No value, means returning HTTP status 204
 																	: valueToActionResultFunc(value),
@@ -47,19 +47,19 @@ public static partial class DomainResultExtensions
 		};
 
 	/// <summary>
-	///		Return 4xx status with a machine-readable format for specifying errors based on https://tools.ietf.org/html/rfc7807.
+	///		Creates a ProblemDetails response with a 4xx status for error scenarios based on RFC 7807.
 	/// </summary>
-	/// <remarks>
-	///		Alternatively can simply return <seealso cref="NotFoundResult"/> or <seealso cref="BadRequestObjectResult"/> without a JSON
-	/// </remarks>
-	private static ObjectResult SadResponse<R>(int statusCode, string title, R? errorDetails, Action<ProblemDetails, R>? errorAction = null) where R : IDomainResultBase
+	private static ObjectResult CreateProblemResponse<R>(int statusCode,
+	                                                     string title,
+	                                                     R errorDetails,
+	                                                     Action<ProblemDetails, R>? errorAction = null) where R : IDomainResultBase
 	{
 		var problemDetails = new ProblemDetails
-			{
-				Title = title,
-				Detail = errorDetails?.Errors.Any() == true ? string.Join(", ", errorDetails.Errors) : null,
-				Status = statusCode
-			};
+		{
+			Title = title,
+			Detail = errorDetails?.Errors.Any() == true ? string.Join(", ", errorDetails.Errors) : null,
+			Status = statusCode
+		};
 
 		errorAction?.Invoke(problemDetails, errorDetails!);
 
