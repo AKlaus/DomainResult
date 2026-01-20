@@ -17,13 +17,13 @@ public static partial class DomainResultExtensions
 															where R : IDomainResultBase
 		=> errorDetails.Status switch
 		{
-			DomainOperationStatus.NotFound		 => SadResponse(HttpCodeConvention.NotFoundHttpCode,		HttpCodeConvention.NotFoundProblemDetailsTitle,	 	errorDetails, errorAction),
-			DomainOperationStatus.Unauthorized	 => SadResponse(HttpCodeConvention.UnauthorizedHttpCode,	HttpCodeConvention.UnauthorizedProblemDetailsTitle,	errorDetails, errorAction),
-			DomainOperationStatus.Conflict		 => SadResponse(HttpCodeConvention.ConflictHttpCode,		HttpCodeConvention.ConflictProblemDetailsTitle,	 	errorDetails, errorAction),
-			DomainOperationStatus.ContentTooLarge=> SadResponse(HttpCodeConvention.ContentTooLargeHttpCode,	HttpCodeConvention.ContentTooLargeProblemDetailsTitle,	errorDetails, errorAction),
-			DomainOperationStatus.Failed		 => SadResponse(HttpCodeConvention.FailedHttpCode,	 		HttpCodeConvention.FailedProblemDetailsTitle,		errorDetails, errorAction),
+			DomainOperationStatus.NotFound		 => CreateProblemResponse(HttpCodeConvention.NotFoundHttpCode,		HttpCodeConvention.NotFoundProblemDetailsTitle,	 		errorDetails, errorAction),
+			DomainOperationStatus.Unauthorized	 => CreateProblemResponse(HttpCodeConvention.UnauthorizedHttpCode,	HttpCodeConvention.UnauthorizedProblemDetailsTitle,		errorDetails, errorAction),
+			DomainOperationStatus.Conflict		 => CreateProblemResponse(HttpCodeConvention.ConflictHttpCode,		HttpCodeConvention.ConflictProblemDetailsTitle,	 		errorDetails, errorAction),
+			DomainOperationStatus.ContentTooLarge=> CreateProblemResponse(HttpCodeConvention.ContentTooLargeHttpCode,HttpCodeConvention.ContentTooLargeProblemDetailsTitle,	errorDetails, errorAction),
+			DomainOperationStatus.Failed		 => CreateProblemResponse(HttpCodeConvention.FailedHttpCode,	 	HttpCodeConvention.FailedProblemDetailsTitle,			errorDetails, errorAction),
 			DomainOperationStatus.CriticalDependencyError
-												 => SadResponse(HttpCodeConvention.CriticalDependencyErrorHttpCode,HttpCodeConvention.CriticalDependencyErrorProblemDetailsTitle, errorDetails, errorAction),
+												 => CreateProblemResponse(HttpCodeConvention.CriticalDependencyErrorHttpCode,HttpCodeConvention.CriticalDependencyErrorProblemDetailsTitle, errorDetails, errorAction),
 			DomainOperationStatus.Success		 => EqualityComparer<V>.Default.Equals(value!, default!)
 																	? new NoContentResult() as ActionResult // No value, means returning HTTP status 204
 																	: valueToActionResultFunc(value),

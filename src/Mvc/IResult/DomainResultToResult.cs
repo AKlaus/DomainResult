@@ -4,6 +4,7 @@ using DomainResults.Common;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 // ReSharper disable CheckNamespace
 // ReSharper disable InconsistentNaming
@@ -35,13 +36,13 @@ public static partial class DomainResultExtensions
 														where TResult : IResult
 		=> errorDetails.Status switch
 		{
-			DomainOperationStatus.NotFound		 => SadResult(HttpCodeConvention.NotFoundHttpCode,		HttpCodeConvention.NotFoundProblemDetailsTitle,		errorDetails, errorAction),
-			DomainOperationStatus.Unauthorized	 => SadResult(HttpCodeConvention.UnauthorizedHttpCode,	HttpCodeConvention.UnauthorizedProblemDetailsTitle,	errorDetails, errorAction),
-			DomainOperationStatus.Conflict		 => SadResult(HttpCodeConvention.ConflictHttpCode,		HttpCodeConvention.ConflictProblemDetailsTitle,		errorDetails, errorAction),
-			DomainOperationStatus.ContentTooLarge=> SadResult(HttpCodeConvention.ContentTooLargeHttpCode,HttpCodeConvention.ContentTooLargeProblemDetailsTitle,	errorDetails, errorAction),
-			DomainOperationStatus.Failed		 => SadResult(HttpCodeConvention.FailedHttpCode,		HttpCodeConvention.FailedProblemDetailsTitle,		errorDetails, errorAction),
+			DomainOperationStatus.NotFound		 => CreateProblemResult(HttpCodeConvention.NotFoundHttpCode,		HttpCodeConvention.NotFoundProblemDetailsTitle,			errorDetails, errorAction),
+			DomainOperationStatus.Unauthorized	 => CreateProblemResult(HttpCodeConvention.UnauthorizedHttpCode,	HttpCodeConvention.UnauthorizedProblemDetailsTitle,		errorDetails, errorAction),
+			DomainOperationStatus.Conflict		 => CreateProblemResult(HttpCodeConvention.ConflictHttpCode,		HttpCodeConvention.ConflictProblemDetailsTitle,			errorDetails, errorAction),
+			DomainOperationStatus.ContentTooLarge=> CreateProblemResult(HttpCodeConvention.ContentTooLargeHttpCode,	HttpCodeConvention.ContentTooLargeProblemDetailsTitle,	errorDetails, errorAction),
+			DomainOperationStatus.Failed		 => CreateProblemResult(HttpCodeConvention.FailedHttpCode,			HttpCodeConvention.FailedProblemDetailsTitle,			errorDetails, errorAction),
 			DomainOperationStatus.CriticalDependencyError
-												 => SadResult(HttpCodeConvention.CriticalDependencyErrorHttpCode,	HttpCodeConvention.CriticalDependencyErrorProblemDetailsTitle,	errorDetails, errorAction),
+												 => CreateProblemResult(HttpCodeConvention.CriticalDependencyErrorHttpCode,	HttpCodeConvention.CriticalDependencyErrorProblemDetailsTitle,	errorDetails, errorAction),
 			DomainOperationStatus.Success		 => EqualityComparer<V>.Default.Equals(value!, default!)
 																	? TypedResults.NoContent()			// No value, means returning HTTP status 204. Since .NET 7 `TypedResults` provides better type safety
 																	: valueToResultFunc(value),
@@ -49,12 +50,9 @@ public static partial class DomainResultExtensions
 		};
 
 	/// <summary>
-	///		Return 4xx status with a machine-readable format for specifying errors based on https://tools.ietf.org/html/rfc7807.
+	///		Creates a ProblemDetails response with a 4xx status for error scenarios based on RFC 7807.
 	/// </summary>
-	/// <remarks>
-	///		Alternatively can simply return <seealso cref="NotFoundResult"/> or <seealso cref="BadRequestObjectResult"/> without a JSON
-	/// </remarks>
-	private static IResult SadResult<R>(int statusCode, string title, R? errorDetails, Action<ProblemDetails, R>? errorAction = null) where R : IDomainResultBase
+	private static ProblemHttpResult CreateProblemResult<R>(int statusCode, string title, R? errorDetails, Action<ProblemDetails, R>? errorAction = null) where R : IDomainResultBase
 	{
 		var problemDetails = new ProblemDetails
 			{
