@@ -51,11 +51,11 @@ fi
 
 load_project_config "$PROJECT_ROOT"
 
-# The token comes from the private file only. An exported GITHUB_TOKEN belongs to other tools, such
-# as Copilot CLI or a CI job, and must not stand in for a file that lacks the key.
-unset GITHUB_TOKEN
-load_private_config "$PROJECT_ROOT" github
-: "${GITHUB_TOKEN:?GITHUB_TOKEN is not set in PROJECT_CFG.Local.md — see .agents/skills/gh-pr-review/references/setup.md}"
+load_github_token "$PROJECT_ROOT"
+# An environment variable or the GitHub CLI can hold another account's token, so name the source.
+if [[ "$GITHUB_TOKEN_SOURCE" != */PROJECT_CFG.Local.md ]]; then
+  echo "Note: the GitHub token comes from ${GITHUB_TOKEN_SOURCE}." >&2
+fi
 : "${GITHUB_REPOSITORY:?GITHUB_REPOSITORY is not set in PROJECT_CFG.md}"
 
 ACTION="${1:?Usage: bash scripts/run.sh <list|create|review|issue|scope|fetch|comment|reply|edit|delete|vote|describe|title|retarget|stack|publish|complete|resolve|unresolve> [args...]}"

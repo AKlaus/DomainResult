@@ -2,7 +2,10 @@
 
 ## 1. Create a GitHub token
 
-Create a fine-grained personal access token at `https://github.com/settings/personal-access-tokens/new`,
+If the GitHub CLI is signed in to an account with access to the repository, skip to section 3:
+the scripts use its token.
+
+Otherwise, create a fine-grained personal access token at `https://github.com/settings/personal-access-tokens/new`,
 for resource owner `AKlaus` and only the `DomainResult` repository, with these permissions:
 
 | Permission | Access | Needed by |
@@ -23,18 +26,23 @@ account. A classic token with the `public_repo` scope also works.
 
 `PROJECT_CFG.md` in the skill folder sets `GITHUB_REPOSITORY` and needs no change.
 
-Put the token in `PROJECT_CFG.Local.md` in the skill folder:
+The scripts use the first token they find, in this order:
+
+1. `PROJECT_CFG.Local.md` in the skill folder.
+2. `github/PROJECT_CFG.Local.md` under the directory that
+   `git rev-parse --path-format=absolute --git-common-dir` prints. Every linked worktree shares it.
+3. The `GH_TOKEN` environment variable, then `GITHUB_TOKEN`.
+4. The GitHub CLI, through `gh auth token`.
+
+A file holds one line, and the root `.gitignore` excludes `.agents/**/*.Local.md`:
 
 ```bash
 GITHUB_TOKEN=your-github-token-here
 ```
 
-The root `.gitignore` excludes `.agents/**/*.Local.md`. The scripts read the token from this file
-only, and ignore an exported `GITHUB_TOKEN`.
-
-To share one token across linked worktrees, put the file at `github/PROJECT_CFG.Local.md` under
-the directory that `git rev-parse --path-format=absolute --git-common-dir` prints. The file in the
-skill folder takes precedence when both exist.
+When the token comes from place 3 or 4, every action names the place on stderr. Such a token can
+belong to another account, or lack a permission from section 1. The scripts never use the Git
+credential helper, because its credential can belong to another account.
 
 ## 3. Pre-approve the commands
 

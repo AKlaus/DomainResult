@@ -49,20 +49,28 @@ test_run_dispatches_fetch_vote_resolve_complete_retarget_and_stack() {
     ! bash "${temp_root}/scripts/run.sh" stack 2>/dev/null
 }
 
-test_run_ignores_an_exported_github_token() {
+test_run_names_a_token_that_no_file_holds() {
   local temp_root output
   temp_root=$(pull_requests_run_fixture)
   trap "rm -rf '${temp_root%/skill}'" EXIT
 
-  # GIVEN a private config without GITHUB_TOKEN, and a token that another tool exported
-  printf 'ADO_PAT=fake-pat\n' >"${temp_root}/PROJECT_CFG.Local.md"
+  # GIVEN a private config without GITHUB_TOKEN, and an exported GITHUB_TOKEN
+  printf 'OTHER_KEY=value\n' >"${temp_root}/PROJECT_CFG.Local.md"
 
   # WHEN a GitHub action runs
-  output=$(GITHUB_TOKEN=exported-token bash "${temp_root}/scripts/run.sh" list 2>&1) && return 1
+  output=$(env -u GH_TOKEN GITHUB_TOKEN=exported-token bash "${temp_root}/scripts/run.sh" list 2>&1) || {
+    printf '%s\n' "$output" >&2
+    return 1
+  }
 
-  # THEN it fails and names the missing key, rather than using the exported token
-  assert_contains "$output" 'GITHUB_TOKEN is not set in PROJECT_CFG.Local.md' &&
-    assert_not_contains "$output" 'exported-token'
+  # THEN the exported token reaches the worker, and run.sh names where it came from
+  assert_contains "$output" 'exported-token|acme/widgets|open' &&
+    assert_contains "$output" 'Note: the GitHub token comes from the GITHUB_TOKEN environment variable.' &&
+    # AND a token from the file wins, with no note
+    printf 'GITHUB_TOKEN=file-token\n' >"${temp_root}/PROJECT_CFG.Local.md" &&
+    output=$(env -u GH_TOKEN GITHUB_TOKEN=exported-token bash "${temp_root}/scripts/run.sh" list 2>&1) &&
+    assert_contains "$output" 'file-token|acme/widgets|open' &&
+    assert_not_contains "$output" 'Note:'
 }
 
 test_run_rejects_extra_positionals() {
@@ -104,5 +112,5 @@ test_run_rejects_extra_positionals() {
 }
 
 run_test 'run.sh dispatches fetch, vote, resolve, complete, retarget, and stack' test_run_dispatches_fetch_vote_resolve_complete_retarget_and_stack
-run_test 'run.sh ignores an exported GITHUB_TOKEN' test_run_ignores_an_exported_github_token
+run_test 'run.sh names a token that no file holds' test_run_names_a_token_that_no_file_holds
 run_test 'run.sh rejects a body split into extra positionals' test_run_rejects_extra_positionals

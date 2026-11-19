@@ -53,19 +53,20 @@ load_project_config() {
   fi
 }
 
-# load_private_config <skill_root> <git_common_subdir>
-# Load the private token file: the skill-local PROJECT_CFG.Local.md first, then
-# <git-common-dir>/<git_common_subdir>/PROJECT_CFG.Local.md. The Git common directory is shared by
-# every linked worktree and cannot be staged from a worktree.
-load_private_config() {
-  local skill_root="$1" subdir="$2"
-  local local_config="${skill_root}/PROJECT_CFG.Local.md"
-  local git_root="$skill_root" git_common_dir shared_config
-
-  if [[ -f "$local_config" ]]; then
-    source_config "$local_config"
-    return
-  fi
+# load_github_token <skill_root>
+# Set GITHUB_TOKEN from the first of these places that holds a token, and GITHUB_TOKEN_SOURCE to
+# the place:
+#   1. PROJECT_CFG.Local.md in the skill folder
+#   2. github/PROJECT_CFG.Local.md in the Git common directory, which every linked worktree shares
+#   3. the GH_TOKEN, then the GITHUB_TOKEN environment variable, the GitHub CLI's own order
+#   4. the GitHub CLI, when it is signed in
+# A file that exists without the key falls through to the next place. Exit with every place it
+# checked when none holds a token. The Git credential helper is not a place: its credential can
+# belong to another account, which could then post comments on a public repository.
+load_github_token() {
+  local skill_root="$1" from_gh_token="${GH_TOKEN:-}" from_github_token="${GITHUB_TOKEN:-}"
+  local git_root="$skill_root" git_common_dir config cli_token
+  local configs=("${skill_root}/PROJECT_CFG.Local.md")
 
   # MSYS2_ARG_CONV_EXCL protects API paths but also stops Git Bash translating /c/... for the
   # native Git executable. Convert only this filesystem argument when cygpath is available.
@@ -73,20 +74,44 @@ load_private_config() {
     git_root=$(cygpath -m "$skill_root")
   fi
   git_common_dir=$(git -C "$git_root" rev-parse --path-format=absolute --git-common-dir 2>/dev/null || true)
-  shared_config="${git_common_dir:+${git_common_dir}/${subdir}/PROJECT_CFG.Local.md}"
-  if [[ -n "$shared_config" && -f "$shared_config" ]]; then
-    source_config "$shared_config"
-    return
+  if [[ -n "$git_common_dir" ]]; then
+    configs+=("${git_common_dir}/github/PROJECT_CFG.Local.md")
   fi
 
-  echo "ERROR: PROJECT_CFG.Local.md was not found at ${local_config}." >&2
-  if [[ -n "$shared_config" ]]; then
-    echo "       Shared config was not found at ${shared_config}." >&2
+  # A file wins over the environment, so the exported value is set aside before the files load.
+  unset GITHUB_TOKEN
+  GITHUB_TOKEN_SOURCE=''
+  for config in "${configs[@]}"; do
+    [[ -f "$config" ]] || continue
+    source_config "$config"
+    if [[ -n "${GITHUB_TOKEN:-}" ]]; then
+      GITHUB_TOKEN_SOURCE="$config"
+      return
+    fi
+  done
+
+  if [[ -n "$from_gh_token" ]]; then
+    GITHUB_TOKEN="$from_gh_token"
+    GITHUB_TOKEN_SOURCE='the GH_TOKEN environment variable'
+  elif [[ -n "$from_github_token" ]]; then
+    GITHUB_TOKEN="$from_github_token"
+    GITHUB_TOKEN_SOURCE='the GITHUB_TOKEN environment variable'
+  elif cli_token=$(github_cli_token) && [[ -n "$cli_token" ]]; then
+    GITHUB_TOKEN="$cli_token"
+    GITHUB_TOKEN_SOURCE='the GitHub CLI (gh auth token)'
   else
-    echo "       The shared Git directory could not be resolved." >&2
+    echo "ERROR: no GitHub token was found. These places were checked, in order:" >&2
+    printf '         %s\n' "${configs[@]}" 'the GH_TOKEN and GITHUB_TOKEN environment variables' \
+      'the GitHub CLI (gh auth token)' >&2
+    echo "       See .agents/skills/gh-pr-review/references/setup.md." >&2
+    exit 1
   fi
-  echo "       Create a private config — see .agents/skills/gh-pr-review/references/setup.md." >&2
-  exit 1
+}
+
+# github_cli_token
+# Print the token of the GitHub CLI for github.com. Fails when gh is missing or signed out.
+github_cli_token() {
+  command -v gh >/dev/null 2>&1 && gh auth token --hostname github.com 2>/dev/null
 }
 
 # require_max_positionals <action> <max> <argc>
