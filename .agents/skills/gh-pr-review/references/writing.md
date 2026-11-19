@@ -65,7 +65,7 @@ _-- AI Assistant_
 
 ## Review comments and replies
 
-- Start with a marker, graded by effect:
+- Start with `[Question]`, `[Info]`, or a marker graded by effect:
 
   | Marker | Effect |
   |---|---|
@@ -74,8 +74,6 @@ _-- AI Assistant_
   | `[Major]` | Wrong results on an edge, failure, or concurrency path, or the main behaviour untested. Also stored data that existing data gives, one rule in two places, a PR over the size ceiling without a valid exemption, a breaking change that the description does not name, a description claim that hides one, or a README snippet that does not compile |
   | `[Minor]` | No wrong results: a misleading name, a member at the wrong abstraction level, a policy in the wrong layer, a test gap, stale text, excess comments, a missing result shape, a public member that consumers do not need, a missing README or sample update, or a breach of `rules.library.md`. Also a description claim that does not hold, an unlinked reference, a description that omits a tangible change, or a PR over the size target without a reason |
   | `[Suggestion]` | Optional; nothing is wrong |
-  | `[Question]` | You need an answer before you can judge |
-  | `[Info]` | A reply that reports a fix or a decision |
 
 - After the marker, two or three sentences: the defect, its effect, and the remedy.
 - If the remedy needs more than a one-line change, add a fenced example the author can paste.

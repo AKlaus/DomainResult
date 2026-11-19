@@ -64,9 +64,10 @@ Follow the split order in `AGENTS.md` and **Pull request slices** in `rules.libr
 - Complete A with `complete`. GitHub then retargets B to `master` and replays its commits onto
   the squash commit under new hashes. Fetch B's new head and check it with `git range-diff`
   before you build on it.
-- A PR outside the stack keeps its old base. Rebase it onto its parent's new tip, with the
-  parent's old tip as the upstream: `git rebase --onto <parent new tip> <parent old tip> <branch>`.
-  Never rebase it onto `origin/master`, or its PR shows the parent's changes again.
+- Rebase every PR whose parent changed and that GitHub did not replay, such as one in a chain
+  without a stack: `git rebase --onto <parent new tip> <parent old tip> <branch>`. If the parent
+  merged, its new tip is the squash commit, and the PR also needs `retarget` to `master`. A plain
+  rebase onto `origin/master` replays the parent's commits again.
 
 ## Run `scope`
 

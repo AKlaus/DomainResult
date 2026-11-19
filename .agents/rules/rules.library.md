@@ -54,7 +54,8 @@ conversions, under the `'DomainResult' package` heading.
 - The `<summary>` is one short statement. Caveats go in `<remarks>`.
 - A factory method's `<summary>` names the `DomainOperationStatus` it returns and its default
   HTTP code, as `IDomainResult.cs` does. Docs in `src/Common` say nothing else about ASP.NET Core.
-- Add `<param>` and `<returns>` only when they add value.
+- Add `<param>` and `<returns>` only when they add value. A method's `<param>` tags cover every
+  parameter or none.
 - Implementations use `<inheritdoc/>`, with `<remarks>` only for contract-relevant differences.
 
 ## README and samples

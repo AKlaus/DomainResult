@@ -19,10 +19,11 @@ stops the workflow, and the report names it.
 
 - Run `review <pr>`. The open comments are the review threads with `isResolved: false` and the
   general comments that are not resolved.
-- Skip a general comment that an earlier reply already answered. A quote-reply from `reply`
-  opens with `> @<login> [wrote](<url>):`, or `> [Comment](<url>):` for a deleted account. If
-  the text after the quote starts with `[Info]`, it is an earlier answer. Any other marker is new
-  feedback, such as a reviewer who disputes a decline.
+- Skip a general comment that an earlier reply already answered.
+- A quote-reply that `reply` posted is an open general comment too. It opens with
+  `> @<login> [wrote](<url>):`, or `> [Comment](<url>):` for a deleted account. Skip it when the
+  text after the quote starts with `[Info]`. With any other marker, it is new feedback, such as a
+  reviewer who disputes a decline.
 - Check that the local branch holds `sourceCommit`:
   `git merge-base --is-ancestor <sourceCommit> HEAD`. If it does not, stop and ask.
 - If the developer named a number of comments and `review` finds a different number, address

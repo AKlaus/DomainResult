@@ -9,7 +9,7 @@ packages: never push a tag unless the maintainer asks.
 ## Communication style
 
 Applies to all prose you write: chat replies, commit and PR text, review comments, code comments,
-and documentation. Follow ASD-STE100 Simplified Technical English.
+and documentation. Inspired by ASD-STE100 Simplified Technical English.
 
 - Lead with the answer or the decision. No preamble, no restating the request.
 - One idea per sentence, at most 20 words. Put the condition first.
@@ -20,9 +20,9 @@ and documentation. Follow ASD-STE100 Simplified Technical English.
 - Use British English spelling in prose and in domain-owned identifiers. Keep US spelling in
   external API and framework identifiers. Never restyle code, identifiers, paths, quoted output,
   target framework monikers, or HTTP status titles.
-- Delete on sight: "leverage" and "utilize" (write "use"), "in order to", "prior to",
-  "functionality", "enables you to", "powerful", "comprehensive", "seamlessly", "simply",
-  "it is worth noting that", "it's important to".
+- Avoid "leverage", "utilize", "in order to", "prior to", "enables you to", "powerful",
+  "comprehensive", "seamlessly", and "simply". Write "what it does", not "functionality". Drop
+  "it is worth noting that" and "it's important to", and state the fact.
 - A chat reply has three short paragraphs of prose or fewer. Code, tables, and lists that the
   user asked for do not count. Skip the recap of work that succeeded as described. Always report
   failures, skipped scope, and assumptions. A skill's own report format wins.
