@@ -39,8 +39,8 @@ description does not show it: a reviewer reads what changed, and runs `scope` fo
 - Human review shows the same limit. A SmartBear study at Cisco found that reviewers find defects
   best in [200 to 400 lines at a time](https://smartbear.com/learn/code-review/best-practices-for-peer-code-review/).
   Google's guide calls [100 lines reasonable and 1000 lines usually too large](https://google.github.io/eng-practices/review/developer/small-cls.html).
-- Past PRs of this library fit the target. The largest recent ones, such as #84 and #91, add
-  overloads across every result shape and stay within it.
+- Past PRs of this library fit the target. The largest recent ones, such as #84 (exception
+  extension methods) and #91 (a switch to `TypedResults` in the converters), stay within it.
 - The ceiling is twice the target. It leaves room for a slice that is atomic but not small, such
   as a new `DomainOperationStatus` value that must reach every result shape and conversion.
 - Tests have no target, because a PR must carry its tests. The 2000-line ceiling still stops a
