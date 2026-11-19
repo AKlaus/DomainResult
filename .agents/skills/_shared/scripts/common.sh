@@ -6,7 +6,7 @@
 
 # fail_with_body <response> <message>
 # Print an error and exit 1. From a JSON error object it prints `.message` and every entry of
-# `.errors[]`: Azure DevOps puts the whole cause in `.message`, while GitHub answers a 422 with
+# `.errors[]`: a REST error such as 404 puts the whole cause in `.message`, a 422 answers
 # "Validation Failed" there and the cause, such as "line must be part of the diff", in `.errors`,
 # and GraphQL reports only `.errors`. Any other body is printed raw. Piping jq straight to stderr
 # would abort on a non-JSON body (HTML sign-in or proxy page) before `exit 1`, losing the detail

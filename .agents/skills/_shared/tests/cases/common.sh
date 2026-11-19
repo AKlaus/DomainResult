@@ -94,7 +94,7 @@ test_pr_reference_match_passes_linked_and_unrelated_text() {
   # digits, and a small ordinal
   local text
   for text in 'Stacked on #41, for AB#964805.' \
-    'Fixed in [aa-bida-acl\#42](https://github.com/anglo-american-group/aa-bida-acl/pull/42).' \
+    'Fixed in [DomainResult\#42](https://github.com/AKlaus/DomainResult/pull/42).' \
     'Stacked on !198265, for #964805.' 'On merged PR 6794b75e75 the rows are gone.' \
     'This is PR 2 of the stack.'; do
     # THEN the shared match stays silent

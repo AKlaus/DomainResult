@@ -10,8 +10,8 @@
 #
 # Endpoints compare by service, verb, and route across all touched classes, so an action that
 # moves to another file of a partial class, or to a renamed controller, is not a change. The
-# service is part of the key, because two services can serve one route: analytics and
-# downhole-data-service both serve POST api/admin/sync.
+# service is part of the key, because two services can serve one route, such as
+# POST api/admin/sync.
 #
 # Output, one tab-separated row per endpoint that differs: change, service, endpoint
 # ("VERB route"), policy. The change is

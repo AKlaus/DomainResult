@@ -138,7 +138,7 @@ gh_ref_to_branch() {
 }
 
 # gh_repo_path <path>
-# Strip the leading slash that an Azure DevOps path carried: GitHub paths are repository-relative.
+# GitHub paths are repository-relative, so strip a leading slash a caller may pass.
 gh_repo_path() {
   printf '%s' "${1#/}"
 }

@@ -328,8 +328,8 @@ while IFS=$'\t' read -r category status first second; do
   fi
 
   # Database: the objects that a deployed script changes. A Migrations/ script runs once. A
-  # CustomFunctions/ script redeploys its routines with every release, as in downhole-data-service,
-  # so a routine that leaves it is removed. Other SQL, such as a query beside its service or a
+  # CustomFunctions/ script redeploys its routines with every release, so a routine that leaves it
+  # is removed. Other SQL, such as a query beside its service or a
   # devops/utils/sql script run by hand, deploys nothing.
   if [[ "$category" == production && ( "$name" == *.sql || "$name" == *.pgsql ) &&
         ( "$path" == */Migrations/* || "$path" == */CustomFunctions/* ) ]]; then

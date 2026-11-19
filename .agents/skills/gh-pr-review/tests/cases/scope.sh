@@ -592,7 +592,7 @@ test_scope_takes_out_an_action() {
     assert_not_contains "$output" '| Changed | `'
 }
 
-# analytics and downhole-data-service both serve POST api/admin/sync. Removing it from one service
+# Two services can both serve POST api/admin/sync. Removing it from one service
 # is a removal, even when the other service keeps it.
 test_scope_keys_endpoints_by_service() {
   local temp_root output service

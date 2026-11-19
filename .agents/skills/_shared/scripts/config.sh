@@ -5,8 +5,7 @@
 # shell options and defines only functions.
 
 # source_config <path>
-# Config values are assigned literally instead of being sourced. A work item tree path carries
-# spaces and backslashes (DA-G3\PI 26.4\2026.4 Sprint 1); sourcing that eats the backslashes and
+# Config values are assigned literally instead of being sourced. Sourcing eats backslashes and
 # runs the rest of the line as a command, and the corruption is silent. Surrounding quotes are
 # stripped, so a value quoted for the old parser still reads the same.
 source_config() {
@@ -23,9 +22,7 @@ source_config() {
     key="${line%%=*}"
     key="${key%"${key##*[![:space:]]}"}"
     value="${line#*=}"
-    # Both ends: a leading space survived into a tree path, failed the project-prefix test in
-    # create_work_item.sh and was sent as {project}\ {project}\{area}. ADO then rejected an unknown
-    # classification node and failed the whole patch document, so nothing was filed at all.
+    # Both ends: a stray space would reach the GitHub API inside the repository name or the token.
     value="${value#"${value%%[![:space:]]*}"}"
     value="${value%"${value##*[![:space:]]}"}"
 
