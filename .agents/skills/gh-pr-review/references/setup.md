@@ -36,17 +36,9 @@ To share one token across linked worktrees, put the file at `github/PROJECT_CFG.
 the directory that `git rev-parse --path-format=absolute --git-common-dir` prints. The file in the
 skill folder takes precedence when both exist.
 
-## 3. Use the skill from Claude Code
+## 3. Pre-approve the commands
 
-Claude Code finds skills in `.claude/skills/`. Link the skill folder there:
-
-```bash
-mkdir -p .claude/skills && ln -s ../../.agents/skills/gh-pr-review .claude/skills/gh-pr-review
-```
-
-Keep `.agents/skills/_shared` in place: the scripts find it from their physical path.
-
-To pre-approve the skill's commands, allow `bash .agents/skills/gh-pr-review/scripts/run.sh *`.
+If your agent asks before it runs a command, allow `bash .agents/skills/gh-pr-review/scripts/run.sh *`.
 
 ## 4. Check the setup
 

@@ -41,7 +41,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
 # The shared scripts sit in .agents/skills/_shared. The path is resolved physically (pwd -P),
-# because a .claude/skills/<skill>/ folder can be a set of symlinks into .agents/skills/<skill>/.
+# because an agent's skill folder can be a set of symlinks into .agents/skills/<skill>/.
 # PROJECT_ROOT stays logical, so a private config beside such a symlink folder is still read.
 SHARED_SCRIPTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)/../../_shared/scripts"
 if [[ ! -f "${SHARED_SCRIPTS_DIR}/config.sh" ]]; then

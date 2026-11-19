@@ -33,7 +33,7 @@ stops the workflow, and the report names it.
 
 Check every claim in the comment against the code at `HEAD`, not against its wording.
 
-- Judge the remedy apart from the finding. Check it against `rules.library.md`, and against the
+- Judge the remedy apart from the finding. Check it against `AGENTS.md`, and against the
   public API and design checks in step 3 of `review.md`.
 - Give each comment one verdict:
 
@@ -66,7 +66,7 @@ If this step finds a problem, go back to step 2.
 
 - Stage only the files of the fix.
 - Write one commit per comment, or per group of comments with one cause. The subject follows
-  "Title areas" in `.agents/skills/_shared/references/text.md`. The body says why, and names
+  **Branches, commits, and pull requests** in `AGENTS.md`. The body says why, and names
   the thread ids it addresses.
 - If the push fails, stop. Do not reply, resolve, or run `describe`. Report the failure.
 

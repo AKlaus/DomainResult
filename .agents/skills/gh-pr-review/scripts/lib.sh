@@ -9,7 +9,7 @@
 #   source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 
 # The shared scripts sit in .agents/skills/_shared. The path is resolved physically (pwd -P),
-# because a .claude/skills/<skill>/ folder can be a set of symlinks into .agents/skills/<skill>/.
+# because an agent's skill folder can be a set of symlinks into .agents/skills/<skill>/.
 SHARED_SCRIPTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)/../../_shared/scripts"
 if [[ ! -f "${SHARED_SCRIPTS_DIR}/common.sh" ]]; then
   echo "ERROR: the shared skill scripts were not found at ${SHARED_SCRIPTS_DIR}." >&2

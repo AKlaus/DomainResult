@@ -56,7 +56,7 @@ A PR over the ceiling names one of these in its description, and contains nothin
 
 ## Split a change
 
-Follow the split order in `AGENTS.md` and **Pull request slices** in `rules.library.md`.
+Follow **Pull request scope** in `AGENTS.md`.
 
 - If slice B builds on slice A before A merges, branch B from A. Open B as a draft that targets
   A's branch, then `stack create <PR of A> <PR of B>`. Add a later slice with
@@ -95,13 +95,14 @@ reads "No tangible change that `scope` detects".
 
 ### What each kind detects
 
-`scope` also holds detectors for web apps, such as API endpoints, UI routes, and database
-migrations. Only these kinds apply here:
+`scope` also holds detectors for web apps, such as UI routes and database migrations, which find
+nothing here. These kinds apply:
 
 | Kind | Source | It cannot see |
 |---|---|---|
 | Project references | `ProjectReference` in each changed `*.csproj` | a reference that only a `Directory.Build.props` adds |
 | Package dependencies | `PackageReference` in each changed production `*.csproj` and `Directory.Build.props` | a `FrameworkReference`; the test project's packages; a second, conditional version of one package, as `src/Directory.Build.props` pins for `net7.0` |
+| API endpoints | verb and route attributes in each touched controller class: the sample controllers in `samples/WebApi/Controllers/` | the minimal-API routes in `samples/WebApiMinimal/Routes/` |
 | Configuration keys | keys added to or removed from `appsettings*.json` in `samples/` | changed values |
 | Infrastructure files | `.github/workflows/*.yml` | the effect of the change |
 
@@ -112,6 +113,8 @@ migrations. Only these kinds apply here:
    - **Public API**: each public type or member that the PR adds, changes, or removes.
    - **Behaviour**: a changed HTTP code, `ProblemDetails` field, or `HttpCodeConvention` default
      behind an unchanged signature.
+   - **Sample routes**: each minimal-API route in `samples/WebApiMinimal/Routes/` that the PR
+     adds, changes, or removes.
    - **Target frameworks**: a `TargetFramework` or `TargetFrameworks` change.
    - **Package metadata**: a change to the package ID, description, tags, or version settings.
 3. Mark each change that breaks a consumer as **Breaking**.

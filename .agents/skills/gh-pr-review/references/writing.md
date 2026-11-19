@@ -1,13 +1,12 @@
 # Writing Conventions
 
 These conventions apply to PR titles and descriptions, review comments and replies, and review
-reports. `.agents/skills/_shared/references/text.md` holds the title areas and the rules for
-multiline content.
+reports. `.agents/skills/_shared/references/text.md` holds the rules for multiline content.
 
 ## Titles and descriptions
 
-**Title**: `Area: imperative summary`, under 60 characters, with an area from "Title areas" in
-`text.md`. The title carries no reference: GitHub appends ` (#<n>)` to the squash commit.
+**Title**: as **Branches, commits, and pull requests** in `AGENTS.md` describes. It carries no
+reference: GitHub appends ` (#<n>)` to the squash commit.
 
 **Description**: why the change is needed, what changed in outline, its tangible changes, and any
 check that it needs. Nothing else, and no list of changed files. A reviewer must grasp it in
@@ -72,7 +71,7 @@ _-- AI Assistant_
   | `[Critical]` | Data loss, a security hole, or an outage |
   | `[Blocker]` | Wrong results on the main path, a failing build on any target framework, or a reference from `src/Common` to ASP.NET Core |
   | `[Major]` | Wrong results on an edge, failure, or concurrency path, or the main behaviour untested. Also stored data that existing data gives, one rule in two places, a PR over the size ceiling without a valid exemption, a breaking change that the description does not name, a description claim that hides one, or a README snippet that does not compile |
-  | `[Minor]` | No wrong results: a misleading name, a member at the wrong abstraction level, a policy in the wrong layer, a test gap, stale text, excess comments, a missing result shape, a public member that consumers do not need, a missing README or sample update, or a breach of `rules.library.md`. Also a description claim that does not hold, an unlinked reference, a description that omits a tangible change, or a PR over the size target without a reason |
+  | `[Minor]` | No wrong results: a misleading name, a member at the wrong abstraction level, a policy in the wrong layer, a test gap, stale text, excess comments, a missing result shape, a public member that consumers do not need, a missing README or sample update, or a breach of `AGENTS.md`. Also a description claim that does not hold, an unlinked reference, a description that omits a tangible change, or a PR over the size target without a reason |
   | `[Suggestion]` | Optional; nothing is wrong |
 
 - After the marker, two or three sentences: the defect, its effect, and the remedy.

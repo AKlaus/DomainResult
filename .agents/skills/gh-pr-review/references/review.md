@@ -37,7 +37,7 @@ its new place in the code.
 
 Grade each finding by the severity table in `writing.md`.
 
-- Read `AGENTS.md` and `.agents/rules/*.md`.
+- Read `AGENTS.md`.
 - Diff `baseCommit` against `sourceCommit`, both from `review`. Read each touched method or file
   in full.
 - In a throwaway `git worktree` at `sourceCommit`, run `dotnet build` and `dotnet test`. List the
@@ -50,7 +50,7 @@ Grade each finding by the severity table in `writing.md`.
 
 ### Public API
 
-Check the public surface before the lines, against these sections of `rules.library.md`:
+Check the public surface before the lines, against these sections of `AGENTS.md`:
 
 - **Public API**: list each breaking change, and whether the description marks it **Breaking**.
   List each new `public` member that consumers do not need.
@@ -107,8 +107,8 @@ a difference is a correctness finding, graded by its effect.
 ### Naming and placement
 
 List every new or changed type, member, parameter, variable, constant, file, folder, test, test
-title, and test helper. Check each one against **Naming** and **Placement** in `AGENTS.md` and
-**Code layout** in `rules.library.md`, and cite the rule in each finding.
+title, and test helper. Check each one against **Naming** and **Placement** in `AGENTS.md`,
+and cite the rule in each finding.
 
 - **Purpose**: write in the worksheet what the symbol holds or does. Flag a name that does not
   say it.
@@ -136,10 +136,10 @@ changed code. Comment lines do not count against the budget, so this check limit
 
 - Flag a non-obvious condition that has no comment, and a comment that describes replaced
   behaviour.
-- Doc comments follow **XML documentation** in `rules.library.md`.
+- Doc comments follow **XML documentation** in `AGENTS.md`.
 - Flag excess: a comment, or a part of a doc comment, whose deletion loses no reason, invariant,
   unit, constraint, or non-obvious condition. Text about the change history or the review belongs
-  in the commit or the PR. A doc comment that `rules.library.md` requires stays; flag only its
+  in the commit or the PR. A doc comment that `AGENTS.md` requires stays; flag only its
   excess part.
 - For excess, post one thread per file that lists its lines, or one general comment when it spans
   several files. The example shows one trimmed case.
@@ -151,7 +151,7 @@ table with one row per new or changed branch, defensive branches included. Each 
 test that fails when the branch breaks, or marks it as a gap, an accepted gap (the PR says why),
 or correctly untested (production cannot reach it).
 
-- Check each case against **Testing** in `rules.library.md`. Flag a case whose branch, boundary,
+- Check each case against **Testing** in `AGENTS.md`. Flag a case whose branch, boundary,
   or contract you cannot name. Keep separate cases only when their failures point to different
   faults.
 - For a case whose input production cannot produce, also flag the code that only it exercises.
