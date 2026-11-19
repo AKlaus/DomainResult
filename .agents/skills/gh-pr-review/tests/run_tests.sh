@@ -16,7 +16,7 @@ BODY_SCRIPT_FLOOR=5
 export MSYS2_ARG_CONV_EXCL='*'
 
 SCRIPT_DIR="$(cd "${SKILL_TEST_DIR}/../scripts" && pwd)"
-CASE_DIRS=("${SKILL_TEST_DIR}/cases")
+CASE_DIR="${SKILL_TEST_DIR}/cases"
 
 PASSED=0
 FAILED=0
@@ -92,9 +92,13 @@ run_test() {
   fi
 }
 
-# Cases live in the cases/*.sh of each CASE_DIRS entry, one file per area, each ending with the run_test calls for the cases
-# above it. Every case stubs curl itself, and run_test runs each case body in a subshell, so a stub
-# or a shell option cannot reach the next case and the glob order of the files carries no meaning.
+# Cases live in cases/*.sh, one file per area, each ending with the run_test calls for the cases
+# above it. A case that calls the API stubs curl: the stub sees the curl arguments in "$*", with the
+# URL last. A request with a body sends it on stdin (--data-binary @-), so the stub reads stdin only
+# then; a bare `cat` on a GET would block. GraphQL requests all POST to
+# https://api.github.com/graphql, so a stub tells them apart by the operation name in the query.
+# run_test runs each case body in a subshell, so a stub or a shell option cannot reach the next
+# case, and the glob order of the files carries no meaning.
 # Top-level code in a case file is the exception: it runs in this process, so a fixture exported
 # there is visible to every file sourced after it. Keep those names prefixed by their area.
 # Adding an area is a new file and nothing else.
@@ -103,19 +107,15 @@ run_test() {
 # list that stopped short of its own end. A whole file removed from cases/ still reads as a clean
 # run; that one is a diff to review, not a number to check.
 EXPECTED=0
-for case_dir in "${CASE_DIRS[@]}"; do
-  for case_file in "$case_dir"/*.sh; do
-    EXPECTED=$(( EXPECTED + $(grep -c '^run_test ' "$case_file") ))
-  done
+for case_file in "$CASE_DIR"/*.sh; do
+  EXPECTED=$(( EXPECTED + $(grep -c '^run_test ' "$case_file") ))
 done
 
-for case_dir in "${CASE_DIRS[@]}"; do
-  for case_file in "$case_dir"/*.sh; do
-    # Parsed before it is sourced. A syntax error mid-file stops the source where it stands, so the
-    # run_test calls below it never run and the suite reports a clean pass of the cases that did load.
-    bash -n "$case_file" || exit 1
-    source "$case_file"
-  done
+for case_file in "$CASE_DIR"/*.sh; do
+  # Parsed before it is sourced. A syntax error mid-file stops the source where it stands, so the
+  # run_test calls below it never run and the suite reports a clean pass of the cases that did load.
+  bash -n "$case_file" || exit 1
+  source "$case_file"
 done
 
 printf '\n%d passed, %d failed\n' "$PASSED" "$FAILED"
@@ -123,13 +123,13 @@ TALLY_REACHED=true
 
 # A cases/ directory that moved or emptied would otherwise report a clean run of nothing and exit 0.
 if (( PASSED + FAILED == 0 )); then
-  printf 'ERROR: no cases were sourced from %s.\n' "${CASE_DIRS[*]}" >&2
+  printf 'ERROR: no cases were sourced from %s.\n' "$CASE_DIR" >&2
   exit 1
 fi
 
 if (( PASSED + FAILED != EXPECTED )); then
   printf 'ERROR: %d cases ran, %d are declared in %s; a case list did not run as written.\n' \
-    "$((PASSED + FAILED))" "$EXPECTED" "${CASE_DIRS[*]}" >&2
+    "$((PASSED + FAILED))" "$EXPECTED" "$CASE_DIR" >&2
   exit 1
 fi
 

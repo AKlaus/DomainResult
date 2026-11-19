@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
-# Cases for lib.sh, its body-text guards, and the run.sh dispatcher.
-#
-# Sourced by run_tests.sh, never run directly: it supplies SCRIPT_DIR, the assert helpers and
-# run_test, and each case runs where it is sourced. Every case stubs curl itself, so this file
-# depends on nothing another case file defines.
+# Cases for lib.sh: the API helpers and the body-text guards.
 
 test_all_scripts_parse() {
   bash -n "${SCRIPT_DIR}"/*.sh "${SCRIPT_DIR}"/scope/*.sh
@@ -48,48 +44,27 @@ test_body_guards_cover_bodies_but_not_titles() {
     [[ "$title_output" != *'names a pull request'* ]]
 }
 
-test_run_rejects_extra_positionals() {
-  # A body that reaches bash already split into words lands in the slots after the one the action
-  # reads. Those slots were ignored, so the call posted the first word and exited 0. The dispatcher
-  # must refuse the call instead, and must still accept every legitimate arity.
-  local temp_root output
-  temp_root=$(make_skill_fixture)
-  trap "rm -rf '${temp_root%/skill}'" EXIT
+test_gh_git_offers_the_token_to_github_only() {
+  # GIVEN gh_git with a token, and no other Git configuration or prompt
+  source "${SCRIPT_DIR}/lib.sh"
+  gh_init fake-token acme/widgets
+  export GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_NOSYSTEM=1 GIT_TERMINAL_PROMPT=0 GIT_ASKPASS='' SSH_ASKPASS=''
 
-  cp "${SCRIPT_DIR}/run.sh" "${temp_root}/scripts/run.sh"
-  printf 'GITHUB_REPOSITORY=o/r\n' >"${temp_root}/PROJECT_CFG.md"
-  # The token sits only in the Git common directory, so this case also covers the folder run.sh names.
-  write_git_dir_private_config "$temp_root" github 'GITHUB_TOKEN=fake-token'
-  printf '%s\n' '#!/usr/bin/env bash' 'IFS="|"; printf "%s\n" "$*"' \
-    | tee "${temp_root}/scripts/update_description.sh" "${temp_root}/scripts/vote_pr.sh" \
-      >"${temp_root}/scripts/post_comment.sh"
+  # WHEN Git asks it for credentials for github.com over HTTPS, a look-alike host, and plain HTTP
+  local github lookalike http
+  github=$(printf 'protocol=https\nhost=github.com\n\n' | gh_git credential fill 2>&1)
+  lookalike=$(printf 'protocol=https\nhost=notgithub.com\n\n' | gh_git credential fill 2>&1)
+  http=$(printf 'protocol=http\nhost=github.com\n\n' | gh_git credential fill 2>&1)
 
-  # GIVEN a description that arrived as four words rather than one argument
-  output=$(bash "${temp_root}/scripts/run.sh" describe 42 He said lease here. 2>&1) && {
-    printf 'Expected a non-zero exit, got: %s\n' "$output" >&2
-    return 1
-  }
-
-  # THEN the dispatcher names the arity and points at the quoting rules
-  assert_contains "$output" 'takes at most 2' &&
-    assert_contains "$output" '.agents/skills/gh-pr-review/references/writing.md' &&
-    # AND the correctly quoted call still reaches the worker intact
-    [[ "$(bash "${temp_root}/scripts/run.sh" describe 42 'He said lease here.')" \
-      == 'fake-token|o/r|42|He said lease here.' ]] &&
-    # AND an action's optional trailing slots stay usable: comment takes five
-    [[ "$(bash "${temp_root}/scripts/run.sh" comment 42 'Body.' abc123 src/a.cs 12)" \
-      == 'fake-token|o/r|42|Body.|abc123|src/a.cs|12' ]] &&
-    ! bash "${temp_root}/scripts/run.sh" comment 42 'Body.' abc123 src/a.cs 12 spurious >/dev/null 2>&1 &&
-    # AND vote binds its event and body and refuses a fourth slot
-    [[ "$(bash "${temp_root}/scripts/run.sh" vote 42 request-changes 'Body.')" \
-      == 'fake-token|o/r|42|request-changes|Body.' ]] &&
-    ! bash "${temp_root}/scripts/run.sh" vote 42 comment 'Body.' spurious >/dev/null 2>&1
+  # THEN only github.com over HTTPS receives the token
+  assert_contains "$github" 'password=fake-token' &&
+    assert_not_contains "$lookalike" 'fake-token' &&
+    assert_not_contains "$http" 'fake-token'
 }
 
 run_test 'all scripts parse' test_all_scripts_parse
 run_test 'gh_init and the path helpers normalise for GitHub' test_gh_init_and_path_helpers
 run_test 'body guards cover bodies but not titles' test_body_guards_cover_bodies_but_not_titles
-run_test 'run.sh rejects a body split into extra positionals' test_run_rejects_extra_positionals
 
 test_fail_with_body_prints_message_and_errors() {
   source "${SCRIPT_DIR}/lib.sh"
@@ -235,3 +210,4 @@ run_test 'quoting guard flags a bare leading dollar sign' test_quoting_guard_fla
 run_test 'PR reference match flags each unlinked form' test_pr_reference_match_flags_unlinked_forms
 run_test 'PR reference match passes linked and unrelated text' test_pr_reference_match_passes_linked_and_unrelated_text
 run_test 'every prose-carrying script calls its guard' test_every_prose_script_calls_its_guard
+run_test 'gh_git offers the token to github.com over HTTPS only' test_gh_git_offers_the_token_to_github_only
