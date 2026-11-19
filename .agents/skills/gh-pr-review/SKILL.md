@@ -5,225 +5,85 @@ description: Work with GitHub pull requests of the repository through a GitHub t
 
 # GitHub Pull Request Skill
 
-Works with the repository's GitHub pull requests through the GitHub REST and GraphQL APIs. All
-calls go through `scripts/run.sh`.
+## Execution rules
 
-Work starts from a GitHub issue, and a PR references it as `#<issue>`. The `issue` action reads
-one, so a review can check the PR against it.
+- Every GitHub call goes through `bash .agents/skills/gh-pr-review/scripts/run.sh <action>`, run
+  from the repository root. Never call the API, the other scripts, or the config files directly.
+  Run one action per Bash call.
+- Local read-only Git is allowed: `git fetch origin pull/<n>/head`, `git diff`, and `diff` or
+  `grep` over fetched files.
+- Double-quote every ref, and pass it as `review` printed it. Do not URL-encode it.
+- If an action fails, report the failure and its likely cause. For a token problem, point to
+  `references/setup.md`.
+- `run.sh` reads the repository from `PROJECT_CFG.md` and the token from `PROJECT_CFG.Local.md`.
+  If the token file is missing, tell the user to follow `references/setup.md`.
 
----
+## Workflows
 
-## ⚠️ Execution Rules — Read Before Running Anything
-
-- **Every GitHub operation goes through `scripts/run.sh`** — it is the only entry point to the API. Never hand-write `curl`/API calls, never call other `scripts/` directly, and never source config manually (`run.sh` handles auth, encoding, and config). Each API action is its own `run.sh` invocation; don't chain multiple actions into one Bash call.
-- **Local, read-only analysis is allowed**: you may redirect a `fetch` to a temp file and run `diff`/`grep` over fetched files to reconstruct and study the change. You may also run `git fetch origin pull/<n>/head` and `git diff` locally. This never touches the API, so it's exempt from the `run.sh`-only rule above.
-- **Always invoke from the repo root**: `bash .agents/skills/gh-pr-review/scripts/run.sh <action>`. Never `cd` into the skill directory first.
-- For `fetch`, pass a branch or a commit SHA exactly as `review` returns it. A branch may be short or full (for example, `"refs/heads/bugfix/#912729"`); the script strips `refs/heads/` and URL-encodes special characters. To fetch an immutable review snapshot, pass a commit SHA from `review`'s SNAPSHOT. Always double-quote refs and never URL-encode them yourself.
-- **If a `run.sh` action fails** (non-zero exit, auth error, or `404`/not-found), report the failure and its likely cause — expired or unapproved token → see `references/setup.md`; wrong PR number, thread or comment id, branch, or file path — rather than retrying blindly or fabricating a result.
-
----
-
-## Step 1 — Load Configuration
-
-`run.sh` reads the repository from `PROJECT_CFG.md`, which is committed, and the token from
-`PROJECT_CFG.Local.md`, which is not. If the token file is missing, tell the user to follow
-`references/setup.md`.
-
----
-
-## Step 2 — Choose an Action
-
-Determine which action the user wants; if unstated, ask. Every action maps to a `run.sh` command in the Step 3 table below: `list`, `create`, `review`, `issue`, `scope`, `fetch`, `comment`, `reply`, `edit`, `delete`, `vote`, `describe`, `title`, `retarget`, `stack`, `publish`, `complete`, `resolve`, `unresolve`.
-
-Two requests run a workflow rather than one action:
-
-- To review a PR, follow `references/review.md`.
+- To review a PR, follow `references/review.md`. A review request runs the whole workflow,
+  posting included, without further prompts, unless it asks for a dry run.
 - To address the open comments on the developer's own PR, follow `references/address-comments.md`.
+- Before you write a PR title or description, a comment, a reply, or a review report, read
+  `references/writing.md` and `.agents/skills/_shared/references/text.md`.
+- Before `create` or `describe`, run `scope` and read `references/scope.md`.
 
----
+## Actions
 
-## Step 3 — Run the Action
+Each command below follows `bash .agents/skills/gh-pr-review/scripts/run.sh`.
 
-| Goal                      | Command                                                                                                   |
-|---------------------------|-----------------------------------------------------------------------------------------------------------|
-| List open PRs             | `bash .agents/skills/gh-pr-review/scripts/run.sh list`                                                    |
-| List by status            | `bash .agents/skills/gh-pr-review/scripts/run.sh list merged` (`open`, `merged`, `closed`, `all`)         |
-| Create draft PR           | `bash .agents/skills/gh-pr-review/scripts/run.sh create <source> <target> "Title" [description]`          |
-| Create ready PR           | `bash .agents/skills/gh-pr-review/scripts/run.sh create <source> <target> "Title" [description] --ready`  |
-| Review a PR               | `bash .agents/skills/gh-pr-review/scripts/run.sh review <pr>`                                             |
-| Read a referenced issue   | `bash .agents/skills/gh-pr-review/scripts/run.sh issue <issue>`                                           |
-| Size a change             | `bash .agents/skills/gh-pr-review/scripts/run.sh scope [base] [head]`                                     |
-| Fetch a file              | `bash .agents/skills/gh-pr-review/scripts/run.sh fetch path/to/file.cs "<ref>"`                           |
-| General comment           | `bash .agents/skills/gh-pr-review/scripts/run.sh comment <pr> "Your comment"`                             |
-| File-level comment        | `bash .agents/skills/gh-pr-review/scripts/run.sh comment <pr> "Your comment" <commit> path/to/file.cs`    |
-| Line comment              | `bash .agents/skills/gh-pr-review/scripts/run.sh comment <pr> "Your comment" <commit> path/to/file.cs <line>` |
-| Reply                     | `bash .agents/skills/gh-pr-review/scripts/run.sh reply <thread_id or general_comment_id> "Your comment"`  |
-| Edit your comment         | `bash .agents/skills/gh-pr-review/scripts/run.sh edit <comment_id> "New text"`                            |
-| Delete your comment       | `bash .agents/skills/gh-pr-review/scripts/run.sh delete <comment_id>`                                     |
-| Approve                   | `bash .agents/skills/gh-pr-review/scripts/run.sh vote <pr> approve ["Body"]`                              |
-| Request changes           | `bash .agents/skills/gh-pr-review/scripts/run.sh vote <pr> request-changes "Reason"`                      |
-| Comment without a verdict | `bash .agents/skills/gh-pr-review/scripts/run.sh vote <pr> comment "Body"`                                |
-| Update description        | `bash .agents/skills/gh-pr-review/scripts/run.sh describe <pr> "New description"`                         |
-| Update title              | `bash .agents/skills/gh-pr-review/scripts/run.sh title <pr> "New title"`                                  |
-| Change the target branch  | `bash .agents/skills/gh-pr-review/scripts/run.sh retarget <pr> <branch>`                                  |
-| List or show stacks       | `bash .agents/skills/gh-pr-review/scripts/run.sh stack list` / `stack show <pr>`                           |
-| Form or grow a stack      | `bash .agents/skills/gh-pr-review/scripts/run.sh stack create <pr> <pr> [...]` / `stack add <stack> <pr> [...]` |
-| Unstack the unmerged PRs  | `bash .agents/skills/gh-pr-review/scripts/run.sh stack unstack <stack>`                                   |
-| Publish a draft           | `bash .agents/skills/gh-pr-review/scripts/run.sh publish <pr>`                                            |
-| Complete (squash-merge)   | `bash .agents/skills/gh-pr-review/scripts/run.sh complete <pr>`                                           |
-| Resolve                   | `bash .agents/skills/gh-pr-review/scripts/run.sh resolve <thread_id or general_comment_id>`               |
-| Reopen                    | `bash .agents/skills/gh-pr-review/scripts/run.sh unresolve <thread_id or general_comment_id>`             |
+| Goal | Command |
+|---|---|
+| List PRs | `list [open\|merged\|closed\|all]` (default `open`) |
+| Create a PR | `create <source> <target> "Title" [description] [--ready]` |
+| Read a PR: metadata, snapshot commits, files, threads, comments, reviews | `review <pr>` |
+| Read an issue with its comments | `issue <issue>` |
+| Size a change | `scope [base] [head]` |
+| Fetch a file at a ref | `fetch path/to/file.cs "<ref>"` |
+| Comment: general, file-level, or on a line | `comment <pr> "Text" [<commit> <file> [<line>]]` |
+| Reply | `reply <PRRT_… or IC_…> "Text"` |
+| Edit or delete your comment | `edit <IC_… or PRRC_…> "Text"`, `delete <IC_… or PRRC_…>` |
+| Submit a review | `vote <pr> approve\|request-changes\|comment ["Body"]` |
+| Update the description or title | `describe <pr> "Text"`, `title <pr> "Text"` |
+| Change the target branch | `retarget <pr> <branch>` |
+| Manage stacks | `stack list`, `stack show <pr>`, `stack create <pr> <pr> [...]`, `stack add <stack> <pr> [...]`, `stack unstack <stack>` |
+| Publish a draft | `publish <pr>` |
+| Squash-merge | `complete <pr>` |
+| Resolve or reopen | `resolve <PRRT_… or IC_…>`, `unresolve <PRRT_… or IC_…>` |
 
-`<pr>` is the PR number. `<thread_id>` is a review thread node ID (`PRRT_…`). `<comment_id>` is a
-general comment (`IC_…`) or a review comment (`PRRC_…`); the node ID decides which kind `edit`
-and `delete` change. `review` prints all three. Paths are repository-relative, without a leading
-`/`; the scripts strip one if present.
+### Behaviour that the commands do not show
 
-GitHub threads only review comments. A general comment stays a flat item in the conversation, so
-`reply` and `resolve` treat its `IC_…` id the closest way GitHub allows:
+- `create` makes a draft unless `--ready` is given. Put `--` before a description that starts
+  with `--`. CI skips draft PRs, so a draft has no build result until `publish`.
+- `comment` with a `<commit>` makes a review thread. Pass the full `sourceCommit` that `review`
+  printed, so the comment stays on the code you read. GitHub refuses a line outside a diff hunk,
+  and every file or line comment while your account has a pending review on the PR.
+- A general comment (`IC_…`) has no thread. `reply` to it posts a new general comment that
+  mentions the author, links the original, and quotes its first line. `resolve` hides it with
+  the reason "Resolved", and `unresolve` shows it again. To answer a review comment (`PRRC_…`),
+  reply to its thread (`PRRT_…`).
+- `vote request-changes` and `vote comment` need a body.
+- `scope` reads the local clone only and needs no token. `base` defaults to `origin/master`.
+- `issue` refuses a pull request number.
+- GitHub refuses `retarget` on a PR in a stack: `stack unstack`, `retarget`, then `stack create`
+  again. `stack create` and `stack add` take PRs bottom first, and each PR must already target the
+  head branch of the one below.
+- `complete` runs only when the developer asks to complete or merge the PR. The squash commit
+  message is a copy of the PR description, so check the description first, as step 6 of
+  `references/address-comments.md` describes. `complete` refuses a draft, a closed PR, a PR
+  without a description, and a stacked PR that is not the bottom of its stack. It polls the merge
+  for up to ten minutes, and running it again picks up a pending merge. After the merge, it deletes
+  the branch on GitHub and locally. It keeps a branch that open PRs target, and a local branch
+  that holds commits the PR did not merge. It then fast-forwards the local target branch. Its output reports each cleanup step in
+  `remoteBranch`, `localBranch`, and `targetBranch`.
 
-| Action      | Review thread (`PRRT_…`)        | General comment (`IC_…`)                                                       |
-|-------------|---------------------------------|--------------------------------------------------------------------------------|
-| `reply`     | Nested reply in the thread      | New general comment that mentions the author, links the original, and quotes its first line |
-| `resolve`   | Marks the thread resolved       | Hides the comment with the reason "Resolved"; it collapses and anyone can expand it |
-| `unresolve` | Reopens the thread              | Shows the hidden comment again                                                 |
+## Maintaining the scripts
 
-Hiding needs write access to the repository. Resolving or reopening a review thread needs
-**Contents → Read and write**, as `references/setup.md` describes. `review` reports `isResolved`
-for both kinds. To answer a review comment (`PRRC_…`), reply to its thread.
-
-For `create`, source and target may be short branch names or full `refs/heads/...`
-references. New PRs are drafts unless `--ready` is supplied. The flag may appear
-before or after the optional description. Use `--` before a description that begins
-with `--`.
-
-`publish` takes a draft out of draft state, which requests its reviewers and notifies them. CI
-(`.github/workflows/ci.yml`) skips draft PRs, so a draft has no build or test result until you
-publish it. `review` reports
-`isDraft`, so check there first: publishing a published PR changes nothing and still answers
-`"isDraft": false`.
-
-### Comment forms
-
-| Form        | Arguments                            | Lands as                                                       |
-|-------------|--------------------------------------|----------------------------------------------------------------|
-| General     | `<pr> <text>`                        | A PR conversation comment (`IC_…`); flat, with no thread       |
-| File-level  | `<pr> <text> <commit> <file>`        | A review thread on the whole file; the file must be in the PR  |
-| Line        | `<pr> <text> <commit> <file> <line>` | A review thread on a line of that commit's version of the file |
-
-`<commit>` is the full `sourceCommit` that `review` printed: the commit you read. A push after
-`review` then cannot move the comment to another line; GitHub marks it outdated instead.
-
-A line comment needs a line inside a diff hunk of the PR. GitHub refuses any other line with `422`,
-and the script prints a hint. For a finding outside the diff, see "Findings outside the diff" in
-`references/review.md`. GitHub also refuses every file or line comment with `422` while your
-account has an unsubmitted (pending) review on the PR, for example one started in VS Code. Submit
-or discard that review, or post a general comment with a permalink to the line.
-
-### Review events for `vote`
-
-| Event             | Meaning                         | Body                             |
-|-------------------|---------------------------------|----------------------------------|
-| `approve`         | Approve the PR                  | Optional                         |
-| `request-changes` | Block the PR until it changes   | Required: state the reason       |
-| `comment`         | Submit a review with no verdict | Required                         |
-
-GitHub refuses `approve` and `request-changes` on a PR you opened. There is no reset: a later
-review from you replaces your earlier verdict.
-
-### Other actions
-
-`scope` checks a change against the PR budget and lists its tangible changes, from the local
-clone only. `base` defaults to `origin/master` and `head` to `HEAD`. Before `create` or
-`describe`, run it and read `references/scope.md`.
-
-`retarget <pr> <branch>` changes the PR's target branch; `<branch>` is a short name or a
-`refs/heads/` ref. GitHub recomputes the diff against the new target and leaves the head branch
-alone, so rebase the head onto the new target first when the two targets have diverged. It is how
-a slice joins or leaves a chain of PRs (`references/scope.md`, "Split a change"): a PR that targets
-another PR's branch shows only its own changes. GitHub refuses `retarget` on a PR that is in a
-stack; `stack unstack` first, then retarget, then `stack create` again. `retarget` needs
-**Pull requests → Read and write**.
-
-`stack` reads and manages GitHub's stacks, its own objects over a chain of PRs. `stack show <pr>`
-prints the stack that holds a PR, bottom first; `stack list` prints every stack. `stack create`
-forms one from PR numbers given bottom first, and `stack add` appends PRs above a stack's top; both
-require each PR to target the head branch of the one below, so `retarget` first. `stack unstack`
-removes every unmerged PR; the PRs stay open with their targets unchanged. Merged and queued PRs
-stay behind in a closed stack, so a stack whose bottom has merged survives holding it alone, and
-GitHub dissolves a stack only when nothing remains. A chain that GitHub has not made a stack of
-gets no automatic retarget or replay when its bottom merges: rebase the next PR onto the squash
-commit and retarget it by hand.
-
-`complete` squash-merges the PR. It runs only when the developer asks to complete or merge the PR.
-The commit subject is the PR title with ` (#<n>)`, and the commit message is a copy of the PR
-description. So before `complete`, check that the description still matches the code, as step 6 of
-`references/address-comments.md` describes. `complete` refuses a draft, a closed or merged PR, a
-PR without a description, and a stacked PR that is not the bottom of its stack, before it sends
-the merge: GitHub merges a stacked PR together with every open PR below it, so complete the lower
-PR first. The merge goes through GitHub's asynchronous merge API, the only one that accepts a
-stacked PR: GitHub accepts the request at once, and `complete` polls its result, for up to ten
-minutes, until it is merged or failed. It merges the head commit that it read, so a push after the
-read makes GitHub cancel the merge. Branch protection and repository rules run only when the merge
-runs, so a failed required check, a missing approval, or a conflict arrives as a failed result,
-and the script prints the reason. A run that gives up while the merge is still pending says so;
-running `complete` again picks the pending request up. The token needs **Contents → Read and
-write**, as `references/setup.md` describes.
-
-After the merge, `complete` deletes the PR's branch on GitHub and in the local clone, and
-fast-forwards the local target branch, such as `master`. Run it from the repository root, so the
-local steps find the clone. The deletion is a push with a lease on the merged head, so a branch
-that moved after the merge stays. It keeps a branch that open PRs target, because the deletion may
-close those PRs; after a stack merge GitHub retargets and replays the PRs above by itself, so the
-branch is usually free by then (`references/scope.md`, "Split a change"). A branch that GitHub keeps, such as a fork's branch or the default branch,
-stays in the clone too. It also keeps a local branch that holds commits the PR did not merge. It
-never forces a switch or a non-fast-forward. The output
-reports each step in `remoteBranch`, `localBranch`, and `targetBranch`, and stderr warns about a
-step that kept or skipped something. A failed cleanup step never fails the run, because the merge
-has already happened.
-
-`issue <issue>` prints an issue's title, state, labels, body, and comments. It refuses a pull
-request number, because GitHub numbers issues and PRs together; read a PR with `review`.
-
-Before writing a PR title or description, review comment, reply, or review report, read
-`references/writing.md` and `.agents/skills/_shared/references/text.md`.
-
-For `review`, read `references/review.md` before analysing or posting findings. A request to
-review a PR runs that whole workflow, posting included, without further prompts, unless it asks
-for a dry run.
-
----
-
-## Maintaining the Scripts
-
-When changing files under `scripts/`, run the mocked regression suite from the repository root:
+After you change a file under `scripts/`, run the mocked suite from the repository root. It does
+not contact GitHub.
 
 ```bash
 bash .agents/skills/gh-pr-review/tests/run_tests.sh
 ```
 
-The suite uses fake token files and an in-process curl replacement. The `scope` cases build a
-throwaway Git repository. The suite does not contact GitHub or mutate remote state.
-
-Run the suites with the oldest supported versions too: bash 3.2 (macOS `/bin/bash`) and jq 1.7.1
-(macOS `/usr/bin/jq`). jq 1.8 accepts expressions that 1.7 rejects, so a pass on 1.8 alone does
-not show that the scripts run on a default macOS.
-
-`.agents/skills/_shared/tests/harness.sh` is the harness: counters, assert helpers, and
-`run_test`. `run_tests.sh` names the skill and sources it. The cases live in `tests/cases/*.sh`,
-one file per area, each ending with the `run_test` calls for the cases above it. The harness also
-runs the cases in `.agents/skills/_shared/tests/cases/`, which hold only cases for
-`_shared/scripts`. Add an area of this skill as a new file in `tests/cases/` — the harness sources
-whatever it finds.
-
----
-
-## Reference Files
-
-- `references/setup.md` — How to create a GitHub token, set up config files, configure `.gitignore`
-- `references/api.md` — GitHub REST and GraphQL reference for each script
-- `references/review.md` — Review analysis, comment, and report workflow
-- `references/address-comments.md` — Address the review comments on your own PR: judge, fix, review, push, reply and resolve, and check the description
-- `references/review-worksheet.md` — Scratch template that each review pass fills, step by step
-- `references/writing.md` — PR titles, descriptions, comments, replies, reports, and references
-- `references/scope.md` — PR size budget, exemptions, how to split, and how to use `scope` in a description or a review
+The scripts must also pass on bash 3.2 (`/bin/bash`) and jq 1.7.1 (`/usr/bin/jq`), the macOS
+defaults. Test cases live in `tests/cases/*.sh`, one file per area.

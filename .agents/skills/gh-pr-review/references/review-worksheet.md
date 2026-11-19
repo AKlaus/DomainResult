@@ -1,8 +1,7 @@
 # Review Worksheet
 
-Copy this file to a scratch path, such as `/tmp/pr-<n>-worksheet.md`, at the start of each review
-pass. Fill a section when you finish its step in `review.md`. If a section has no rows, write
-"None" and the reason. Build the comments and the report from this file.
+Copy this file to a scratch path at the start of each review pass. Fill a section when you finish
+its step in `review.md`. If a section has no rows, write "None" and the reason.
 
 PR #<n>, base <baseCommit>, source <sourceCommit>
 
@@ -49,7 +48,7 @@ Existing structure of the concept: <where the code already expresses it>
 | Policy | Layer it sits in | Layer that knows what it needs | Verdict |
 |---|---|---|---|
 
-| Design | Stores | Layers touched | Verdict |
+| Design | Stores | Files touched | Verdict |
 |---|---|---|---|
 | The PR | | | |
 | Alternative | | | |
@@ -92,7 +91,7 @@ One row per symbol. In the verdict, write `ok` or the name of the failed check f
 
 ### Comments and documentation
 
-Verdict: `ok`, `missing reason`, `stale`, `stack-rule breach`, or `excess` with the part to cut.
+Verdict: `ok`, `missing reason`, `stale`, `rules breach`, or `excess` with the part to cut.
 
 | Location | Verdict |
 |---|---|
