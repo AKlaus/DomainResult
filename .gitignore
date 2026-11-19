@@ -352,3 +352,6 @@ MigrationBackup/
 
 # Private agent skill settings, such as a GitHub token
 .agents/**/*.Local.md
+
+# macOS folder metadata
+.DS_Store
