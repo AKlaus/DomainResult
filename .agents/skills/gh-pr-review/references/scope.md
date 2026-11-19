@@ -8,24 +8,12 @@ The main reviewer is an LLM agent, such as Claude, that runs the `review.md` wor
 keeps its context window on one clear goal. The maintainer who approves the PR must still
 understand it, so both read the description first.
 
-The budget is measured in changed lines, but no report shows a line count. Both reviewers learn
-more from what changed, such as the public API and the package dependencies, so `scope` reports
-what it can detect and gives the budget result only on stderr.
-
 ## The budget
 
-`scope` counts changed lines, added plus deleted, and prints only the result, on stderr. The
-description does not show it: a reviewer reads what changed, and runs `scope` for the budget.
-
-| Lines | Target | Ceiling |
-|---|---|---|
-| Production | 500 | 1000 |
-| Production and tests | none | 2000 |
-
-- **Within the target**: no remark is needed.
-- **Over the target**: the description states, in one sentence, why the change cannot be split.
-- **Over the ceiling**: split the PR. If it cannot be split, the description names one exemption
-  from the list below and gives the reason.
+`scope` counts changed lines, added plus deleted, against the target and the ceiling in
+`AGENTS.md`. It prints only the result, on stderr, and no report shows a line count: both
+reviewers learn more from what changed, such as the public API and the package dependencies. A
+reviewer runs `scope` for the budget.
 
 ### Why these numbers
 
@@ -112,10 +100,8 @@ Follow the split order in `AGENTS.md` and the slice rules in `rules.library.md`.
 - If slice B builds on slice A before A merges, branch B from A. Open B as a draft that targets
   A's branch, then form the stack: `stack create <PR of A> <PR of B>`. Add a later slice with
   `stack add <stack> <PR of C>`.
-- Complete A with `complete`, which merges the bottom of a stack alone; it refuses B while A is
-  open. GitHub's stack-aware merge then retargets B to `master` and replays B's commits onto the
-  squash commit by itself, with the same patches under new hashes, and `complete` deletes A's
-  branch once no open PR targets it. Fetch B's new head and check it with `git range-diff`
+- Complete A with `complete`. `SKILL.md` describes how GitHub then retargets B to `master` and
+  replays its commits under new hashes. Fetch B's new head and check it with `git range-diff`
   before you build on it. A PR that is not in the stack, such as one opened after the stack
   formed, keeps its old base and needs a rebase by hand: onto its parent's new tip, with the
   parent's old tip as the upstream, `git rebase --onto <parent new tip> <parent old tip> <C branch>`,
@@ -182,6 +168,6 @@ migrations. This repository has none of those files in `src/`, so only these kin
 3. Mark each change that breaks a consumer as **Breaking**. Examples are a removed or renamed
    public member, a changed signature, a changed default HTTP code, and a dropped target framework.
 4. Delete a row that is wrong.
-5. If the PR is over the target, add the reason. If it is over the ceiling, name the exemption.
+5. If the PR is over the target or the ceiling, add what **Pull request scope** in `AGENTS.md` asks for.
 
 When a push changes the result, run `scope` again and update the description with `describe`.

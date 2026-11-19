@@ -25,25 +25,9 @@ one, so a review can check the PR against it.
 
 ## Step 1 — Load Configuration
 
-### Shared config (team settings)
-`PROJECT_CFG.md` — lives in the skill directory (`.agents/skills/gh-pr-review/`), committed to Git. Contains the repository as `<owner>/<repo>`:
-
-```
-GITHUB_REPOSITORY=AKlaus/DomainResult
-```
-
-### Private config (token — never committed)
-Store the token in `.agents/skills/gh-pr-review/PROJECT_CFG.Local.md` and exclude it through
-`.gitignore`. As an option for linked worktrees, use
-`<git-common-dir>/github/PROJECT_CFG.Local.md`; every worktree shares that file.
-
-```
-GITHUB_TOKEN=your-github-token-here
-```
-
-If both files are missing, tell the user to follow `references/setup.md`.
-
-See `references/setup.md` for full setup instructions.
+`run.sh` reads the repository from `PROJECT_CFG.md`, which is committed, and the token from
+`PROJECT_CFG.Local.md`, which is not. If the token file is missing, tell the user to follow
+`references/setup.md`.
 
 ---
 
@@ -149,12 +133,9 @@ review from you replaces your earlier verdict.
 
 ### Other actions
 
-`scope` checks a change against the PR budget and counts its tangible changes: project
-references, package dependencies, endpoints, contracts, routes, components and their size,
-database objects, configuration keys, and infrastructure. It never prints line counts, and it
-prints the budget result on stderr. It reads the local clone only, so it needs no token. `base`
-defaults to `origin/master` and `head` to `HEAD`. Before `create` or `describe`, run it and read
-`references/scope.md`; its output goes into the description.
+`scope` checks a change against the PR budget and lists its tangible changes, from the local
+clone only. `base` defaults to `origin/master` and `head` to `HEAD`. Before `create` or
+`describe`, run it and read `references/scope.md`.
 
 `retarget <pr> <branch>` changes the PR's target branch; `<branch>` is a short name or a
 `refs/heads/` ref. GitHub recomputes the diff against the new target and leaves the head branch

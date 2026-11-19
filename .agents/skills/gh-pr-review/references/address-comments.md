@@ -53,7 +53,6 @@ numbers, callers, and statements such as "nothing reads it" or "production canno
 - Keep the fix inside the PR's purpose. A defect that the PR did not add gets its own PR.
 - Change the tests with the code: rename a test whose name states the old behaviour, and use
   input that production can produce.
-- If the fix changes public behaviour, update `README.md` and `samples/` in the same commit.
 
 ## 3. Review the fix
 
@@ -64,9 +63,9 @@ Review your own diff as a reviewer would, before you commit it.
 - No copy of the defect remains. Search the diff and the repository for the pattern.
 - The fix adds no defect: check the callers, null handling, and the contracts and docs that
   describe the old behaviour, such as XML comments, remarks, and test names.
-- The fix keeps the public API compatible, or the PR description marks the change **Breaking**.
-- Run `dotnet build` with no new warning, and `dotnet test`. Both cover every target framework.
-  If a framework's SDK is missing here, say so in the report. Never report an unrun test as passed.
+- The fix passes the **Public API** checks in step 3 of `review.md`.
+- Run `dotnet build` with no new warning, and `dotnet test`. If a framework's SDK is missing here,
+  say so in the report. Never report an unrun test as passed.
 
 If this step finds a problem, go back to step 2.
 

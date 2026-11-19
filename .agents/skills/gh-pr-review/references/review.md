@@ -48,6 +48,7 @@ once `resolve` has hidden it as resolved.
 
 Robustness and maintainability are paramount. Judge whether the change remains correct under
 failure, edge, and concurrency conditions, and whether future maintainers can safely change it.
+Grade each finding by the severity table in `writing.md`.
 
 - Read applicable `AGENTS.md` files and `.agents/rules/*.md` path-scoped rules.
 - Reconstruct the diff at the immutable `baseCommit` (the merge base) and `sourceCommit` (the
@@ -58,36 +59,27 @@ failure, edge, and concurrency conditions, and whether future maintainers can sa
 - Review the design, logic, security, naming, maintainability, and test coverage. Do not repeat
   diagnostics that CI already fails on.
 - Check out `sourceCommit` in a throwaway `git worktree`, and run `git fetch origin pull/<n>/head`
-  first if the commit is missing. Run `dotnet build` and `dotnet test` there, which cover every
-  target framework, and list the new warnings in changed files. Do not build your working tree: its
+  first if the commit is missing. Run `dotnet build` and `dotnet test` there, and list the new warnings in changed files. Do not build your working tree: its
   uncommitted edits add warnings that the PR does not carry. A warning that `rules.library.md`
   names, such as CS1573 for partial `<param>` tags, is a finding. So is a CS1591 warning for an
   undocumented public member.
 - **Description claims**: check each claim that step 1 listed against the code, a command result,
-  or the PR text. A claim that does not hold is `[Minor]`, or `[Major]` when it hides a breaking
-  change. Post them in one comment.
+  or the PR text. Post the claims that do not hold in one comment.
 - **References**: a PR that the description names as plain text, such as `PR 12`, does not
-  link. It is `[Minor]`, and the example is the line with `#12`. See `writing.md`.
+  link. The example is the line with `#12`. See `writing.md`.
 
 ### Public API
 
 The packages ship to consumers who cannot see this repository's history. Check the public
-surface before the lines.
+surface before the lines, against these sections of `rules.library.md`:
 
-- **Breaking changes**: list each public type and member that the PR removes, renames, or changes,
-  each changed default in `HttpCodeConvention`, and each changed status-to-HTTP-code mapping. Each
-  one that the description does not mark **Breaking** is `[Major]`.
-- **Binary compatibility**: a new optional parameter on an existing public method, or a changed
-  return type, breaks a consumer compiled against the old version. Grade it as a breaking change.
-- **Parity**: compare the change with **Parity across result shapes** in `rules.library.md`. A shape
-  or conversion that the change leaves out, without a reason in the description, is `[Minor]`;
-  `[Major]` when the missing shape gives a wrong HTTP response.
-- **Package boundary**: a reference to `Microsoft.AspNetCore.*` from `src/Common` is `[Blocker]`.
-- **Exposure**: a new `public` member that consumers do not need is `[Minor]`; it becomes a
-  contract that only a major version can remove.
-- **README and samples**: public behaviour that the PR adds or changes without a matching
-  `README.md` and `samples/` update is `[Minor]`. A README snippet that no longer compiles against
-  the API is `[Major]`, because consumers copy it.
+- **Public API**: list each change that the section calls breaking, and whether the description
+  marks it **Breaking**. List each new `public` member that consumers do not need.
+- **Parity across result shapes**: list each shape or conversion that the change leaves out
+  without a reason in the description.
+- **Packages and dependencies**: check the package boundary of `src/Common`.
+- **README and samples**: check each README snippet that the change affects against the API, and
+  list each missing README or sample update.
 
 ### Design and data model
 
@@ -112,8 +104,6 @@ wrong result today. A later change that the design makes easy to get wrong is en
   Compare the two in the worksheet. If the alternative is simpler, the finding gives it as the
   remedy.
 
-Grade a copy of existing data, or one rule in two places, as `[Major]`.
-Grade a member at the wrong abstraction level, or a policy in the wrong layer, as `[Minor]`.
 
 ### Size and changes at a glance
 
@@ -121,17 +111,16 @@ Read `scope.md`. Run `scope` with the `baseCommit` and `sourceCommit` that `revi
 commit is missing locally, `git fetch origin pull/<n>/head` first.
 
 - **Budget**: read the budget result that `scope` prints on stderr. Over the ceiling without a
-  valid exemption is a `[Major]` finding. Over the target without a reason is `[Minor]`. Post
-  either as one general comment. Its example is a split: one line per proposed PR, in merge order,
+  valid exemption, or over the target without a reason, is a finding. Post it as one general
+  comment. Its example is a split: one line per proposed PR, in merge order,
   built from the diff, its **Changes at a glance** rows, and the split order in `AGENTS.md`.
 - **Atomic**: flag a refactor, reformat, or unrelated fix mixed into a behaviour change. Flag a
   behaviour change without its tests, and a slice that leaves `master` broken.
 - **Changes at a glance**: compare the description with the `scope` output and with the diff.
   Flag each missing or stale row. Also flag each tangible change that `scope` cannot see and the
   description does not name, such as a public API change or a behaviour change behind an unchanged signature. The example
-  is the missing rows, ready to paste. An unnamed breaking change is `[Major]`; any other gap is
-  `[Minor]`. Post the unnamed breaking changes in one `[Major]` comment, and the other gaps in one
-  `[Minor]` comment.
+  is the missing rows, ready to paste. Post the unnamed breaking changes in one comment, and the
+  other gaps in another.
 
 ### Behavioural blast radius
 
@@ -169,9 +158,8 @@ finding. Run these checks for each symbol:
 - **Place**: for each new or moved file, name the feature folder that holds it. For a shared
   symbol, list the features that call it and name the one that owns its concept. Flag shared code
   outside the feature that owns its concept, or above the nearest folder that holds all its
-  callers. The namespace matches the folder, except for public extension methods, which
-  `rules.library.md` keeps in the package's root namespace. A test file mirrors its source folder,
-  as the **Testing** section of `rules.library.md` says. Member order follows `rules.library.md`.
+  callers. Check the namespace against **Placement** in `AGENTS.md`, and the test file location
+  and member order against `rules.library.md`.
 - **Older faults**: flag a wrong name or folder in a file the PR edits even when the fault is
   older, and ask for the move in a follow-up PR.
 - **Parallel pattern**: parallel implementations of one feature follow one pattern. When several
@@ -193,8 +181,7 @@ check is what limits their volume.
 - A comment states the reason, an invariant, or a non-obvious condition. Flag a non-obvious
   condition that has no comment.
 - Flag a comment that describes behaviour that the change, or a later commit of it, replaced.
-- Doc comments follow `rules.library.md`. Docs in `src/Common` do not describe ASP.NET Core
-  callers, except to name the HTTP code that a status converts to.
+- Doc comments follow **XML documentation** in `rules.library.md`.
 
 #### Excess comments
 
@@ -216,7 +203,7 @@ excess:
 If `rules.library.md` requires a doc comment, such as on a public member, the comment
 stays. Flag only its excess part.
 
-Excess is a `[Minor]` finding: it breaches `rules.library.md` and hides the comments that matter.
+Excess breaches `rules.library.md` and hides the comments that matter.
 Keep the threads few:
 
 - If one file has several excess comments, post one thread on the first and list the other lines.
@@ -230,20 +217,15 @@ table with one row per new or changed branch, defensive branches included. Each 
 test that fails when that branch breaks, or marks the branch as a gap, an accepted gap (the PR
 says why), or correctly untested (production cannot reach it).
 
-- Each case, including each theory row, covers a branch, boundary, or contract that no other
-  case covers. If you cannot name it, flag the case as redundant. Keep separate cases only when
+- Check each case against **Testing** in `rules.library.md`. If you cannot name the branch,
+  boundary, or contract that a case covers, flag it as redundant. Keep separate cases only when
   their failures would point to different faults.
-- Cases that differ only in input and expected result belong in one parameterised test, such as
-  `[Theory]` with `[InlineData]` or `[MemberData]`.
-- Flag a case whose input production cannot produce, such as a cast integer that is not a
-  `DomainOperationStatus` value. Also flag the code that only this case exercises.
-- Flag a test that checks a test-only copy of production logic. Test the shipped artefact, such
-  as the public extension method, instead.
+- For a case whose input production cannot produce, also flag the code that only this case
+  exercises.
+- Flag a test that checks a test-only copy of production logic.
 - Flag one wiring check repeated across classes. Propose moving the shared code so that one test
   covers it.
 - The same feature in parallel suites has the same cases.
-- Assertions check the specific status, not only failure.
-- Test names, BDD comments, and mocks follow `rules.library.md`.
 - Flag test setup and parameters that the code under test no longer uses.
 
 ## 4. Post findings

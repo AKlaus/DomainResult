@@ -16,8 +16,8 @@ set -euo pipefail
 # syntax only, so the C locale changes no result.
 export LC_ALL=C
 
-# The budget, in changed lines (added plus deleted). references/scope.md gives the reasons, and
-# AGENTS.md quotes the numbers: change all three places together.
+# The budget, in changed lines (added plus deleted). AGENTS.md states the numbers for people:
+# change both places together. references/scope.md gives the reasons.
 PRODUCTION_TARGET=500
 PRODUCTION_CEILING=1000
 REVIEWABLE_CEILING=2000

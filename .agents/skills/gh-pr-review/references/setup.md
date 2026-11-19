@@ -34,13 +34,8 @@ Permissions can be edited on a fine-grained token later; a classic token's scope
 ## 2. `PROJECT_CFG.md` (shared with team)
 
 The file sits in the skill directory (`.agents/skills/gh-pr-review/`) and is committed to Git.
-
-```bash
-# PROJECT_CFG.md — shared team settings, safe to commit
-GITHUB_REPOSITORY=AKlaus/DomainResult
-```
-
-`GITHUB_REPOSITORY` is `<owner>/<repo>`, as in `https://github.com/<owner>/<repo>`.
+It sets `GITHUB_REPOSITORY` to `<owner>/<repo>`, as in `https://github.com/<owner>/<repo>`. It
+needs no change for this repository.
 
 ---
 
@@ -56,15 +51,9 @@ GITHUB_TOKEN=your-github-token-here
 The scripts read the token from this file only. Do not export `GITHUB_TOKEN` in your shell
 instead: GitHub Copilot CLI and other tools read that variable too.
 
-### Add to `.gitignore`
+### Check that Git ignores it
 
-Add this line to your root `.gitignore` file:
-
-```
-.agents/**/*.Local.md
-```
-
-Verify it's ignored:
+The root `.gitignore` excludes `.agents/**/*.Local.md`. Check it:
 ```bash
 git check-ignore -v .agents/skills/gh-pr-review/PROJECT_CFG.Local.md
 # Should output: .gitignore:N:.agents/**/*.Local.md  .agents/skills/gh-pr-review/PROJECT_CFG.Local.md

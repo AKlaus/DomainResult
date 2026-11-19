@@ -18,8 +18,7 @@ the description must still match the code when the PR merges.
 
 **Description**: why the change is needed, what changed in outline, its tangible changes, and any
 check that it needs. Nothing else. Do not enumerate the changed files; the diff already lists
-them, and do not give line counts or the budget result. A PR over the target or the ceiling adds
-the reason or the exemption. GitHub accepts up to 65,536 characters, but aim for a reviewer to
+them. GitHub accepts up to 65,536 characters, but aim for a reviewer to
 grasp the change in 30 seconds.
 
 An agent ends the description with `_-- AI Assistant_` on a new line, as it ends a comment. It
@@ -34,10 +33,8 @@ anyway: a manual step in the app, or a command with arguments that this PR chose
 step that every PR repeats, such as running the project's test suite. If no such check exists,
 leave out the section.
 
-Before `create` or `describe`, run `scope` and read `scope.md`. Paste its **Changes at a glance**
-section, then add what `scope` cannot see, as `scope.md` describes. Run it again after a push that
-changes the result. If the tables grow long, keep the rows a reviewer needs and replace the rest
-with a count, as `scope.md` describes.
+**Changes at a glance** and any budget reason come from `scope`, as "Put it in the description"
+in `scope.md` describes.
 
 GitHub renders the description as GitHub Flavored Markdown, including `<details>` blocks, Mermaid
 diagrams, and task lists. Format for scanning, not for volume: keep section headings at `###`.
@@ -113,8 +110,8 @@ See "References" for issue, pull request, and commit references.
   |---|---|
   | `[Critical]` | Data loss, a security hole, or an outage |
   | `[Blocker]` | Wrong results on the main path, a failing build on any target framework, or a reference from `src/Common` to ASP.NET Core |
-  | `[Major]` | Wrong results on an edge, failure, or concurrency path, or the main behaviour untested. Also stored data that existing data gives, one rule in two places, a PR over the size ceiling without a valid exemption, a breaking change that the description does not name, or a README snippet that does not compile |
-  | `[Minor]` | No wrong results: a misleading name, a member at the wrong abstraction level, a policy in the wrong layer, a test gap, stale text, excess comments, a missing result shape, or a breach of `rules.library.md`. Also a description that omits a tangible change, or a PR over the size target without a reason |
+  | `[Major]` | Wrong results on an edge, failure, or concurrency path, or the main behaviour untested. Also stored data that existing data gives, one rule in two places, a PR over the size ceiling without a valid exemption, a breaking change that the description does not name, a description claim that hides one, or a README snippet that does not compile |
+  | `[Minor]` | No wrong results: a misleading name, a member at the wrong abstraction level, a policy in the wrong layer, a test gap, stale text, excess comments, a missing result shape, a public member that consumers do not need, a missing README or sample update, or a breach of `rules.library.md`. Also a description claim that does not hold, an unlinked reference, a description that omits a tangible change, or a PR over the size target without a reason |
   | `[Suggestion]` | Optional; nothing is wrong |
 
 - After the importance marker, use two or three sentences. Explain the defect, effect, and remedy.
