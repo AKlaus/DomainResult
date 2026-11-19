@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
-# Cases for _shared/scripts/config.sh: where the private token file is read from.
+# Cases for scripts/config.sh: where the private token file is read from.
 #
-# Each case sources config.sh in its own subshell and reads the variable the private file sets, so
-# it holds for every skill that loads its token through load_private_config.
+# Each case sources config.sh in its own subshell and reads the variable the private file sets.
 
 # Builds a Git repository in $1 holding one skill folder, $1/skill, with a committed PROJECT_CFG.md.
 config_prepare_repo() {
@@ -29,7 +28,7 @@ test_private_config_uses_shared_git_config_fallback() {
   printf 'ADO_PAT=fake-shared-pat\n' >"${temp_root}/.git/azure-devops/PROJECT_CFG.Local.md"
 
   # WHEN the skill loads its private config
-  source "${SHARED_SCRIPTS_DIR}/config.sh"
+  source "${SCRIPT_DIR}/config.sh"
   load_private_config "${temp_root}/skill" azure-devops
 
   # THEN the shared token is read
@@ -48,7 +47,7 @@ test_private_config_prefers_skill_local_file() {
   printf 'ADO_PAT=fake-local-pat\n' >"${temp_root}/skill/PROJECT_CFG.Local.md"
 
   # WHEN the skill loads its private config
-  source "${SHARED_SCRIPTS_DIR}/config.sh"
+  source "${SCRIPT_DIR}/config.sh"
   load_private_config "${temp_root}/skill" azure-devops
 
   # THEN the skill-local token wins
@@ -74,7 +73,7 @@ test_private_config_reads_shared_file_from_linked_worktree() {
   printf 'ADO_PAT=fake-shared-pat\n' >"${temp_root}/main/.git/azure-devops/PROJECT_CFG.Local.md"
 
   # WHEN the skill in the linked worktree loads its private config
-  source "${SHARED_SCRIPTS_DIR}/config.sh"
+  source "${SCRIPT_DIR}/config.sh"
   load_private_config "${linked_root}/skill" azure-devops
 
   # THEN the shared token is read
@@ -88,7 +87,7 @@ test_private_config_names_both_paths_when_missing() {
   config_prepare_repo "$temp_root"
 
   # GIVEN neither private file
-  source "${SHARED_SCRIPTS_DIR}/config.sh"
+  source "${SCRIPT_DIR}/config.sh"
 
   # WHEN the skill loads its private config
   output=$(load_private_config "${temp_root}/skill" azure-devops 2>&1) && return 1

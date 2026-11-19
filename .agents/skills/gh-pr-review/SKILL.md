@@ -24,7 +24,7 @@ description: Work with GitHub pull requests of the repository through a GitHub t
   posting included, without further prompts, unless it asks for a dry run.
 - To address the open comments on the developer's own PR, follow `references/address-comments.md`.
 - Before you write a PR title or description, a comment, a reply, or a review report, read
-  `references/writing.md` and `.agents/skills/_shared/references/text.md`.
+  `references/writing.md`.
 - Before `create` or `describe`, run `scope` and read `references/scope.md`.
 
 ## Actions

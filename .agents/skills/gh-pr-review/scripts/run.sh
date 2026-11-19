@@ -40,16 +40,7 @@ export MSYS2_ARG_CONV_EXCL='*'
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
-# The shared scripts sit in .agents/skills/_shared. The path is resolved physically (pwd -P),
-# because an agent's skill folder can be a set of symlinks into .agents/skills/<skill>/.
-# PROJECT_ROOT stays logical, so a private config beside such a symlink folder is still read.
-SHARED_SCRIPTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)/../../_shared/scripts"
-if [[ ! -f "${SHARED_SCRIPTS_DIR}/config.sh" ]]; then
-  echo "ERROR: the shared skill scripts were not found at ${SHARED_SCRIPTS_DIR}." >&2
-  echo "       Keep .agents/skills/_shared beside the skill folder, or link it beside a copied one." >&2
-  exit 1
-fi
-source "${SHARED_SCRIPTS_DIR}/config.sh"
+source "${SCRIPT_DIR}/config.sh"
 
 # scope reads the local clone and never calls GitHub, so it runs before the configuration loads: a
 # clone without a token can still size a branch before it has a PR.
@@ -58,7 +49,7 @@ if [[ "${1:-}" == scope ]]; then
   exec bash "${SCRIPT_DIR}/pr_scope.sh" "$@"
 fi
 
-load_shared_config "$PROJECT_ROOT"
+load_project_config "$PROJECT_ROOT"
 
 # The token comes from the private file only. An exported GITHUB_TOKEN belongs to other tools, such
 # as Copilot CLI or a CI job, and must not stand in for a file that lacks the key.

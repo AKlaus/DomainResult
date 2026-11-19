@@ -1,7 +1,7 @@
 # Writing Conventions
 
 These conventions apply to PR titles and descriptions, review comments and replies, and review
-reports. `.agents/skills/_shared/references/text.md` holds the rules for multiline content.
+reports.
 
 ## Titles and descriptions
 
@@ -54,6 +54,15 @@ Closes #88. Follows #87.
 
 _-- AI Assistant_
 ```
+
+## Multiline content
+
+Pass real newlines in a body, such as `$'...'` in bash or zsh. A double-quoted `"\n"` posts as
+visible `\n` text. From PowerShell, use PowerShell 7 and a literal here-string (`@'...'@`):
+Windows PowerShell 5.1 splits the body into several arguments, which `run.sh` refuses.
+
+After posting, read the text back. The scripts warn on stderr about a literal `\n` or a leading
+`$`, but they cannot see a character that the shell dropped.
 
 ## References
 

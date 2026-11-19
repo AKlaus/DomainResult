@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# config.sh — configuration loading and the argument guard shared by every skill's run.sh.
+# config.sh — configuration loading and the argument guard of run.sh.
 #
-# This file is *sourced* by a skill's run.sh, never executed directly. It inherits the caller's
+# This file is *sourced* by run.sh, never executed directly. It inherits the caller's
 # shell options and defines only functions.
 
 # source_config <path>
@@ -40,9 +40,9 @@ source_config() {
   done <"$config_path"
 }
 
-# load_shared_config <skill_root>
+# load_project_config <skill_root>
 # Load the committed PROJECT_CFG.md of a skill, or exit with the setup pointer.
-load_shared_config() {
+load_project_config() {
   local config_path="$1/PROJECT_CFG.md"
   if [[ -f "$config_path" ]]; then
     source_config "$config_path"
@@ -99,7 +99,7 @@ require_max_positionals() {
   if (( argc > max )); then
     echo "ERROR: ${action} takes at most ${max} argument(s), but received ${argc}." >&2
     echo "       A multiline body must arrive as ONE argument. If it split into words, the calling" >&2
-    echo "       shell did not quote it — see .agents/skills/_shared/references/text.md for the form your shell needs." >&2
+    echo "       shell did not quote it — see .agents/skills/gh-pr-review/references/writing.md, "Multiline content"." >&2
     exit 1
   fi
 }

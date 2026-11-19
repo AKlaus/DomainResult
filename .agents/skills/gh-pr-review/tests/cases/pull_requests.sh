@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Pull request actions — cases for the GitHub skill scripts.
 #
-# Sourced by harness.sh, never run directly: it supplies SCRIPT_DIR, the assert helpers and
+# Sourced by run_tests.sh, never run directly: it supplies SCRIPT_DIR, the assert helpers and
 # run_test, and each case runs where it is sourced. Every case stubs curl itself, so this file
 # depends on nothing another case file defines.
 #
