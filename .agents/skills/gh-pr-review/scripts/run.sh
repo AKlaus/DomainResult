@@ -46,7 +46,7 @@ source "${SCRIPT_DIR}/config.sh"
 # clone without a token can still size a branch before it has a PR.
 if [[ "${1:-}" == scope ]]; then
   shift
-  exec bash "${SCRIPT_DIR}/pr_scope.sh" "$@"
+  exec bash "${SCRIPT_DIR}/scope/pr_scope.sh" "$@"
 fi
 
 load_project_config "$PROJECT_ROOT"

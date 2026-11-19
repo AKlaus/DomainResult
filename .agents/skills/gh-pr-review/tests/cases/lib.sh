@@ -6,7 +6,7 @@
 # depends on nothing another case file defines.
 
 test_all_scripts_parse() {
-  bash -n "${SCRIPT_DIR}"/*.sh
+  bash -n "${SCRIPT_DIR}"/*.sh "${SCRIPT_DIR}"/scope/*.sh
 }
 
 test_gh_init_and_path_helpers() {

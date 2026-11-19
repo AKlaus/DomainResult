@@ -16,10 +16,10 @@
 
 BEGIN {
   # A swap between two of these, in any case, changes behaviour, so it is never a rename.
-  split("true false null undefined none nil public private protected internal " \
-        "static readonly const let var void async await sealed abstract virtual override new " \
-        "int uint long ulong short ushort byte sbyte float double decimal bool boolean string " \
-        "char object number bigint any unknown never and or not is as in if else while for " \
+  split("true false null public private protected internal " \
+        "static readonly const var void async await sealed abstract virtual override new " \
+        "int uint long ulong short ushort byte sbyte float double decimal bool string " \
+        "char object and or not is as in if else while for " \
         "return break continue throw", words, " ")
   for (i in words) keyword[words[i]] = 1
 }
@@ -106,25 +106,19 @@ function strip_path(p) {
 
 # ── Comments ─────────────────────────────────────────────────────────────────────────────────────
 
-# Sets the line-comment prefixes and the block-comment delimiters of the file type of p.
+# Sets the line-comment prefix and the block-comment delimiters of the file type of p.
 function comment_syntax(p,   name, ext) {
-  line1 = ""; line2 = ""; block_open = ""; block_close = ""
+  line1 = ""; block_open = ""; block_close = ""
   name = tolower(p)
   sub(/^.*\//, "", name)
   ext = name
   if (!sub(/^.*\./, "", ext)) ext = ""
 
-  if (ext ~ /^(cs|ts|tsx|mts|cts|js|jsx|mjs|cjs|scss|less|css|bicep|java|kt|go|rs|c|h|cpp|hpp|swift|proto)$/) {
+  if (ext == "cs") {
     line1 = "//"; block_open = "/*"; block_close = "*/"
-  } else if (ext ~ /^(sql|pgsql|psql)$/) {
-    line1 = "--"; block_open = "/*"; block_close = "*/"
-  } else if (ext ~ /^(ps1|psm1|psd1)$/) {
-    line1 = "#"; block_open = "<#"; block_close = "#>"
-  } else if (ext ~ /^(py|sh|bash|zsh|yaml|yml|toml|conf|r|rb|tf|dockerfile)$/ || name ~ /^(dockerfile|makefile)/) {
+  } else if (ext ~ /^(yaml|yml)$/) {
     line1 = "#"
-  } else if (ext ~ /^(ini|cfg)$/) {
-    line1 = ";"; line2 = "#"
-  } else if (ext ~ /^(xml|csproj|props|targets|config|resx|nuspec|xaml|html|htm|svg)$/) {
+  } else if (ext ~ /^(xml|csproj|props|targets|config|resx|nuspec)$/) {
     block_open = "<!--"; block_close = "-->"
   }
 }
@@ -151,7 +145,6 @@ function rest_is_comment(s, side) {
 
 function starts_comment(s, side,   p) {
   if (line1 != "" && substr(s, 1, length(line1)) == line1) return 1
-  if (line2 != "" && substr(s, 1, length(line2)) == line2) return 1
   if (block_open == "" || substr(s, 1, length(block_open)) != block_open) return 0
   s = substr(s, length(block_open) + 1)
   p = index(s, block_close)

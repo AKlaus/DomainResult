@@ -12,7 +12,7 @@ function attribute(s, name,   pattern) {
   return ""
 }
 
-# ..\..\lib\Foo\Foo.csproj seen from admin/Api resolves to lib/Foo. The project file name is
+# ..\Common\DomainResults.Common.csproj seen from src/Mvc resolves to src/Common. The project file name is
 # dropped, because the folder is what the rest of the repository names.
 function resolve(base, relative,   parts, n, kept, m, i, out) {
   gsub(/\\/, "/", relative)

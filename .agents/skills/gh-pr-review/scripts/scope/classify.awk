@@ -2,13 +2,11 @@
 #
 # Output, one tab-separated row per file: category, added, deleted, path. The categories are
 #   binary        Git reports no line counts
-#   generated     generated front-end clients and test snapshots
-#   auxiliary     lockfiles, solution files, repository settings such as .gitignore, and
-#                 experiments and tooling: anything under .agents/, .claude/, sandbox/, or a
-#                 *ScratchPad* folder
+#   auxiliary     the NuGet lockfile, solution and ReSharper files, repository settings such as
+#                 .gitignore, and agent tooling under .agents/
 #   docs          every Markdown file, and docs/ folders
-#   test          test projects, test folders, and JavaScript or TypeScript *.test.* or *.spec.* files
-#   production    everything else; migration scripts and the migration classes that run them included
+#   test          test projects and test folders
+#   production    everything else
 # references/scope.md says which categories count against the budget. pr_scope.sh reads the
 # category from here only, so a path pattern lives in one place.
 
@@ -43,18 +41,12 @@ NF < 3 { next }
     category = "binary"
     added = 0
     deleted = 0
-  } else if (q ~ /\.gen\.[cm]?[jt]sx?$/ || q ~ /\.snap$/) {
-    category = "generated"
-  } else if (q ~ /\/(yarn\.lock|package-lock\.json|packages\.lock\.json|pnpm-lock\.yaml|poetry\.lock|uv\.lock)$/ ||
-             q ~ /\.(sln|slnf|DotSettings|DotSettings\.user)$/ || q ~ /^\/\.yarn\// ||
-             q ~ /\/\.(gitignore|gitattributes|editorconfig|eslintignore|prettierignore|yarnrc\.yml|DS_Store)$/ ||
-             q ~ /\/\.prettierrc[^\/]*$/ ||
-             q ~ /^\/(\.agents|\.claude|sandbox)\// || q ~ /\/[^\/]*[Ss]cratch[Pp]ad[^\/]*\//) {
+  } else if (q ~ /\/packages\.lock\.json$/ || q ~ /\.(sln|slnf|DotSettings|DotSettings\.user)$/ ||
+             q ~ /\/\.(gitignore|gitattributes|editorconfig|DS_Store)$/ || q ~ /^\/\.agents\//) {
     category = "auxiliary"
   } else if (q ~ /\.md$/ || q ~ /\/docs\//) {
     category = "docs"
-  } else if (q ~ /\/[^\/]*\.Tests?\// || q ~ /\/[Tt]ests?\// || q ~ /\/__tests__\// ||
-             q ~ /\.(test|spec)\.[cm]?[jt]sx?$/ || q ~ /\/test_[^\/]*\.py$/ || q ~ /_test\.py$/) {
+  } else if (q ~ /\/[^\/]*\.Tests?\// || q ~ /\/[Tt]ests?\//) {
     category = "test"
   } else {
     category = "production"

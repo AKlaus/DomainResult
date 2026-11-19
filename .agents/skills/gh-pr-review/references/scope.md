@@ -18,17 +18,16 @@ The ceiling is twice the target, for a slice that is atomic but not small, such 
 | Category | Files | Counts |
 |---|---|---|
 | Production | everything not below: `src/`, `samples/`, project files, and `.github/workflows/` | target and ceiling |
-| Tests | `*.Tests/`, `Tests/`, `tests/`, and the other test folder names that `classify.awk` lists | ceiling |
-| Generated | `*.gen.ts` and `*.snap` | no |
-| Auxiliary | `*.sln`, `*.slnf`, `*.DotSettings`, lockfiles, and settings such as `.gitignore` and `.editorconfig` | no |
-| Experiments and tooling | anything under `.agents/`, `.claude/`, or `sandbox/`, and any `*ScratchPad*` folder | no |
+| Tests | `*.Tests/`, `Tests/`, and `tests/` folders | ceiling |
+| Auxiliary | `*.sln`, `*.slnf`, `*.DotSettings`, `packages.lock.json`, settings such as `.gitignore` and `.editorconfig`, and anything under `.agents/` | no |
 | Docs | every `*.md`, `README.md` and `AGENTS.md` included, and `docs/` | no |
 | Binary | files that Git cannot count in lines, such as `DomainResult.snk` | no |
 
 A moved file counts by its edits only. `scripts/scope/uncounted.awk` also leaves out:
 
-- **Comment lines**: a line that holds only a comment, or a line inside a block comment. XML doc
-  comments (`///`) are comment lines. A code line with a trailing comment counts.
+- **Comment lines**: a line that holds only a comment, or a line inside a block comment, in C#,
+  MSBuild and other XML files, and YAML. XML doc comments (`///`) are comment lines. A code line
+  with a trailing comment counts.
 - **Simple renames**: a deleted line and the added line that replaces it, if all of these are
   true:
   - The two lines differ only in identifiers. A changed number, operator, or argument list
@@ -95,16 +94,13 @@ reads "No tangible change that `scope` detects".
 
 ### What each kind detects
 
-`scope` also holds detectors for web apps, such as UI routes and database migrations, which find
-nothing here. These kinds apply:
-
 | Kind | Source | It cannot see |
 |---|---|---|
 | Project references | `ProjectReference` in each changed `*.csproj` | a reference that only a `Directory.Build.props` adds |
-| Package dependencies | `PackageReference` in each changed production `*.csproj` and `Directory.Build.props` | a `FrameworkReference`; the test project's packages; a second, conditional version of one package, as `src/Directory.Build.props` pins for `net7.0` |
+| Package dependencies | `PackageReference` in each changed production `*.csproj` and `Directory.Build.props`, and `PackageVersion` in `Directory.Packages.props` | a `FrameworkReference`; the test project's packages; a second, conditional version of one package, as `src/Directory.Build.props` pins for `net7.0` |
 | API endpoints | verb and route attributes in each touched controller class: the sample controllers in `samples/WebApi/Controllers/` | the minimal-API routes in `samples/WebApiMinimal/Routes/` |
 | Configuration keys | keys added to or removed from `appsettings*.json` in `samples/` | changed values |
-| Infrastructure files | `.github/workflows/*.yml` | the effect of the change |
+| CI workflows | `.github/workflows/*.yml` | the effect of the change |
 
 ## Put it in the description
 

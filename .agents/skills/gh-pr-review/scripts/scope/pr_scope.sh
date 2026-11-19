@@ -26,7 +26,7 @@ REVIEWABLE_CEILING=2000
 # the whole report: a row can hold several names.
 MAX_ROWS=15
 
-SCOPE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/scope" && pwd)"
+SCOPE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 if (( $# > 2 )); then
   echo "ERROR: scope takes at most 2 arguments, but received $#." >&2
@@ -69,7 +69,7 @@ lines() { # category → its changed lines, less the lines that do not count
     END { print sum + 0 }' "${WORK}/uncounted" "${WORK}/classified"
 }
 
-# Generated code, auxiliary files and experiments, docs, and binary files do not count.
+# Auxiliary files, docs, and binary files do not count.
 PRODUCTION_LINES=$(lines production)
 REVIEWABLE_LINES=$(( PRODUCTION_LINES + $(lines test) ))
 
@@ -77,15 +77,6 @@ REVIEWABLE_LINES=$(( PRODUCTION_LINES + $(lines test) ))
 # One row per tangible change: kind, then added, changed, or removed. The table below counts them.
 git -c core.quotepath=off diff -M --name-status "$MERGE_BASE" "$HEAD_REV" >"${WORK}/status"
 : >"${WORK}/metrics"
-
-# Projects: a folder that holds a *.csproj, a package.json, or a pyproject.toml, at either end. The
-# lists below name a service or an app by its project. The table does not count projects: Areas
-# names the parts of the repository that a PR touches more plainly.
-{
-  git -c core.quotepath=off ls-tree -r --name-only "$MERGE_BASE"
-  git -c core.quotepath=off ls-tree -r --name-only "$HEAD_REV"
-} | awk '/\// && (/\.csproj$/ || /\/package\.json$/ || /\/pyproject\.toml$/) { sub(/\/[^\/]*$/, ""); print }' \
-  | sort -u >"${WORK}/projects"
 
 # The top-level folders that hold changed production or test files.
 AREAS=$(awk -F'\t' '
@@ -121,49 +112,13 @@ change_label() {
 # The folder that names a service or an app: the part of the path before its source folder.
 owner_of() {
   local path="$1" marker
-  for marker in /Api/ /Controllers/ /src/ /Migrations/; do
+  for marker in /Api/ /Controllers/ /src/; do
     if [[ "$path" == *"$marker"* ]]; then
       printf '%s' "${path%%"$marker"*}"
       return
     fi
   done
   printf '%s' "${path%/*}"
-}
-
-# The project that holds a path: its nearest folder in the projects list. A front-end file can sit
-# outside src/, such as a preview harness, so the project names its app better than owner_of does.
-project_of() {
-  local dir="$1"
-  while [[ "$dir" == */* ]]; do
-    dir="${dir%/*}"
-    if grep -Fxq -- "$dir" "${WORK}/projects"; then
-      printf '%s' "$dir"
-      return
-    fi
-  done
-  owner_of "$1"
-}
-
-# Whether a project is a front-end app or package: it holds a package.json at either end.
-is_front_end() { # project
-  git cat-file -e "${HEAD_REV}:${1}/package.json" 2>/dev/null ||
-    git cat-file -e "${MERGE_BASE}:${1}/package.json" 2>/dev/null
-}
-
-# Whether a component exists at one revision. A folder, given with its trailing slash, exists when
-# it holds a .tsx file; a .tsx file at the app's root exists when it is there.
-component_exists() { # revision component-path
-  if [[ "$2" == */ ]]; then
-    git -c core.quotepath=off ls-tree --name-only "$1" -- "$2" | awk '/\.tsx$/ { found = 1 } END { exit !found }'
-  else
-    git cat-file -e "${1}:${2}" 2>/dev/null
-  fi
-}
-
-# A generated file in a test folder is a fixture, not a contract. classify.awk files every *.gen.*
-# as generated, so it classifies the same path without the .gen part.
-is_test_fixture() { # path
-  [[ "$(printf '0\t0\t%s.%s\n' "${1%.gen.*}" "${1##*.}" | awk -f "${SCOPE_DIR}/classify.awk" | cut -f1)" == test ]]
 }
 
 compare() { awk -f "${SCOPE_DIR}/compare.awk" "$1" "$2" | sort; }
@@ -190,52 +145,7 @@ record_dependencies() { # kind label
   done >>"${WORK}/dependencies"
 }
 
-# Records each table, view, function, procedure, and type that the loop's SQL script changes, as
-# service, kind, name, and change (added, replaced, changed, data, or removed). A created or
-# replaced view, function, or procedure is added only if no SQL file of the service named it at the
-# base; otherwise it is replaced. A script that names nothing that database.awk reads is listed by
-# its file name, so the reviewer still sees it.
-record_database_objects() {
-  local service kind object statement object_change
-  service=$(project_of "$path")
-  content_at head | awk -f "${SCOPE_DIR}/database.awk" >"${WORK}/sql.head"
-  : >"${WORK}/sql.base"
-  if [[ "$path" == */CustomFunctions/* ]]; then
-    content_at base | awk -f "${SCOPE_DIR}/database.awk" >"${WORK}/sql.base"
-  fi
-  if [[ ! -s "${WORK}/sql.head" && ! -s "${WORK}/sql.base" ]]; then
-    if [[ -n "$new" ]]; then
-      printf -- '- `%s`: %s `%s`, which names no database object that `scope` reads\n' \
-        "$service" "$change" "$name" >>"${WORK}/database.unread"
-      metric Database changed
-    fi
-    return 0
-  fi
-  while IFS=$'\t' read -r kind object statement; do
-    case "$statement" in
-      created | replaced)
-        object_change=added
-        if [[ "$kind" =~ ^(view|function|procedure)$ ]] && git grep -q -i -w -F -e "${object##*.}" "$MERGE_BASE" -- \
-            "${service}/*.sql" "${service}/*.pgsql"; then
-          object_change=replaced
-        fi
-        ;;
-      altered) object_change=changed ;;
-      data) object_change=data ;;
-      *) object_change=removed ;;
-    esac
-    printf '%s\t%s\t%s\t%s\n' "$service" "$kind" "$object" "$object_change" >>"${WORK}/database.rows"
-  done <"${WORK}/sql.head"
-  # A routine or view that leaves a CustomFunctions/ script no longer deploys.
-  awk -F'\t' -v service="$service" '
-    FILENAME == ARGV[1] { head[$1 "\t" $2] = 1; next }
-    $1 ~ /^(view|function|procedure)$/ && !(($1 "\t" $2) in head) && !seen[$1 "\t" $2]++ {
-      print service "\t" $1 "\t" $2 "\tremoved"
-    }' \
-    "${WORK}/sql.head" "${WORK}/sql.base" >>"${WORK}/database.rows"
-}
-
-for section_file in controllers endpoints endpoints.changed contracts routes components database.rows database.unread dependencies configuration infrastructure; do
+for section_file in controllers endpoints endpoints.changed dependencies configuration workflows; do
   : >"${WORK}/${section_file}"
 done
 
@@ -249,14 +159,6 @@ while IFS=$'\t' read -r category status first second; do
   path="${new:-$old}"
   name="${path##*/}"
   change=$(change_label "$status")
-  # A contract or component name is internal: neither an API caller nor a user sees it. A moved
-  # file without edits is no tangible change, and a moved file with edits is a modified one.
-  case "$status" in
-    R100) content_change='' ;;
-    R*) content_change=modified ;;
-    *) content_change="$change" ;;
-  esac
-
   # Endpoints: note each controller class touched, as its folder and its file name before the first
   # dot. A partial class spreads over XController.cs and XController.Query.cs, so the whole class
   # is compared below, not the one file. A *ControllerBase.cs file holds shared plumbing.
@@ -287,70 +189,16 @@ while IFS=$'\t' read -r category status first second; do
     fi
   fi
 
-  # Contracts that other services compile against: SDK clients and DTO assemblies, and the
-  # generated front-end clients. One row per file; folded per folder below.
-  if [[ -n "$content_change" && "$category" == production && "$name" == *.cs && "$path" =~ /SDK\.(Client|DTOs)/ ]]; then
-    project="${path%%/SDK.${BASH_REMATCH[1]}/*}/SDK.${BASH_REMATCH[1]}"
-    printf '%s\t%s\t`%s`\n' "$project" "$content_change" "${name%.*}" >>"${WORK}/contracts"
-    metric 'API contracts and clients' "$content_change"
-  elif [[ -n "$content_change" && "$category" == generated && "$name" =~ \.gen\.[cm]?[jt]sx?$ ]] && ! is_test_fixture "$path"; then
-    printf '%s\t%s\t`%s`\n' "${path%/*}" "$content_change (generated)" "${name%%.gen.*}" >>"${WORK}/contracts"
-    metric 'API contracts and clients' "$content_change"
-  fi
-
-  # UI routes: path literals in the files that declare routes. App.tsx, AppRoutes.tsx,
-  # AppRouteElements.tsx, and the *Module.tsx route tables match; breadcrumb configs do not.
-  if [[ "$category" == production && "$name" =~ ^(App[A-Za-z]*|[A-Za-z]*[Mm]odules?|[A-Za-z]*[Rr]out(es?|er))\.tsx?$ ]]; then
-    content_at base | awk -f "${SCOPE_DIR}/routes.awk" >"${WORK}/routes.base"
-    content_at head | awk -f "${SCOPE_DIR}/routes.awk" >"${WORK}/routes.head"
-    compare "${WORK}/routes.base" "${WORK}/routes.head" \
-      | while IFS=$'\t' read -r route_change route _; do
-          printf '| `%s` | %s | `%s` |\n' "$(project_of "$path")" "$route_change" "$route"
-          metric 'UI routes' "$route_change"
-        done >>"${WORK}/routes"
-  fi
-
-  # UI components: the front-end source files of each component folder, named from the app. A
-  # file at the app's root is a component of its own only if it is a .tsx file. The rows are
-  # folded per component below, where its size is the sum of its files' changed lines.
-  if [[ -n "$content_change" && "$category" == production && "$name" =~ \.(tsx|ts|scss|css)$ ]]; then
-    app=$(project_of "$path")
-    component="${path#"$app"/}"
-    component="${component#src/}"
-    if [[ "$component" == */* ]]; then
-      component="${component%/*}/"
-    elif [[ "$name" != *.tsx ]]; then
-      component=''
-    fi
-    if [[ -n "$component" ]] && is_front_end "$app"; then
-      printf '%s\t%s\t%s\t%s\n' "$app" "$component" "$path" "$status" >>"${WORK}/components"
-    fi
-  fi
-
-  # Database: the objects that a deployed script changes. A Migrations/ script runs once. A
-  # CustomFunctions/ script redeploys its routines with every release, so a routine that leaves it
-  # is removed. Other SQL, such as a query beside its service or a
-  # devops/utils/sql script run by hand, deploys nothing.
-  if [[ "$category" == production && ( "$name" == *.sql || "$name" == *.pgsql ) &&
-        ( "$path" == */Migrations/* || "$path" == */CustomFunctions/* ) ]]; then
-    record_database_objects
-  fi
-
   # Projects and dependencies: what each project builds on, which is the architecture.
   if [[ "$category" == production ]]; then
     case "$name" in
-      *.csproj | package.json | pyproject.toml)
+      *.csproj)
         if [[ "$change" != modified ]]; then
           printf -- '- %s project `%s`\n' "$change" "${path%/*}" >>"${WORK}/dependencies"
         fi
         ;;
     esac
-    # requirements.txt often holds only "-r requirements/prod.txt"; the pins live in that folder.
-    dependency_file="$name"
-    if [[ "$path" == */requirements/*.txt ]]; then
-      dependency_file=requirements.txt
-    fi
-    case "$dependency_file" in
+    case "$name" in
       Directory.Packages.props)
         content_at base | awk -v kind=version -f "${SCOPE_DIR}/msbuild.awk" >"${WORK}/deps.base"
         content_at head | awk -v kind=version -f "${SCOPE_DIR}/msbuild.awk" >"${WORK}/deps.head"
@@ -370,35 +218,11 @@ while IFS=$'\t' read -r category status first second; do
         content_at head | awk -v kind=package -f "${SCOPE_DIR}/msbuild.awk" >"${WORK}/deps.head"
         record_dependencies 'Package dependencies' "\`${path}\` package reference"
         ;;
-      package.json)
-        for side in base head; do
-          content_at "$side" | jq -r '
-            ("dependencies", "devDependencies", "peerDependencies") as $kind
-            | (.[$kind] // {}) | to_entries[] | "\(.key) (\($kind))\t\(.value)"' \
-            >"${WORK}/deps.${side}" 2>/dev/null || : >"${WORK}/deps.${side}"
-        done
-        record_dependencies 'Package dependencies' "npm \`${path%/*}\`"
-        ;;
-      requirements*.txt)
-        for side in base head; do
-          content_at "$side" | awk '
-            { sub(/#.*/, ""); gsub(/[ \t\r]/, "") }
-            /^-/ || $0 == "" { next }
-            { name = $0; sub(/[=<>~!;\[].*/, "", name); spec = substr($0, length(name) + 1); print tolower(name) "\t" spec }' \
-            >"${WORK}/deps.${side}"
-        done
-        record_dependencies 'Package dependencies' "Python \`$path\`"
-        ;;
-      pyproject.toml)
-        if [[ "$change" == modified ]]; then
-          printf -- '- modified `%s` (dependencies not compared)\n' "$path" >>"${WORK}/dependencies"
-        fi
-        ;;
     esac
   fi
 
   # Configuration: keys added or removed. Values are never printed, as they can hold secrets.
-  if [[ "$category" == production && ( "$name" =~ ^appsettings.*\.json$ || "$path" =~ /public/env[^/]*\.json$ ) ]]; then
+  if [[ "$category" == production && "$name" =~ ^appsettings.*\.json$ ]]; then
     parsed=true
     for side in base head; do
       content_at "$side" | jq -r 'paths(scalars) | map(tostring) | join(":") | . + "\t"' \
@@ -422,12 +246,10 @@ while IFS=$'\t' read -r category status first second; do
     fi
   fi
 
-  # Infrastructure and pipelines.
-  if [[ "$category" == production && ( "$path" == devops/* || "$path" == */devops/* || "$name" =~ \.(bicep|tf)$ || "$name" == Dockerfile* ||
-        "$name" == docker-compose* || "$name" =~ ^azure-pipelines.*\.ya?ml$ || "$path" =~ /pipelines?/.*\.ya?ml$ ||
-        "$path" =~ ^\.github/workflows/.*\.ya?ml$ ) ]]; then
-    printf -- '- %s `%s`\n' "$change" "$path" >>"${WORK}/infrastructure"
-    metric 'Infrastructure files' "$status"
+  # CI workflows.
+  if [[ "$category" == production && "$path" =~ ^\.github/workflows/.*\.ya?ml$ ]]; then
+    printf -- '- %s `%s`\n' "$change" "$path" >>"${WORK}/workflows"
+    metric 'CI workflows' "$status"
   fi
 done <"${WORK}/inventory"
 
@@ -465,131 +287,8 @@ if [[ -s "${WORK}/controllers" ]]; then
       done >"${WORK}/endpoints"
 fi
 
-# Folds one row per contract file into one row per folder and change: "- `folder`: change names".
-awk -F'\t' '
-  {
-    key = $1 SUBSEP $2
-    if (!(key in count)) order[++n] = key
-    count[key]++
-    if (count[key] <= 8) names[key] = names[key] (names[key] == "" ? "" : ", ") $3
-  }
-  END {
-    for (i = 1; i <= n; i++) {
-      split(order[i], part, SUBSEP)
-      more = count[order[i]] > 8 ? sprintf(" and %d more", count[order[i]] - 8) : ""
-      printf "- `%s`: %s %s%s\n", part[1], part[2], names[order[i]], more
-    }
-  }' "${WORK}/contracts" >"${WORK}/contracts.folded"
-
-# One row per app: how many components changed, and one size for all of them together, from the
-# changed lines of their files. The size is approximate on purpose: small under 50 lines, average
-# under 200, and big from 200. Whether a component is added, modified, or removed depends on whether
-# it exists at each end, not on which of its files changed: a new helper in an existing component
-# modifies it. A folder without a .tsx file at either end holds helpers, not components. A file
-# moved into a component existed at the base under its old path, so the component is modified.
-awk -F'\t' '
-  FILENAME == ARGV[1] { lines[$4] = $2 + $3; next }
-  {
-    key = $1 SUBSEP $2
-    if (!(key in total)) {
-      order[++n] = key
-      identity[key] = $3
-      if ($2 ~ /\/$/) sub(/[^\/]*$/, "", identity[key])
-    }
-    total[key] += lines[$3]
-    if ($4 ~ /^R/) moved[key] = 1
-  }
-  END {
-    for (i = 1; i <= n; i++) {
-      key = order[i]
-      split(key, part, SUBSEP)
-      print part[1] "\t" total[key] "\t" ((key in moved) ? 1 : 0) "\t" identity[key]
-    }
-  }' "${WORK}/classified" "${WORK}/components" \
-  | while IFS=$'\t' read -r app component_lines moved component_path; do
-      at_base=false
-      at_head=false
-      component_exists "$MERGE_BASE" "$component_path" && at_base=true
-      component_exists "$HEAD_REV" "$component_path" && at_head=true
-      if [[ "$moved" == 1 && "$at_head" == true ]]; then
-        at_base=true
-      fi
-      case "$at_base:$at_head" in
-        true:true) component_change=modified ;;
-        false:true) component_change=added ;;
-        true:false) component_change=removed ;;
-        *) continue ;;
-      esac
-      metric 'UI components' "$component_change"
-      printf '%s\t%s\n' "$app" "$component_lines"
-    done \
-  | LC_ALL=C sort -t$'\t' -k1,1 \
-  | awk -F'\t' '
-      { if (!($1 in count)) order[++n] = $1; count[$1]++; total[$1] += $2 }
-      END {
-        for (i = 1; i <= n; i++) {
-          app = order[i]
-          size = total[app] >= 200 ? "big" : (total[app] >= 50 ? "average" : "small")
-          printf "| `%s` | %d | %s |\n", app, count[app], size
-        }
-      }' >"${WORK}/components.table"
-
-# One row per database object: an object that the PR adds and alters is added, one that it adds or
-# replaces and also removes is changed, as a migration that drops and re-creates a routine does, and
-# one whose rows it only writes has changed data. An altered table that the PR drops is removed.
-# Each object, whatever its kind, counts once in the Database row of the table above.
-awk -F'\t' -v metrics="${WORK}/metrics" '
-  {
-    key = $1 SUBSEP $2 SUBSEP $3
-    if (!(key in changes)) order[++n] = key
-    changes[key] = changes[key] " " $4
-  }
-  END {
-    for (i = 1; i <= n; i++) {
-      c = changes[order[i]]
-      split(order[i], part, SUBSEP)
-      if (c ~ /added|replaced/ && c ~ /removed/) change = "changed"
-      else if (c ~ /added/) change = "added"
-      else if (c ~ /removed/) change = "removed"
-      else if (c ~ /changed|replaced/) change = "changed"
-      else change = "changed data in"
-      print "Database\t" (change ~ /^changed/ ? "changed" : change) >>metrics
-      printf "%s\t%s\t%s\t%s\n", part[1], change, part[2], part[3]
-    }
-  }' "${WORK}/database.rows" | sort -t$'\t' -k1,1 -k2,2 -k3,3 -k4,4 >"${WORK}/database.items"
-
-# One line per service and change, with the names grouped by kind:
-# "- `svc`: added tables `A`, `B`; function `f`". Each kind lists at most 8 names.
-awk -F'\t' '
-  function flush_kind() {
-    if (kind == "") return
-    text = text (text == "" ? "" : "; ") kind (count > 1 ? "s" : "") " " names \
-      (count > 8 ? sprintf(" and %d more", count - 8) : "")
-    kind = ""
-    names = ""
-    count = 0
-  }
-  function flush_group() {
-    flush_kind()
-    if (service != "") printf "- `%s`: %s %s\n", service, change, text
-    text = ""
-  }
-  ($1 SUBSEP $2) != group {
-    flush_group()
-    group = $1 SUBSEP $2
-    service = $1
-    change = $2
-  }
-  $3 != kind {
-    flush_kind()
-    kind = $3
-  }
-  { if (++count <= 8) names = names (names == "" ? "" : ", ") "`" $4 "`" }
-  END { flush_group() }' "${WORK}/database.items" >"${WORK}/database"
-cat "${WORK}/database.unread" >>"${WORK}/database"
-
 # Prints the metrics as one table row per kind, in a fixed order. A zero prints as an empty cell.
-METRIC_ORDER='Project references|Package dependencies|API endpoints|API contracts and clients|UI routes|UI components|Database|Configuration keys|Infrastructure files'
+METRIC_ORDER='Project references|Package dependencies|API endpoints|Configuration keys|CI workflows'
 print_metrics() {
   awk -F'\t' -v order="$METRIC_ORDER" '
     function cell(n) { return n > 0 ? n : "" }
@@ -649,12 +348,8 @@ section() { # title file [table header lines...]
     echo "**Areas**: ${AREAS}"
   fi
   section 'API endpoints' "${WORK}/endpoints" '| Service | Change | Endpoint | Policy |' '|---|---|---|---|'
-  section 'API contracts and clients' "${WORK}/contracts.folded"
-  section 'UI routes' "${WORK}/routes" '| App | Change | Route |' '|---|---|---|'
-  section 'UI components' "${WORK}/components.table" '| App | Components | Size |' '|---|---|---|'
-  section 'Database' "${WORK}/database"
   section 'Projects and dependencies' "${WORK}/dependencies"
   section 'Configuration' "${WORK}/configuration"
-  section 'Infrastructure and pipelines' "${WORK}/infrastructure"
+  section 'CI workflows' "${WORK}/workflows"
 }
 print_budget >&2
