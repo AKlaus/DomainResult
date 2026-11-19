@@ -1,0 +1,3 @@
+# The wrapper trims a CR along with the surrounding whitespace, so this is hygiene rather than a
+# correctness guard: it keeps a KEY=VALUE file byte-identical for everyone who reads the diff.
+PROJECT_CFG*.md text eol=lf
