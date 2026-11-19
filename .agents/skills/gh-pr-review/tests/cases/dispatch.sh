@@ -89,7 +89,7 @@ test_run_rejects_extra_positionals() {
 
   # THEN the dispatcher names the arity and points at the quoting rules
   assert_contains "$output" 'takes at most 2' &&
-    assert_contains "$output" '.agents/skills/gh-pr-review/references/writing.md' &&
+    assert_contains "$output" '.agents/skills/gh-pr-review/references/writing.md, "Multiline content"' &&
     # AND the correctly quoted call still reaches the worker intact
     [[ "$(bash "${temp_root}/scripts/run.sh" describe 42 'He said lease here.')" \
       == 'fake-token|o/r|42|He said lease here.' ]] &&

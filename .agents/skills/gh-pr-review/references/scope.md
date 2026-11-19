@@ -1,8 +1,5 @@
 # PR Scope
 
-Read this before `create` or `describe`, and before the size step of a review. `AGENTS.md`
-**Pull request scope** gives the budget and the split order.
-
 ## The budget
 
 `scope` counts changed lines, added plus deleted, against the target and the ceiling in
@@ -54,8 +51,6 @@ A PR over the ceiling names one of these in its description, and contains nothin
   split fails.
 
 ## Split a change
-
-Follow **Pull request scope** in `AGENTS.md`.
 
 - If slice B builds on slice A before A merges, branch B from A. Open B as a draft that targets
   A's branch, then `stack create <PR of A> <PR of B>`. Add a later slice with

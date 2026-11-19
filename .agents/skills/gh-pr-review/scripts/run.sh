@@ -55,7 +55,7 @@ load_project_config "$PROJECT_ROOT"
 # as Copilot CLI or a CI job, and must not stand in for a file that lacks the key.
 unset GITHUB_TOKEN
 load_private_config "$PROJECT_ROOT" github
-: "${GITHUB_TOKEN:?GITHUB_TOKEN is not set in PROJECT_CFG.Local.md — see references/setup.md}"
+: "${GITHUB_TOKEN:?GITHUB_TOKEN is not set in PROJECT_CFG.Local.md — see .agents/skills/gh-pr-review/references/setup.md}"
 : "${GITHUB_REPOSITORY:?GITHUB_REPOSITORY is not set in PROJECT_CFG.md}"
 
 ACTION="${1:?Usage: bash scripts/run.sh <list|create|review|issue|scope|fetch|comment|reply|edit|delete|vote|describe|title|retarget|stack|publish|complete|resolve|unresolve> [args...]}"

@@ -13,10 +13,8 @@ description: Work with GitHub pull requests of the repository through a GitHub t
 - Local read-only Git is allowed: `git fetch origin pull/<n>/head`, `git diff`, and `diff` or
   `grep` over fetched files.
 - Double-quote every ref, and pass it as `review` printed it. Do not URL-encode it.
-- If an action fails, report the failure and its likely cause. For a token problem, point to
-  `references/setup.md`.
-- `run.sh` reads the repository from `PROJECT_CFG.md` and the token from `PROJECT_CFG.Local.md`.
-  If the token file is missing, tell the user to follow `references/setup.md`.
+- If an action fails, report the failure and its likely cause. For a missing or rejected token,
+  point the user to `references/setup.md`.
 
 ## Workflows
 
@@ -25,7 +23,7 @@ description: Work with GitHub pull requests of the repository through a GitHub t
 - To address the open comments on the developer's own PR, follow `references/address-comments.md`.
 - Before you write a PR title or description, a comment, a reply, or a review report, read
   `references/writing.md`.
-- Before `create` or `describe`, run `scope` and read `references/scope.md`.
+- Before `create` or `describe`, run `scope`.
 
 ## Actions
 

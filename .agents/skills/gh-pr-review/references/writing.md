@@ -5,8 +5,7 @@ reports.
 
 ## Titles and descriptions
 
-**Title**: as **Branches, commits, and pull requests** in `AGENTS.md` describes. It carries no
-reference: GitHub appends ` (#<n>)` to the squash commit.
+**Title**: no reference, because GitHub appends ` (#<n>)` to the squash commit.
 
 **Description**: why the change is needed, what changed in outline, its tangible changes, and any
 check that it needs. Nothing else, and no list of changed files. A reviewer must grasp it in

@@ -1,7 +1,6 @@
 # Pull Request Review Workflow
 
-Read this after `review <pr>` and before you analyse or post. Read `writing.md` before you write a
-finding or the report.
+Start with `review <pr>`: every step below reads its output.
 
 A review request runs every step below, in order, posting included. On a dry run, change nothing
 on the PR: the report holds the drafts, and you do not reply, edit, resolve, or vote. If a step
@@ -37,7 +36,6 @@ its new place in the code.
 
 Grade each finding by the severity table in `writing.md`.
 
-- Read `AGENTS.md`.
 - Diff `baseCommit` against `sourceCommit`, both from `review`. Read each touched method or file
   in full.
 - In a throwaway `git worktree` at `sourceCommit`, run `dotnet build` and `dotnet test`. List the
@@ -193,7 +191,7 @@ Use the first option that fits:
 
 Check each draft:
 
-- **Severity**: the marker matches the severity table in `writing.md` for the effect it states.
+- **Severity**: the marker matches the effect that the comment states.
 - **Statements**: every line number, symbol, quote, count, and claim matches the code at
   `sourceCommit`, a command result, or the PR text. Drop a statement you cannot check, or mark it
   as unchecked and say why.
@@ -215,4 +213,4 @@ comment back and confirm that it matches the draft.
 ## 5. Present the review
 
 Confirm that every worksheet section is filled or says why it is empty. Write the report from the
-worksheet, as "Review reports" in `writing.md` describes.
+worksheet.

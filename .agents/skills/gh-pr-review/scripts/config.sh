@@ -48,7 +48,7 @@ load_project_config() {
     source_config "$config_path"
   else
     echo "ERROR: PROJECT_CFG.md not found at ${config_path}" >&2
-    echo "       Create PROJECT_CFG.md — see references/setup.md" >&2
+    echo "       Create PROJECT_CFG.md — see .agents/skills/gh-pr-review/references/setup.md" >&2
     exit 1
   fi
 }
@@ -85,7 +85,7 @@ load_private_config() {
   else
     echo "       The shared Git directory could not be resolved." >&2
   fi
-  echo "       Create a private config — see references/setup.md." >&2
+  echo "       Create a private config — see .agents/skills/gh-pr-review/references/setup.md." >&2
   exit 1
 }
 
@@ -99,7 +99,7 @@ require_max_positionals() {
   if (( argc > max )); then
     echo "ERROR: ${action} takes at most ${max} argument(s), but received ${argc}." >&2
     echo "       A multiline body must arrive as ONE argument. If it split into words, the calling" >&2
-    echo "       shell did not quote it — see .agents/skills/gh-pr-review/references/writing.md, "Multiline content"." >&2
+    echo "       shell did not quote it — see .agents/skills/gh-pr-review/references/writing.md, \"Multiline content\"." >&2
     exit 1
   fi
 }

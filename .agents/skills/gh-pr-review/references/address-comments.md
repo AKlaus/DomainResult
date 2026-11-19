@@ -33,8 +33,7 @@ stops the workflow, and the report names it.
 
 Check every claim in the comment against the code at `HEAD`, not against its wording.
 
-- Judge the remedy apart from the finding. Check it against `AGENTS.md`, and against the
-  public API and design checks in step 3 of `review.md`.
+- Judge the remedy apart from the finding, with the checks of step 3 below.
 - Give each comment one verdict:
 
   | Verdict | Next |
@@ -56,7 +55,8 @@ Check every claim in the comment against the code at `HEAD`, not against its wor
   asked for.
 - No copy of the defect remains.
 - The XML comments, remarks, and test names that described the old behaviour are updated.
-- The fix passes the **Public API** checks in step 3 of `review.md`.
+- The fix follows `AGENTS.md`, and passes the public API and design checks in step 3 of
+  `review.md`.
 - `dotnet build` adds no warning, and `dotnet test` passes. If a framework's SDK is missing here,
   say so in the report.
 
@@ -65,25 +65,22 @@ If this step finds a problem, go back to step 2.
 ## 4. Commit and push
 
 - Stage only the files of the fix.
-- Write one commit per comment, or per group of comments with one cause. The subject follows
-  **Branches, commits, and pull requests** in `AGENTS.md`. The body says why, and names
-  the thread ids it addresses.
+- Write one commit per comment, or per group of comments with one cause. The body says why, and
+  names the thread ids it addresses.
 - If the push fails, stop. Do not reply, resolve, or run `describe`. Report the failure.
 
 ## 5. Reply and resolve
 
-- Follow "Review comments and replies" in `writing.md`. A fixed comment gets `[Info]`, what
-  changed, and the commit SHA. A declined comment gets `[Info] Not changed.` and the reason, with
+- A fixed comment gets `[Info]`, what changed, and the commit SHA. A declined comment gets `[Info] Not changed.` and the reason, with
   its evidence.
 - After the reply, `resolve` the comment, fixed or declined. A comment that waits on the
   developer's decision stays open.
 
 ## 6. Check the description
 
-- Run `scope`, and compare its output with **Changes at a glance**.
+- Run `scope`, and update **Changes at a glance** as "Put it in the description" in `scope.md`
+  describes.
 - Check each statement in the description against the new code, and fix the ones that changed.
-- If the PR is now over the target or the ceiling, add what **Pull request scope** in `AGENTS.md`
-  asks for.
 - Run `describe` only when a statement changed. Keep the developer's text that is still true.
 
 ## Report
