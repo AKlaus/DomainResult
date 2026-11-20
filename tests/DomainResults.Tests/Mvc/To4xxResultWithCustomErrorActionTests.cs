@@ -101,7 +101,7 @@ public class To_4xx_Result_With_Custom_ErrorAction_Tests
 	#region Tests for the other result shapes with errorAction
 
 	[Theory]
-	[MemberData(nameof(ResultShapeCases))]
+	[MemberData(nameof(IResultShapeCases))]
 	[SuppressMessage("Usage", "xUnit1026:Theory methods should use all of their parameters", Justification = "The shape names the test case")]
 	public async Task ErrorAction_Preserves_Custom_Properties_For_Shape_IResult(string shape, Func<Task<IResult>> convert)
 	{
@@ -112,7 +112,7 @@ public class To_4xx_Result_With_Custom_ErrorAction_Tests
 		// THEN custom properties are preserved
 		Then_ProblemDetails_Has_Custom_Properties((res as IValueHttpResult)?.Value as ProblemDetails);
 	}
-	public static readonly TheoryData<string, Func<Task<IResult>>> ResultShapeCases = new()
+	public static readonly TheoryData<string, Func<Task<IResult>>> IResultShapeCases = new()
 		{
 			{ "Task<IDomainResult<T>>",		() => DomainResult.FailedTask<int>("Error").ToResult((problemDetails, _) => SetCustomProperties(problemDetails)) },
 			{ "(T, IDomainResult)",			() => Task.FromResult((10, DomainResult.Failed("Error")).ToResult((problemDetails, _) => SetCustomProperties(problemDetails))) },
