@@ -43,12 +43,37 @@ jobs:
       run: dotnet pack ./src/Common/DomainResults.Common.csproj --output nuget-packages --configuration Release
     - name: Pack DomainResult (full)
       run: dotnet pack ./src/Mvc/DomainResults.Mvc.csproj --output nuget-packages --configuration Release
-    - name: NuGet publish
-      if: github.event_name == 'push'
-      run: find nuget-packages -name '*.nupkg' | xargs -i dotnet nuget push {} --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
 
     - name: Artifacts
       uses: actions/upload-artifact@v7
       with:
         name: nuget-packages
         path: nuget-packages/**/*
+
+  # A separate job keeps the OIDC token away from the restore, build and test steps.
+  publish:
+    needs: build
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    # The nuget.org policy names this environment, so it refuses tokens from other jobs
+    environment: nuget
+    permissions:
+      # Trusted publishing on nuget.org needs the GitHub OIDC token
+      id-token: write
+
+    steps:
+    - name: Download packages
+      uses: actions/download-artifact@v8
+      with:
+        name: nuget-packages
+        path: nuget-packages
+    # Trusted publishing exchanges the GitHub OIDC token for a short-lived API key.
+    # It needs a matching policy on nuget.org (https://learn.microsoft.com/nuget/nuget-org/trusted-publishing).
+    - name: NuGet login
+      id: nuget-login
+      uses: NuGet/login@8d196754b4036150537f80ac539e15c2f1028841 # v1.2.0
+      with:
+        # The nuget.org profile name of the package owner
+        user: AlexKlaus
+    - name: NuGet publish
+      run: find nuget-packages -name '*.nupkg' | xargs -i dotnet nuget push {} --api-key ${{ steps.nuget-login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
