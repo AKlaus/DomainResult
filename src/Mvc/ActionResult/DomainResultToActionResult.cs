@@ -40,8 +40,8 @@ public static partial class DomainResultExtensions
 			DomainOperationStatus.Failed		 => CreateProblemResponse(HttpCodeConvention.FailedHttpCode,	 	 HttpCodeConvention.FailedProblemDetailsTitle,			errorDetails, errorAction),
 			DomainOperationStatus.CriticalDependencyError
 												 => CreateProblemResponse(HttpCodeConvention.CriticalDependencyErrorHttpCode,	HttpCodeConvention.CriticalDependencyErrorProblemDetailsTitle,	errorDetails, errorAction),
-			DomainOperationStatus.Success		 => EqualityComparer<V>.Default.Equals(value!, default!)
-																	? new NoContentResult() as ActionResult // No value, means returning HTTP status 204
+			DomainOperationStatus.Success		 => value is null
+																	? new NoContentResult() as ActionResult // No value, means returning HTTP status 204. A default value, such as 0 or false, is a value
 																	: valueToActionResultFunc(value),
 			_ => throw new ArgumentOutOfRangeException(),
 		};
