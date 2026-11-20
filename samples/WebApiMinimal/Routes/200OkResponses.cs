@@ -16,6 +16,10 @@ internal static partial class RoutesExtension
 		   .WithTags("Success: 200 Ok")
 		   .Produces<int>();
 		
+		app.MapGet("Get200OkWithDefaultNumber", () => service.GetSuccessWithDefaultNumericValue().ToResult())
+		   .WithTags("Success: 200 Ok")
+		   .Produces<int>();
+		
 		app.MapGet("Get200OkWithNumberTask", () => service.GetSuccessWithNumericValueTask().ToResult())
 		   .WithTags("Success: 200 Ok")
 		   .Produces<int>();

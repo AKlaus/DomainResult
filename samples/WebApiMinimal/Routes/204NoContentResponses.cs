@@ -19,5 +19,9 @@ internal static partial class RoutesExtension
 		app.MapGet("Get204NoContentTask", () => service.GetSuccessTask().ToResult())
 		   .WithTags("Success: 204 NoContent")
 		   .Produces(StatusCodes.Status204NoContent);
+		
+		app.MapGet("Get204NoContentForNullNumber", () => service.GetSuccessWithNullNumericValue().ToResult())
+		   .WithTags("Success: 204 NoContent")
+		   .Produces(StatusCodes.Status204NoContent);
 	}
 }

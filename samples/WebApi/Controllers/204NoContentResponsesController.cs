@@ -20,4 +20,9 @@ public class NoContentResponsesController : ControllerBase
 	[ProducesResponseType(StatusCodes.Status204NoContent)]
 	public Task<IActionResult> Get204NoContentTask()
 		=> _service.GetSuccessTask().ToActionResult();
+
+	[HttpGet("[action]")]
+	[ProducesResponseType(StatusCodes.Status204NoContent)]
+	public IActionResult Get204NoContentForNullNumber()
+		=> _service.GetSuccessWithNullNumericValue().ToActionResult();
 }
