@@ -11,7 +11,7 @@ namespace DomainResults.Tests.Mvc;
 /// <summary>
 ///		Conversion of a successful result with a default value or a null value, for both result shapes with a value
 /// </summary>
-public class ToSuccessResultDefaultValueTests
+public class ToSuccessResultDefaultOrNullValueTests
 {
 	private static readonly Uri Location = new("http://localhost/");
 
