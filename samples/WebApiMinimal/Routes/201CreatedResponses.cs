@@ -51,8 +51,8 @@ internal static partial class RoutesExtension
 							.GetSuccessWithNullNumericValue()
 							// The custom conversion receives a null value too
 							.ToCustomResult(val => val is null
-								                       ? TypedResults.NoContent()
-								                       : (IResult)TypedResults.CreatedAtRoute(val, "GetById", new { id = val }))
+							                          ? TypedResults.NoContent()
+							                          : (IResult)TypedResults.CreatedAtRoute(val, "GetById", new { id = val }))
 			   )
 		   .WithTags("Success: 201 Created")
 		   .Produces<int>(StatusCodes.Status201Created)

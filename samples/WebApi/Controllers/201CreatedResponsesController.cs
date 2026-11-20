@@ -42,8 +42,8 @@ public class CreatedResponsesController : ControllerBase
 		=> _service.GetSuccessWithNullNumericValue()
 		           // The custom conversion receives a null value too
 		           .ToCustomActionResult(val => val is null
-			                                        ? NoContent()
-			                                        : (ActionResult)CreatedAtAction(nameof(GetById), new { id = val }, val));
+		                                            ? NoContent()
+		                                            : (ActionResult)CreatedAtAction(nameof(GetById), new { id = val }, val));
 
 	[HttpGet("{id}")]
 	public IActionResult GetById([FromRoute] int id) => Ok(new { id });
