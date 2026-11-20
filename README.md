@@ -113,8 +113,8 @@ app.MapGet("Invoice", () => _service.GetInvoice().ToResult())
 The above returns:
 
 - HTTP code `200 OK` along with an instance of `InvoiceResponseDto` on successful executions.
-- Non-2xx codes wrapped in [ProblemDetails](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.problemdetails) (as per [RFC 7807](https://tools.ietf.org/html/rfc7807)):
-  - HTTP code `400 Bad Request` with a message "_Try harder_" when the invoice ID < 1 (the HTTP code can be configured to `422 Unprocessable Entity`).
+- Non-2xx codes wrapped in [ProblemDetails](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.problemdetails) (as per [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457)):
+  - HTTP code `400 Bad Request` with a message "_Try harder_" when the invoice ID < 0 (the HTTP code can be configured to `422 Unprocessable Entity`).
   - HTTP code `404 Not Found` for incorrect invoice IDs.
 
 ## Quick start
@@ -165,8 +165,8 @@ IDomainResult res = IDomainResult.Success();        // res.Status is 'Success'
 (value, state) = IDomainResult.Success(10);         // value = 10; state.Status is 'Success'
 // The same but wrapped in a task
 var res = IDomainResult.SuccessTask(10);            // res is Task<(int, IDomainResult)>
-// Implicit convertion
-IDomainResult<int> res = 10;                        // res.Value = 10; res.Status is 'Success'
+// Implicit conversion
+DomainResult<int> res = 10;                         // res.Value = 10; res.Status is 'Success'
 
 // Error message
 IDomainResult res = IDomainResult.Failed("Ahh!");   // res.Status is 'Failed' and res.Errors = new []{ "Ahh!" }
@@ -206,6 +206,8 @@ Note that returning [Tuple](https://learn.microsoft.com/en-us/dotnet/csharp/lang
 In some cases, throwing an exception on failed statuses is the desired behaviour. Use `ThrowIfNoSuccess()` extension method to interrupt the flow with `DomainResultException` exception if the `IDomainResult.IsSuccess == false`:
 
 ```csharp
+using DomainResults.Common.Exceptions;              // The namespace of 'ThrowIfNoSuccess()' and 'DomainResultException'
+
 var failedResult = IDomainResult.Failed("Ahh!");
 failedResult.ThrowIfNoSuccess();                    // DomainResultException is thrown here 
 failedResult.ThrowIfNoSuccess<CustomException>();   // CustomException is thrown here 
@@ -213,7 +215,7 @@ failedResult.ThrowIfNoSuccess<CustomException>();   // CustomException is thrown
 
 ## 'DomainResult' package
 
-**Converts a `IDomainResult`-based object to various `IActionResult` and `IResult`-based types providing 40+ static extension methods.**
+**Converts a `IDomainResult`-based object to various `IActionResult` and `IResult`-based types providing 20+ static extension methods.**
 
 The mapping rules are built around `IDomainResult.Status`:
 
@@ -356,7 +358,7 @@ string NotFoundProblemDetailsTitle { get; set; }  = "Not Found";
 Feel free to change them (hmm... remember they're static, with all the pros and cons). The reasons you may want it:
 
 - Localisation of the titles
-- Favour [422](https://httpstatuses.com/422) HTTP code in stead of [400](https://httpstatuses.com/400) (see opinions [here](https://stackoverflow.com/a/52098667/968003) and [here](https://stackoverflow.com/a/20215807/968003)).
+- Favour [422](https://httpstatuses.com/422) HTTP code instead of [400](https://httpstatuses.com/400) (see opinions [here](https://stackoverflow.com/a/52098667/968003) and [here](https://stackoverflow.com/a/20215807/968003)).
 
 The extension methods also support a custom response for special cases when the `IDomainResult.Status` requires a different handler:
 
