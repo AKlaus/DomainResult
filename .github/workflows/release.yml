@@ -31,18 +31,15 @@ jobs:
           9.x
           10.x
 
-    - name: Install dependencies
-      run: dotnet restore
-
-    # Package validation must compare the release with the previous release
-    - name: Check the package validation baseline
+    # Package validation compares the packages with the release before this commit.
+    # MSBuild reads the variable as a property in the restore, build and pack steps.
+    - name: Set the package validation baseline
       run: |
         previous=$(git describe --tags --abbrev=0 --match 'v*.*.*' HEAD^)
-        baseline=$(dotnet msbuild src/Common -getProperty:PackageValidationBaselineVersion)
-        if [ "v$baseline" != "$previous" ]; then
-          echo "::error::The baseline is $baseline, but the previous release is $previous."
-          exit 1
-        fi
+        echo "PackageValidationBaselineVersion=${previous#v}" >> "$GITHUB_ENV"
+
+    - name: Install dependencies
+      run: dotnet restore
 
     - name: Build
       run: dotnet build --configuration Release --no-restore
