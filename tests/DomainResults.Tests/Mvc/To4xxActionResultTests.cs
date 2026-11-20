@@ -103,7 +103,7 @@ public class To_4xx_ActionResult_Tests
 	[MemberData(nameof(FailedResultWithValueCases))]
 	public async Task Failed_DomainResult_With_Value_ActionResultOfT<TValue>(IDomainResult<TValue> domainValue, int expectedCode, string expectedTitle, string expectedErrorMsg)
 	{
-		var actionRes = ToActionResult(domainValue.ToActionResultOfT());
+		var actionRes = Convert(domainValue.ToActionResultOfT());
 		await Then_Response_Is_ActionResult_Type_And_ProblemDetails_StatusAndText_Correct(actionRes, expectedCode, expectedTitle, expectedErrorMsg);
 	}
 
@@ -111,7 +111,7 @@ public class To_4xx_ActionResult_Tests
 	[MemberData(nameof(FailedValueTestCases))]
 	public async Task Failed_ValueResult_ActionResultOfT((int, IDomainResult) domainValue, int expectedCode, string expectedTitle, string expectedErrorMsg)
 	{
-		var actionRes = ToActionResult(domainValue.ToActionResultOfT());
+		var actionRes = Convert(domainValue.ToActionResultOfT());
 		await Then_Response_Is_ActionResult_Type_And_ProblemDetails_StatusAndText_Correct(actionRes, expectedCode, expectedTitle, expectedErrorMsg);
 	}
 
@@ -212,7 +212,7 @@ public class To_4xx_ActionResult_Tests
 	/// </summary>
 	private static string? GetIResultType(int statusCode) => TypedResults.Problem(statusCode: statusCode).ProblemDetails.Type;
 
-	private static IActionResult ToActionResult<T>(ActionResult<T> actionResult) => ((IConvertToActionResult)actionResult).Convert();
+	private static IActionResult Convert<T>(ActionResult<T> actionResult) => ((IConvertToActionResult)actionResult).Convert();
 
 	/// <summary>
 	///		Get test cases (input test parameters for the <see cref="MemberDataAttribute"/>)
