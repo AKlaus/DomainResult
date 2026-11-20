@@ -4,6 +4,8 @@ using DomainResults.Common;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.Extensions.DependencyInjection;
 
 // ReSharper disable once CheckNamespace
 namespace DomainResults.Mvc;
@@ -61,6 +63,32 @@ public static partial class DomainResultExtensions
 
 		errorAction?.Invoke(problemDetails, errorDetails!);
 
-		return new ObjectResult(problemDetails) { StatusCode = problemDetails.Status };
+		return new ProblemDetailsObjectResult(problemDetails) { StatusCode = problemDetails.Status };
+	}
+
+	/// <summary>
+	///		An <see cref="ObjectResult"/> that completes its <see cref="ProblemDetails"/> with the <see cref="ProblemDetailsFactory"/> when it runs.
+	/// </summary>
+	/// <remarks>
+	///		The response then matches <c>ControllerBase.Problem()</c>: the factory adds 'type' and 'traceId', and applies the <c>AddProblemDetails()</c> customisation.
+	///		The factory gets the fields that the 'errorAction' set, so it keeps them. Extensions that the factory also sets keep the factory value.
+	///		Without a registered factory, the response keeps the <see cref="ProblemDetails"/> as it is.
+	/// </remarks>
+	private sealed class ProblemDetailsObjectResult(ProblemDetails problemDetails) : ObjectResult(problemDetails)
+	{
+		public override Task ExecuteResultAsync(ActionContext context)
+		{
+			var factory = context.HttpContext.RequestServices.GetService<ProblemDetailsFactory>();
+			if (factory is not null && Value is ProblemDetails source)
+			{
+				var target = factory.CreateProblemDetails(context.HttpContext, source.Status ?? StatusCode, source.Title, source.Type, source.Detail, source.Instance);
+				foreach (var (key, value) in source.Extensions)
+					target.Extensions.TryAdd(key, value);
+
+				Value = target;
+				StatusCode = target.Status;
+			}
+			return base.ExecuteResultAsync(context);
+		}
 	}
 }
