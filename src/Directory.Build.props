@@ -28,6 +28,12 @@
 		<!-- Prefix for tag names MinVer -->
 		<MinVerTagPrefix>v</MinVerTagPrefix>
 
+		<!-- Package validation fails the pack on an API break or a dropped target framework against the baseline.
+			 The CI workflows set PackageValidationBaselineVersion to the previous release tag.
+			 Without it, as in a local build, validation skips the baseline comparison.
+			 Record an intended break in the project's CompatibilitySuppressions.xml. -->
+		<EnablePackageValidation>true</EnablePackageValidation>
+
 		<!-- Reference README file for nuget.org (https://devblogs.microsoft.com/nuget/add-a-readme-to-your-nuget-package/)-->
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 

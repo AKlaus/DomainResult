@@ -21,8 +21,8 @@ jobs:
     steps:
     - uses: actions/checkout@v7
       with:
-        # Fix for MinVer
-        fetch-depth: 100
+        # MinVer needs the tags, and package validation needs the version from them
+        fetch-depth: 0
 
     # Install all SDK versions targeted in the Test project
     - name: Setup .NET
@@ -33,6 +33,13 @@ jobs:
           8.x
           9.x
           10.x
+
+    # Package validation compares the packages with the release before this commit.
+    # MSBuild reads the variable as a property in the restore, build and pack steps.
+    - name: Set the package validation baseline
+      run: |
+        previous=$(git describe --tags --abbrev=0 --match 'v*.*.*' HEAD^)
+        echo "PackageValidationBaselineVersion=${previous#v}" >> "$GITHUB_ENV"
 
     - name: Install dependencies
       run: dotnet restore
