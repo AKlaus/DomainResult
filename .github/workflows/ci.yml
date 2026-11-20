@@ -55,3 +55,4 @@ jobs:
       uses: coverallsapp/github-action@8d6379e14d29928660c4ba802d8e85393440b329 # v2.3.8
       with:
         file: ./tests/DomainResults.Tests/TestResults/coverage.net10.0.info
+        coverage-reporter-version: v0.6.22
