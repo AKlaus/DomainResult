@@ -97,6 +97,23 @@ test_gh_api_keeps_the_token_out_of_the_command_line() {
     [[ -n "$header_file" && ! -e "$header_file" ]]
 }
 
+# Bash reads a CR as part of a command. Under core.autocrlf=true, the Git for Windows default, a file
+# without eol=lf checks out with CRLF, and every action then fails at its first line.
+test_every_skill_file_checks_out_with_lf() {
+  local skill_dir files bad
+  skill_dir="$(cd "${SCRIPT_DIR}/.." && pwd)"
+
+  # GIVEN every tracked file of the skill
+  files=$(git -C "$skill_dir" ls-files) && [[ -n "$files" ]] || return 1
+
+  # THEN Git checks each one out with LF, whatever core.autocrlf says
+  bad=$(printf '%s\n' "$files" | (cd "$skill_dir" && git check-attr --stdin eol) | grep -v ': eol: lf$' || true)
+  [[ -z "$bad" ]] || {
+    printf 'Not checked out with LF:\n%s\n' "$bad" >&2
+    return 1
+  }
+}
+
 run_test 'all scripts parse' test_all_scripts_parse
 run_test 'gh_init and the path helpers normalise for GitHub' test_gh_init_and_path_helpers
 run_test 'body guards cover bodies but not titles' test_body_guards_cover_bodies_but_not_titles
@@ -245,3 +262,4 @@ run_test 'PR reference match passes linked and unrelated text' test_pr_reference
 run_test 'every prose-carrying script calls its guard' test_every_prose_script_calls_its_guard
 run_test 'gh_git offers the token to github.com over HTTPS only' test_gh_git_offers_the_token_to_github_only
 run_test 'gh_api keeps the token out of the command line' test_gh_api_keeps_the_token_out_of_the_command_line
+run_test 'every skill file checks out with LF' test_every_skill_file_checks_out_with_lf
