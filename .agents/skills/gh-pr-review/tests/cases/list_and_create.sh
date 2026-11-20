@@ -27,7 +27,7 @@ test_list_prs_paginates_until_a_short_page() {
 
   # WHEN every pull request is listed
   local output
-  output=$(bash "${SCRIPT_DIR}/list_prs.sh" fake-token acme/widgets all 2>&1) || {
+  output=$(bash "${SCRIPT_DIR}/list_prs.sh" acme/widgets all 2>&1) || {
     printf '%s\n' "$output" >&2
     return 1
   }
@@ -56,9 +56,9 @@ test_list_prs_maps_and_filters_status() {
   # GIVEN one merged, one closed, and one open pull request
   # WHEN all of them are listed, then merged only, then closed only
   local all merged closed
-  all=$(bash "${SCRIPT_DIR}/list_prs.sh" fake-token acme/widgets all 2>&1) &&
-    merged=$(bash "${SCRIPT_DIR}/list_prs.sh" fake-token acme/widgets merged 2>&1) &&
-    closed=$(bash "${SCRIPT_DIR}/list_prs.sh" fake-token acme/widgets closed 2>&1) || {
+  all=$(bash "${SCRIPT_DIR}/list_prs.sh" acme/widgets all 2>&1) &&
+    merged=$(bash "${SCRIPT_DIR}/list_prs.sh" acme/widgets merged 2>&1) &&
+    closed=$(bash "${SCRIPT_DIR}/list_prs.sh" acme/widgets closed 2>&1) || {
       printf '%s\n%s\n%s\n' "${all:-}" "${merged:-}" "${closed:-}" >&2
       return 1
     }
@@ -79,7 +79,7 @@ test_list_prs_rejects_unknown_status_before_http() {
   # GIVEN a status name that list does not accept
   # WHEN it is passed to list
   local output
-  output=$(bash "${SCRIPT_DIR}/list_prs.sh" fake-token acme/widgets abandoned 2>&1) && return 1
+  output=$(bash "${SCRIPT_DIR}/list_prs.sh" acme/widgets abandoned 2>&1) && return 1
 
   # THEN the valid statuses are named, rather than a curl failure
   assert_contains "$output" "invalid status 'abandoned'" &&
@@ -108,7 +108,7 @@ test_list_prs_emits_no_partial_output_when_a_page_fails() {
 
   # GIVEN a full first page and a second page that fails
   # WHEN open pull requests are listed
-  bash "${SCRIPT_DIR}/list_prs.sh" fake-token acme/widgets >"$output_file" 2>"$error_file"
+  bash "${SCRIPT_DIR}/list_prs.sh" acme/widgets >"$output_file" 2>"$error_file"
   status=$?
 
   # THEN the run fails, prints no list, and names the cause
@@ -136,7 +136,7 @@ test_create_preserves_unicode_and_ready_state() {
 
   # GIVEN full refs, --ready, and a dash-prefixed Unicode description after --
   local output
-  output=$(bash "${SCRIPT_DIR}/create_pull_request.sh" fake-token acme/widgets \
+  output=$(bash "${SCRIPT_DIR}/create_pull_request.sh" acme/widgets \
     refs/heads/feature/example refs/heads/develop "Test PR" --ready -- '--leading — curly ‘quote’' 2>&1) || {
       printf '%s\n' "$output" >&2
       return 1
@@ -158,7 +158,7 @@ test_create_reports_api_error() {
   # GIVEN GitHub answers 422 with a detail in .errors
   local output status
   output=$(bash "${SCRIPT_DIR}/create_pull_request.sh" \
-    fake-token acme/widgets feature/example develop "Test PR" 2>&1)
+    acme/widgets feature/example develop "Test PR" 2>&1)
   status=$?
 
   # THEN the run fails and shows both the message and the detail

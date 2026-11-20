@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # review_pr.sh — Fetch a GitHub pull request with its snapshot commits, changed files and discussion
-# Usage: bash review_pr.sh <GITHUB_TOKEN> <OWNER/REPO> <PR>
+# Usage: bash review_pr.sh <OWNER/REPO> <PR>
 #
 # Prints the PR metadata, the snapshot commits (merge base and head), the changed files, the
 # review threads, the general comments, and the review bodies. REST lists and GraphQL connections
@@ -9,12 +9,11 @@
 set -euo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 
-TOKEN="${1:?Missing GITHUB_TOKEN}"
-REPOSITORY="${2:?Missing GITHUB_REPOSITORY}"
-PR="${3:?Missing PR}"
+REPOSITORY="${1:?Missing GITHUB_REPOSITORY}"
+PR="${2:?Missing PR}"
 
 gh_require_pr_number "$PR"
-gh_init "$TOKEN" "$REPOSITORY"
+gh_init "$REPOSITORY"
 
 # graphql_connection <query> <jq path to the connection> <message>
 # Run <query> once per page of the connection at <path>, following pageInfo.endCursor through the

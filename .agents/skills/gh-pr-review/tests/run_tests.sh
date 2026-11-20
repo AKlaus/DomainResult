@@ -7,6 +7,8 @@
 set -uo pipefail
 
 SKILL_TEST_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# The workers read the token from the environment, as run.sh exports it.
+export GITHUB_TOKEN=fake-token
 # The number of workers that post body text, which test_every_prose_script_calls_its_guard must
 # find. It guards the derivation in that test against selecting nothing.
 BODY_SCRIPT_FLOOR=5

@@ -110,7 +110,7 @@ test_review_reports_snapshot_files_threads_and_reviews() {
 
   # GIVEN PR 7 with a moved base branch, 101 files, and threads and comments over two pages each
   local output
-  output=$(bash "${SCRIPT_DIR}/review_pr.sh" fake-token acme/widgets 7 2>&1) || {
+  output=$(bash "${SCRIPT_DIR}/review_pr.sh" acme/widgets 7 2>&1) || {
     printf '%s\n' "$output" >&2
     return 1
   }
@@ -154,7 +154,7 @@ test_review_compares_a_closed_pr_with_its_recorded_base() {
 
   # GIVEN PR 7 closed, so its target branch has moved on since base.sha was recorded
   local output
-  output=$(REVIEW_STATE=closed bash "${SCRIPT_DIR}/review_pr.sh" fake-token acme/widgets 7 2>&1) || {
+  output=$(REVIEW_STATE=closed bash "${SCRIPT_DIR}/review_pr.sh" acme/widgets 7 2>&1) || {
     printf '%s\n' "$output" >&2
     return 1
   }
@@ -180,7 +180,7 @@ test_review_fails_when_the_pr_moves_while_it_reads() {
     # GIVEN a push to the PR, or a new commit on its target branch, while review reads it
     REVIEW_READS=$(mktemp)
     output=$(REVIEW_MOVE="$move" REVIEW_READS="$REVIEW_READS" \
-      bash "${SCRIPT_DIR}/review_pr.sh" fake-token acme/widgets 7 2>&1)
+      bash "${SCRIPT_DIR}/review_pr.sh" acme/widgets 7 2>&1)
     status=$?
     rm -f "$REVIEW_READS"
 
@@ -204,7 +204,7 @@ test_review_fails_on_graphql_errors_with_http_200() {
 
   # GIVEN GraphQL answers HTTP 200 with an errors array
   local output status
-  output=$(bash "${SCRIPT_DIR}/review_pr.sh" fake-token acme/widgets 7 2>&1)
+  output=$(bash "${SCRIPT_DIR}/review_pr.sh" acme/widgets 7 2>&1)
   status=$?
 
   # THEN the run fails with the GraphQL message, and prints no partial review
@@ -224,7 +224,7 @@ test_fetch_encodes_path_and_ref() {
 
   # GIVEN a leading slash, a path with a space and #, and a full ref with #
   local output
-  output=$(bash "${SCRIPT_DIR}/fetch_file.sh" fake-token acme/widgets \
+  output=$(bash "${SCRIPT_DIR}/fetch_file.sh" acme/widgets \
     '/docs/My File#1.md' 'refs/heads/bugfix/#912729' 2>&1) || {
       printf '%s\n' "$output" >&2
       return 1
@@ -248,7 +248,7 @@ test_fetch_preserves_exact_file_bytes() {
 
   # GIVEN a file with a blank line, non-ASCII text, and no trailing newline
   printf 'line1\n\nnaïve — end' >"$expected_file"
-  bash "${SCRIPT_DIR}/fetch_file.sh" fake-token acme/widgets src/main.cs 0123456789abcdef \
+  bash "${SCRIPT_DIR}/fetch_file.sh" acme/widgets src/main.cs 0123456789abcdef \
     >"$output_file" 2>"$error_file" || {
       cat "$error_file" >&2
       return 1
@@ -267,7 +267,7 @@ test_fetch_propagates_http_failure() {
 
   # GIVEN a path that GitHub does not hold at the ref
   # THEN fetch fails rather than printing the error body as file content
-  ! bash "${SCRIPT_DIR}/fetch_file.sh" fake-token acme/widgets src/missing.cs develop >/dev/null 2>&1
+  ! bash "${SCRIPT_DIR}/fetch_file.sh" acme/widgets src/missing.cs develop >/dev/null 2>&1
 }
 
 test_issue_shows_the_issue_and_its_comments() {
@@ -288,7 +288,7 @@ test_issue_shows_the_issue_and_its_comments() {
   # GIVEN an issue with one comment
   # WHEN the issue is shown
   local output
-  output=$(bash "${SCRIPT_DIR}/show_issue.sh" fake-token acme/widgets 88 2>&1) || {
+  output=$(bash "${SCRIPT_DIR}/show_issue.sh" acme/widgets 88 2>&1) || {
     printf '%s\n' "$output" >&2
     return 1
   }
@@ -323,7 +323,7 @@ test_issue_reads_a_long_comment_list() {
   # GIVEN an issue with 100 comments of 11,000 characters each
   # WHEN the issue is shown
   local output
-  output=$(bash "${SCRIPT_DIR}/show_issue.sh" fake-token acme/widgets 88 2>&1) || {
+  output=$(bash "${SCRIPT_DIR}/show_issue.sh" acme/widgets 88 2>&1) || {
     printf '%s\n' "${output:0:500}" >&2
     return 1
   }
@@ -346,7 +346,7 @@ test_issue_refuses_a_pull_request_number() {
   # GIVEN a number that belongs to a pull request
   # WHEN it is shown as an issue
   local output
-  if output=$(bash "${SCRIPT_DIR}/show_issue.sh" fake-token acme/widgets 89 2>&1); then
+  if output=$(bash "${SCRIPT_DIR}/show_issue.sh" acme/widgets 89 2>&1); then
     return 1
   fi
 

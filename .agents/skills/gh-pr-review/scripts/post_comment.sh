@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # post_comment.sh — Post a general, file-level, or line comment on a GitHub pull request
-# Usage: bash post_comment.sh <GITHUB_TOKEN> <OWNER/REPO> <PR> <COMMENT> [COMMIT FILE_PATH [LINE]]
+# Usage: bash post_comment.sh <OWNER/REPO> <PR> <COMMENT> [COMMIT FILE_PATH [LINE]]
 #
 # Without COMMIT, posts a general comment. With COMMIT and FILE_PATH, posts a file-level review
 # comment; with LINE too, a review comment on LINE of that commit's version of the file. COMMIT is
@@ -8,13 +8,12 @@
 set -euo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 
-TOKEN="${1:?Missing GITHUB_TOKEN}"
-REPOSITORY="${2:?Missing GITHUB_REPOSITORY}"
-PR="${3:?Missing PR}"
-COMMENT="${4:?Missing COMMENT}"
-COMMIT="${5:-}"
-FILE_PATH="${6:-}"
-LINE="${7:-}"
+REPOSITORY="${1:?Missing GITHUB_REPOSITORY}"
+PR="${2:?Missing PR}"
+COMMENT="${3:?Missing COMMENT}"
+COMMIT="${4:-}"
+FILE_PATH="${5:-}"
+LINE="${6:-}"
 
 gh_require_pr_number "$PR"
 # Any anchor argument makes this a review comment, which needs both COMMIT and FILE_PATH. An empty
@@ -32,7 +31,7 @@ if [[ -n "$LINE" && ! "$LINE" =~ ^[1-9][0-9]*$ ]]; then
   exit 1
 fi
 
-gh_init "$TOKEN" "$REPOSITORY"
+gh_init "$REPOSITORY"
 warn_body_text "the comment" "$COMMENT"
 
 if [[ -z "$COMMIT" ]]; then

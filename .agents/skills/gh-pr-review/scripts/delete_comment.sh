@@ -1,17 +1,16 @@
 #!/usr/bin/env bash
 # delete_comment.sh — Delete a comment from a GitHub pull request
-# Usage: bash delete_comment.sh <GITHUB_TOKEN> <OWNER/REPO> <COMMENT_ID>
+# Usage: bash delete_comment.sh <OWNER/REPO> <COMMENT_ID>
 #
 # COMMENT_ID is IC_… (general comment) or PRRC_… (review comment), as review prints it. Deleting
 # the only comment of a review thread removes the thread.
 set -euo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 
-TOKEN="${1:?Missing GITHUB_TOKEN}"
-REPOSITORY="${2:?Missing GITHUB_REPOSITORY}"
-COMMENT_ID="${3:?Missing COMMENT_ID}"
+REPOSITORY="${1:?Missing GITHUB_REPOSITORY}"
+COMMENT_ID="${2:?Missing COMMENT_ID}"
 
-gh_init "$TOKEN" "$REPOSITORY"
+gh_init "$REPOSITORY"
 
 # The id alone names its kind: an issue comment (a general comment) and a review comment use
 # different mutations, and asking the node for its type avoids parsing the id format.

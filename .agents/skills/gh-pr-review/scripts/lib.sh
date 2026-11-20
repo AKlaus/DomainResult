@@ -3,7 +3,8 @@
 #
 # This file is *sourced* by the worker scripts, never executed directly. It sets no
 # `set -euo pipefail` of its own — it inherits the caller's shell options — and defines only
-# functions and the REPO_URL/GRAPHQL_URL/GH_AUTH_TOKEN/GH_OWNER/GH_REPO globals via gh_init.
+# functions and the REPO_URL/GRAPHQL_URL/GH_OWNER/GH_REPO globals via gh_init. The token comes from
+# the GITHUB_TOKEN environment variable, which run.sh exports.
 #
 # Every worker sources it with:
 #   source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
@@ -91,12 +92,12 @@ GH_API_VERSION='2022-11-28'
 # endpoints and the `stack` object on a pull request. complete and stack switch to it.
 GH_STACK_API_VERSION='2026-03-10'
 
-# gh_init <TOKEN> <OWNER/REPO>
-# Validates the two arguments common to every script and populates the globals the other helpers
-# rely on. REPO_URL is the repository-scoped REST root.
+# gh_init <OWNER/REPO>
+# Validates the repository and the GITHUB_TOKEN variable, and populates the globals the other
+# helpers rely on. REPO_URL is the repository-scoped REST root.
 gh_init() {
-  GH_AUTH_TOKEN="${1:?Missing GITHUB_TOKEN}"
-  local repository="${2:?Missing GITHUB_REPOSITORY}"
+  : "${GITHUB_TOKEN:?Missing GITHUB_TOKEN}"
+  local repository="${1:?Missing GITHUB_REPOSITORY}"
   if [[ ! "$repository" =~ ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$ ]]; then
     echo "ERROR: GITHUB_REPOSITORY must be <owner>/<repo>, got '${repository}'." >&2
     exit 1
@@ -105,6 +106,24 @@ gh_init() {
   GH_REPO="${repository#*/}"
   REPO_URL="${GH_API_URL}/repos/${GH_OWNER}/${GH_REPO}"
   GRAPHQL_URL="${GH_API_URL}/graphql"
+}
+
+# gh_curl <curl arguments>...
+# Run curl with the token in its Authorization header. The header comes from a file that only the
+# owner can read, made for this call and removed after it: in an argument, the token would show in
+# the process list, which other accounts on the host can read.
+gh_curl() {
+  local header_file header_path status
+  header_file=$(mktemp) || return 1
+  printf 'Authorization: Bearer %s\n' "$GITHUB_TOKEN" >"$header_file"
+  header_path="$header_file"
+  # The native curl of Git Bash reads a Windows path.
+  if command -v cygpath >/dev/null 2>&1; then
+    header_path=$(cygpath -m "$header_file")
+  fi
+  if curl -H "@${header_path}" "$@"; then status=0; else status=$?; fi
+  rm -f "$header_file"
+  return "$status"
 }
 
 # gh_api <VERB> <url> [body]
@@ -117,13 +136,12 @@ gh_init() {
 gh_api() {
   local verb="$1" url="$2"
   local args=(--fail-with-body -sS -X "$verb"
-    -H "Authorization: Bearer ${GH_AUTH_TOKEN}"
     -H 'Accept: application/vnd.github+json'
     -H "X-GitHub-Api-Version: ${GH_API_VERSION}")
   if (( $# >= 3 )); then
-    printf '%s' "$3" | curl "${args[@]}" -H 'Content-Type: application/json' --data-binary @- "$url"
+    printf '%s' "$3" | gh_curl "${args[@]}" -H 'Content-Type: application/json' --data-binary @- "$url"
   else
-    curl "${args[@]}" "$url"
+    gh_curl "${args[@]}" "$url"
   fi
 }
 
@@ -139,8 +157,7 @@ gh_get() {
 # GET with the raw media type, for file content. Streams the body unchanged; an HTTP error returns
 # non-zero with the error body on stdout, so a failed fetch cannot be mistaken for file content.
 gh_get_raw() {
-  curl --fail-with-body -sS \
-    -H "Authorization: Bearer ${GH_AUTH_TOKEN}" \
+  gh_curl --fail-with-body -sS \
     -H 'Accept: application/vnd.github.raw+json' \
     -H "X-GitHub-Api-Version: ${GH_API_VERSION}" \
     "$1"
@@ -178,15 +195,15 @@ gh_graphql() {
 }
 
 # gh_git <git arguments>...
-# Run git with the token as the credential for https://github.com only. The helper reads the token
-# from the environment of this one command, so it stays out of the command line and the Git config.
+# Run git with the token as the credential for https://github.com only. The helper reads
+# GITHUB_TOKEN from the environment, so the token stays out of the command line and the Git config.
 # It answers no other protocol or host, so a remote elsewhere never receives the token. A remote
 # over SSH ignores the helper.
 gh_git() {
   # shellcheck disable=SC2016 # The helper's variables expand when Git runs it, not here.
-  local helper='!f() { test "$1" = get || exit 0; protocol=; host=; while IFS== read -r key value; do case "$key" in protocol) protocol=$value ;; host) host=$value ;; "") break ;; esac; done; test "$protocol" = https && test "$host" = github.com || exit 0; echo username=x-access-token; echo "password=${GH_GIT_TOKEN}"; }; f'
+  local helper='!f() { test "$1" = get || exit 0; protocol=; host=; while IFS== read -r key value; do case "$key" in protocol) protocol=$value ;; host) host=$value ;; "") break ;; esac; done; test "$protocol" = https && test "$host" = github.com || exit 0; echo username=x-access-token; echo "password=${GITHUB_TOKEN}"; }; f'
   # No terminal prompt: when GitHub rejects the token, Git fails instead of waiting for a username.
-  GH_GIT_TOKEN="$GH_AUTH_TOKEN" GIT_TERMINAL_PROMPT=0 git -c credential.helper= -c "credential.helper=${helper}" "$@"
+  GIT_TERMINAL_PROMPT=0 git -c credential.helper= -c "credential.helper=${helper}" "$@"
 }
 
 # gh_require_pr_number <value>

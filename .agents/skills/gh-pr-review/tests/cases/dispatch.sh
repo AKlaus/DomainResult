@@ -11,7 +11,7 @@ pull_requests_run_fixture() {
   printf 'GITHUB_REPOSITORY=acme/widgets\n' >"${temp_root}/PROJECT_CFG.md"
   printf 'GITHUB_TOKEN=fake-token\n' >"${temp_root}/PROJECT_CFG.Local.md"
   for worker in fetch_file vote_pr resolve_thread list_prs complete_pr retarget_pr stack_prs; do
-    printf '%s\n' '#!/usr/bin/env bash' 'IFS="|"; printf "%s\n" "$*"' >"${temp_root}/scripts/${worker}.sh"
+    printf '%s\n' '#!/usr/bin/env bash' 'IFS="|"; printf "%s|%s\n" "${GITHUB_TOKEN:-}" "$*"' >"${temp_root}/scripts/${worker}.sh"
   done
   printf '%s' "$temp_root"
 }
@@ -84,7 +84,7 @@ test_run_rejects_extra_positionals() {
   printf 'GITHUB_REPOSITORY=o/r\n' >"${temp_root}/PROJECT_CFG.md"
   # The token sits only in the Git common directory, so this case also covers the folder run.sh names.
   write_git_dir_private_config "$temp_root" github 'GITHUB_TOKEN=fake-token'
-  printf '%s\n' '#!/usr/bin/env bash' 'IFS="|"; printf "%s\n" "$*"' \
+  printf '%s\n' '#!/usr/bin/env bash' 'IFS="|"; printf "%s|%s\n" "${GITHUB_TOKEN:-}" "$*"' \
     | tee "${temp_root}/scripts/update_description.sh" "${temp_root}/scripts/vote_pr.sh" \
       >"${temp_root}/scripts/post_comment.sh"
 

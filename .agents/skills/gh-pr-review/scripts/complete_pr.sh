@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # complete_pr.sh — Squash-merge a GitHub pull request, with its description as the commit message
-# Usage: bash complete_pr.sh <GITHUB_TOKEN> <OWNER/REPO> <PR>
+# Usage: bash complete_pr.sh <OWNER/REPO> <PR>
 #
 # The commit subject is "<PR title> (#<PR>)", the form GitHub gives a squash commit by default. The
 # commit message is the PR description, copied as it stands when the PR is read. The merge names
@@ -23,12 +23,11 @@
 set -euo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 
-TOKEN="${1:?Missing GITHUB_TOKEN}"
-REPOSITORY="${2:?Missing GITHUB_REPOSITORY}"
-PR="${3:?Missing PR}"
+REPOSITORY="${1:?Missing GITHUB_REPOSITORY}"
+PR="${2:?Missing PR}"
 
 gh_require_pr_number "$PR"
-gh_init "$TOKEN" "$REPOSITORY"
+gh_init "$REPOSITORY"
 # The fields this script reads from the pull request are the same in both API versions.
 GH_API_VERSION="$GH_STACK_API_VERSION"
 

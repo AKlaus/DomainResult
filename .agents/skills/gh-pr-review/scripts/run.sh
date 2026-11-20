@@ -70,7 +70,10 @@ case "$ACTION" in
   comment)                                                           require_max_positionals "$ACTION" 5 $# ;;
 esac
 
-GH=("$GITHUB_TOKEN" "$GITHUB_REPOSITORY")
+# The workers read the token from the environment: in an argument, it would show in the process
+# list, which other accounts on the host can read.
+export GITHUB_TOKEN
+GH=("$GITHUB_REPOSITORY")
 
 case "$ACTION" in
   list)

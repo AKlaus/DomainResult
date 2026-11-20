@@ -98,7 +98,7 @@ test_complete_squash_merges_with_the_description() {
   # GIVEN an open pull request with a multiline description
   # WHEN it is completed outside a Git clone
   local output
-  output=$(bash "${SCRIPT_DIR}/complete_pr.sh" fake-token acme/widgets 42 2>&1) || {
+  output=$(bash "${SCRIPT_DIR}/complete_pr.sh" acme/widgets 42 2>&1) || {
     printf '%s\n' "$output" >&2
     return 1
   }
@@ -138,7 +138,7 @@ test_complete_refuses_before_merge() {
 
     # WHEN each is completed
     # THEN the run fails with the way out, and no merge request is sent
-    output=$(bash "${SCRIPT_DIR}/complete_pr.sh" fake-token acme/widgets 42 2>&1) && return 1
+    output=$(bash "${SCRIPT_DIR}/complete_pr.sh" acme/widgets 42 2>&1) && return 1
     assert_contains "$output" "$expected" || return 1
   done
   [[ ! -e "$CURL_MARKER" ]]
@@ -163,7 +163,7 @@ test_complete_reports_a_merge_with_a_long_description() {
   # GIVEN an open pull request whose description is longer than one command-line argument allows
   # WHEN it is completed
   local output
-  output=$(bash "${SCRIPT_DIR}/complete_pr.sh" fake-token acme/widgets 42 2>&1) || {
+  output=$(bash "${SCRIPT_DIR}/complete_pr.sh" acme/widgets 42 2>&1) || {
     printf '%s\n' "$output" >&2
     return 1
   }
@@ -220,7 +220,7 @@ test_complete_reports_each_remote_branch_outcome() {
       # WHEN each is completed
       # THEN the run succeeds and reports the outcome; a kept branch also warns on stderr
       local output
-      output=$(bash "${SCRIPT_DIR}/complete_pr.sh" fake-token acme/widgets 42 2>&1) || exit 1
+      output=$(bash "${SCRIPT_DIR}/complete_pr.sh" acme/widgets 42 2>&1) || exit 1
       jq -e --arg expected "$expected" '.merged and (.remoteBranch | startswith($expected))' \
         <<<"$(printf '%s\n' "$output" | grep -v '^WARNING:')" >/dev/null || exit 1
       if [[ "$expected" == kept:* ]]; then
@@ -272,7 +272,7 @@ test_complete_cleans_up_the_local_clone() {
 
   # WHEN the pull request is completed in the clone
   local output
-  output=$(bash "${SCRIPT_DIR}/complete_pr.sh" fake-token acme/widgets 42 2>&1) || {
+  output=$(bash "${SCRIPT_DIR}/complete_pr.sh" acme/widgets 42 2>&1) || {
     printf '%s\n' "$output" >&2
     return 1
   }
@@ -296,7 +296,7 @@ test_complete_keeps_a_local_branch_with_unmerged_commits() {
 
   # WHEN the pull request is completed in the clone
   local output
-  output=$(bash "${SCRIPT_DIR}/complete_pr.sh" fake-token acme/widgets 42 2>&1) || {
+  output=$(bash "${SCRIPT_DIR}/complete_pr.sh" acme/widgets 42 2>&1) || {
     printf '%s\n' "$output" >&2
     return 1
   }
@@ -316,7 +316,7 @@ test_complete_keeps_the_branch_when_the_switch_fails() {
 
   # WHEN the pull request is completed in the clone
   local output
-  output=$(bash "${SCRIPT_DIR}/complete_pr.sh" fake-token acme/widgets 42 2>&1) || {
+  output=$(bash "${SCRIPT_DIR}/complete_pr.sh" acme/widgets 42 2>&1) || {
     printf '%s\n' "$output" >&2
     return 1
   }
@@ -340,7 +340,7 @@ test_complete_keeps_a_local_branch_that_github_keeps() {
 
   # WHEN the pull request is completed in the clone
   local output
-  output=$(bash "${SCRIPT_DIR}/complete_pr.sh" fake-token acme/widgets 42 2>&1) || {
+  output=$(bash "${SCRIPT_DIR}/complete_pr.sh" acme/widgets 42 2>&1) || {
     printf '%s\n' "$output" >&2
     return 1
   }
@@ -369,7 +369,7 @@ test_complete_never_forces_the_target_branch() {
       before=$(git rev-parse develop)
 
       # WHEN the pull request is completed in the clone
-      output=$(bash "${SCRIPT_DIR}/complete_pr.sh" fake-token acme/widgets 42 2>&1) || exit 1
+      output=$(bash "${SCRIPT_DIR}/complete_pr.sh" acme/widgets 42 2>&1) || exit 1
 
       # THEN develop keeps its local commit, and a warning names the reason
       [[ "$(git rev-parse develop)" == "$before" ]] &&
@@ -386,7 +386,7 @@ test_complete_skips_the_local_steps_inside_a_bare_repository() {
 
   # WHEN the pull request is completed there
   local output
-  output=$(bash "${SCRIPT_DIR}/complete_pr.sh" fake-token acme/widgets 42 2>&1) || return 1
+  output=$(bash "${SCRIPT_DIR}/complete_pr.sh" acme/widgets 42 2>&1) || return 1
 
   # THEN the local steps report that they did not run in a clone
   jq -e '.localBranch == "kept: not run in a Git clone"' \
@@ -401,7 +401,7 @@ test_complete_ignores_a_look_alike_remote() {
 
   # WHEN the pull request is completed in the clone
   local output
-  output=$(bash "${SCRIPT_DIR}/complete_pr.sh" fake-token acme/widgets 42 2>&1) || return 1
+  output=$(bash "${SCRIPT_DIR}/complete_pr.sh" acme/widgets 42 2>&1) || return 1
 
   # THEN the local steps find no remote, so nothing fetches from that host
   jq -e '.localBranch == "kept: no remote points at acme/widgets"' \
@@ -426,7 +426,7 @@ test_complete_reports_the_merge_refusal() {
 
   # GIVEN a pull request whose head moves before the merge
   local output status
-  output=$(bash "${SCRIPT_DIR}/complete_pr.sh" fake-token acme/widgets 42 2>&1)
+  output=$(bash "${SCRIPT_DIR}/complete_pr.sh" acme/widgets 42 2>&1)
   status=$?
 
   # THEN the run fails with GitHub's reason
@@ -464,7 +464,7 @@ test_complete_refuses_a_pull_request_above_the_bottom_of_its_stack() {
 
   # WHEN it is completed
   local output
-  output=$(bash "${SCRIPT_DIR}/complete_pr.sh" fake-token acme/widgets 42 2>&1) && return 1
+  output=$(bash "${SCRIPT_DIR}/complete_pr.sh" acme/widgets 42 2>&1) && return 1
 
   # THEN the run refuses it, names the pull request to complete first, and sends no merge request
   assert_contains "$output" 'is stacked on feature/parent' &&
@@ -483,7 +483,7 @@ test_complete_merges_the_bottom_of_a_stack() {
 
   # WHEN it is completed
   local output
-  output=$(bash "${SCRIPT_DIR}/complete_pr.sh" fake-token acme/widgets 42 2>&1) || {
+  output=$(bash "${SCRIPT_DIR}/complete_pr.sh" acme/widgets 42 2>&1) || {
     printf '%s\n' "$output" >&2
     return 1
   }
@@ -503,7 +503,7 @@ test_complete_picks_up_a_pending_merge_request() {
 
   # WHEN it is completed again
   local output
-  output=$(bash "${SCRIPT_DIR}/complete_pr.sh" fake-token acme/widgets 42 2>&1) || {
+  output=$(bash "${SCRIPT_DIR}/complete_pr.sh" acme/widgets 42 2>&1) || {
     printf '%s\n' "$output" >&2
     return 1
   }
@@ -522,7 +522,7 @@ test_complete_reports_a_failed_merge_result() {
 
   # WHEN it is completed
   local output status
-  output=$(bash "${SCRIPT_DIR}/complete_pr.sh" fake-token acme/widgets 42 2>&1)
+  output=$(bash "${SCRIPT_DIR}/complete_pr.sh" acme/widgets 42 2>&1)
   status=$?
 
   # THEN the run fails with GitHub's reason, and no branch is deleted
@@ -541,7 +541,7 @@ test_complete_reports_an_enqueued_merge_result() {
 
   # WHEN it is completed
   local output status
-  output=$(bash "${SCRIPT_DIR}/complete_pr.sh" fake-token acme/widgets 42 2>&1)
+  output=$(bash "${SCRIPT_DIR}/complete_pr.sh" acme/widgets 42 2>&1)
   status=$?
 
   # THEN the run fails, names the merge queue, and reports no merge
@@ -567,7 +567,7 @@ test_complete_keeps_the_pending_hint_when_a_poll_fails() {
 
   # WHEN it is completed
   local output status
-  output=$(bash "${SCRIPT_DIR}/complete_pr.sh" fake-token acme/widgets 42 2>&1)
+  output=$(bash "${SCRIPT_DIR}/complete_pr.sh" acme/widgets 42 2>&1)
   status=$?
 
   # THEN the run fails with the pending hint, not as a failed merge, and reports no merge
@@ -586,7 +586,7 @@ test_complete_refuses_a_pending_request_with_another_method() {
 
   # WHEN it is completed
   local output status
-  output=$(bash "${SCRIPT_DIR}/complete_pr.sh" fake-token acme/widgets 42 2>&1)
+  output=$(bash "${SCRIPT_DIR}/complete_pr.sh" acme/widgets 42 2>&1)
   status=$?
 
   # THEN the run refuses to adopt that request, names it and its method, and never polls it
@@ -605,7 +605,7 @@ test_complete_reports_a_top_level_merge_error() {
 
   # WHEN it is completed
   local output status
-  output=$(bash "${SCRIPT_DIR}/complete_pr.sh" fake-token acme/widgets 42 2>&1)
+  output=$(bash "${SCRIPT_DIR}/complete_pr.sh" acme/widgets 42 2>&1)
   status=$?
 
   # THEN the run fails with GitHub's message
@@ -624,7 +624,7 @@ test_complete_gives_up_on_a_merge_that_stays_pending() {
 
   # WHEN it is completed, with the zero interval of the tests counting as a second per poll
   local output status
-  output=$(bash "${SCRIPT_DIR}/complete_pr.sh" fake-token acme/widgets 42 2>&1)
+  output=$(bash "${SCRIPT_DIR}/complete_pr.sh" acme/widgets 42 2>&1)
   status=$?
 
   # THEN the run polls twice, fails, says how to pick the request up, and reports no merge

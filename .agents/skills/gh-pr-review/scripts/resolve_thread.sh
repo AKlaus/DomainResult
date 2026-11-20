@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # resolve_thread.sh — Resolve or reopen a review thread or a general comment on a GitHub pull request
-# Usage: bash resolve_thread.sh <GITHUB_TOKEN> <OWNER/REPO> <ID> <resolve|unresolve>
+# Usage: bash resolve_thread.sh <OWNER/REPO> <ID> <resolve|unresolve>
 #
 # ID is an id as review prints it. A review thread (PRRT_…) is resolved or reopened. A general
 # comment (IC_…) has no thread on GitHub, so resolve hides it with the reason "Resolved", which
@@ -9,10 +9,9 @@
 set -euo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 
-TOKEN="${1:?Missing GITHUB_TOKEN}"
-REPOSITORY="${2:?Missing GITHUB_REPOSITORY}"
-TARGET_ID="${3:?Missing THREAD_OR_COMMENT_ID}"
-MODE="${4:-resolve}"
+REPOSITORY="${1:?Missing GITHUB_REPOSITORY}"
+TARGET_ID="${2:?Missing THREAD_OR_COMMENT_ID}"
+MODE="${3:-resolve}"
 
 case "$MODE" in
   resolve | unresolve) ;;
@@ -22,7 +21,7 @@ case "$MODE" in
     ;;
 esac
 
-gh_init "$TOKEN" "$REPOSITORY"
+gh_init "$REPOSITORY"
 
 VARIABLES=$(jq -n --arg id "$TARGET_ID" '{id: $id}')
 KIND=$(gh_graphql 'query($id: ID!) { node(id: $id) { __typename } }' "$VARIABLES" \

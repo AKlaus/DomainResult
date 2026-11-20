@@ -16,9 +16,9 @@ test_vote_maps_to_review_events() {
 
   # GIVEN the three votes, the last two with a body
   local approve changes comment
-  approve=$(bash "${SCRIPT_DIR}/vote_pr.sh" fake-token acme/widgets 42 approve 2>&1) &&
-    changes=$(bash "${SCRIPT_DIR}/vote_pr.sh" fake-token acme/widgets 42 request-changes 'Fix the test.' 2>&1) &&
-    comment=$(bash "${SCRIPT_DIR}/vote_pr.sh" fake-token acme/widgets 42 comment 'A question.' 2>&1) || {
+  approve=$(bash "${SCRIPT_DIR}/vote_pr.sh" acme/widgets 42 approve 2>&1) &&
+    changes=$(bash "${SCRIPT_DIR}/vote_pr.sh" acme/widgets 42 request-changes 'Fix the test.' 2>&1) &&
+    comment=$(bash "${SCRIPT_DIR}/vote_pr.sh" acme/widgets 42 comment 'A question.' 2>&1) || {
       printf '%s\n%s\n%s\n' "${approve:-}" "${changes:-}" "${comment:-}" >&2
       return 1
     }
@@ -37,8 +37,8 @@ test_vote_rejects_bad_arguments_before_http() {
 
   # GIVEN request-changes with no body, and a vote that does not exist
   local no_body invalid
-  no_body=$(bash "${SCRIPT_DIR}/vote_pr.sh" fake-token acme/widgets 42 request-changes 2>&1) && return 1
-  invalid=$(bash "${SCRIPT_DIR}/vote_pr.sh" fake-token acme/widgets 42 10 2>&1) && return 1
+  no_body=$(bash "${SCRIPT_DIR}/vote_pr.sh" acme/widgets 42 request-changes 2>&1) && return 1
+  invalid=$(bash "${SCRIPT_DIR}/vote_pr.sh" acme/widgets 42 10 2>&1) && return 1
 
   # THEN both are refused with a reason, and curl never runs
   assert_contains "$no_body" 'request-changes needs a body' &&
@@ -56,7 +56,7 @@ test_vote_reports_own_pr_refusal() {
 
   # GIVEN the author approves their own pull request
   local output status
-  output=$(bash "${SCRIPT_DIR}/vote_pr.sh" fake-token acme/widgets 42 approve 2>&1)
+  output=$(bash "${SCRIPT_DIR}/vote_pr.sh" acme/widgets 42 approve 2>&1)
   status=$?
 
   # THEN the run fails with GitHub's reason
@@ -85,7 +85,7 @@ test_publish_marks_a_draft_ready() {
 
   # GIVEN a draft pull request
   local output
-  output=$(bash "${SCRIPT_DIR}/publish_pr.sh" fake-token acme/widgets 42 2>&1) || {
+  output=$(bash "${SCRIPT_DIR}/publish_pr.sh" acme/widgets 42 2>&1) || {
     printf '%s\n' "$output" >&2
     return 1
   }
@@ -109,7 +109,7 @@ test_publish_skips_graphql_for_a_ready_pr() {
 
   # GIVEN a pull request already out of draft
   local output
-  output=$(bash "${SCRIPT_DIR}/publish_pr.sh" fake-token acme/widgets 42 2>&1) || {
+  output=$(bash "${SCRIPT_DIR}/publish_pr.sh" acme/widgets 42 2>&1) || {
     printf '%s\n' "$output" >&2
     return 1
   }

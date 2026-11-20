@@ -1,18 +1,17 @@
 #!/usr/bin/env bash
 # fetch_file.sh — Fetch the content of a file at a branch or commit
-# Usage: bash fetch_file.sh <GITHUB_TOKEN> <OWNER/REPO> <FILE_PATH> <REF>
+# Usage: bash fetch_file.sh <OWNER/REPO> <FILE_PATH> <REF>
 #
 # Use this after review_pr.sh to read changed file contents. FILE_PATH is repository-relative; a
 # leading / is accepted and dropped. REF is a branch name, a refs/heads/ ref, or a commit SHA.
 set -euo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 
-TOKEN="${1:?Missing GITHUB_TOKEN}"
-REPOSITORY="${2:?Missing GITHUB_REPOSITORY}"
-FILE_PATH="${3:?Missing FILE_PATH}"
-REF="${4:?Missing REF}"
+REPOSITORY="${1:?Missing GITHUB_REPOSITORY}"
+FILE_PATH="${2:?Missing FILE_PATH}"
+REF="${3:?Missing REF}"
 
-gh_init "$TOKEN" "$REPOSITORY"
+gh_init "$REPOSITORY"
 
 # Each path segment is encoded on its own, so the slashes stay separators. The ref is encoded
 # whole: # in a branch name must become %23, or the URL parser reads it as a fragment and

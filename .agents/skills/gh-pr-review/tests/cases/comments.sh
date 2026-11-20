@@ -16,7 +16,7 @@ test_comment_general_posts_an_issue_comment() {
 
   # GIVEN a comment with no file
   local output
-  output=$(bash "${SCRIPT_DIR}/post_comment.sh" fake-token acme/widgets 12 'General note.' 2>&1) || {
+  output=$(bash "${SCRIPT_DIR}/post_comment.sh" acme/widgets 12 'General note.' 2>&1) || {
     printf '%s\n' "$output" >&2
     return 1
   }
@@ -36,7 +36,7 @@ test_comment_on_a_file_sends_file_subject() {
 
   # GIVEN a comment with the reviewed commit, a file, and no line
   local output
-  output=$(bash "${SCRIPT_DIR}/post_comment.sh" fake-token acme/widgets 12 'File note.' "$COMMENT_REVIEWED_SHA" /src/a.cs 2>&1) || {
+  output=$(bash "${SCRIPT_DIR}/post_comment.sh" acme/widgets 12 'File note.' "$COMMENT_REVIEWED_SHA" /src/a.cs 2>&1) || {
     printf '%s\n' "$output" >&2
     return 1
   }
@@ -56,7 +56,7 @@ test_comment_on_a_line_sends_line_and_right_side() {
 
   # GIVEN a comment with the reviewed commit, a file, and a line
   local output
-  output=$(bash "${SCRIPT_DIR}/post_comment.sh" fake-token acme/widgets 12 'Line note.' "$COMMENT_REVIEWED_SHA" src/a.cs 8 2>&1) || {
+  output=$(bash "${SCRIPT_DIR}/post_comment.sh" acme/widgets 12 'Line note.' "$COMMENT_REVIEWED_SHA" src/a.cs 8 2>&1) || {
     printf '%s\n' "$output" >&2
     return 1
   }
@@ -85,7 +85,7 @@ test_comment_422_names_its_cause_and_way_out() {
     fi
 
     # GIVEN GitHub refuses the review comment with 422 for this cause
-    output=$(COMMENT_422_CAUSE="$cause" bash "${SCRIPT_DIR}/post_comment.sh" fake-token acme/widgets 12 \
+    output=$(COMMENT_422_CAUSE="$cause" bash "${SCRIPT_DIR}/post_comment.sh" acme/widgets 12 \
       'Line note.' "$COMMENT_REVIEWED_SHA" src/a.cs 900 2>&1)
     status=$?
 
@@ -106,11 +106,11 @@ test_comment_rejects_bad_anchor_arguments_before_http() {
   # GIVEN a commit with no file, an empty commit with a file and a line, a line alone, a short
   # commit, and a line that is not a number
   local no_file no_commit line_only short_commit not_number
-  no_file=$(bash "${SCRIPT_DIR}/post_comment.sh" fake-token acme/widgets 12 'Note.' "$COMMENT_REVIEWED_SHA" 2>&1) && return 1
-  no_commit=$(bash "${SCRIPT_DIR}/post_comment.sh" fake-token acme/widgets 12 'Note.' '' src/a.cs 8 2>&1) && return 1
-  line_only=$(bash "${SCRIPT_DIR}/post_comment.sh" fake-token acme/widgets 12 'Note.' '' '' 8 2>&1) && return 1
-  short_commit=$(bash "${SCRIPT_DIR}/post_comment.sh" fake-token acme/widgets 12 'Note.' 0123456 src/a.cs 8 2>&1) && return 1
-  not_number=$(bash "${SCRIPT_DIR}/post_comment.sh" fake-token acme/widgets 12 'Note.' "$COMMENT_REVIEWED_SHA" src/a.cs 8a 2>&1) && return 1
+  no_file=$(bash "${SCRIPT_DIR}/post_comment.sh" acme/widgets 12 'Note.' "$COMMENT_REVIEWED_SHA" 2>&1) && return 1
+  no_commit=$(bash "${SCRIPT_DIR}/post_comment.sh" acme/widgets 12 'Note.' '' src/a.cs 8 2>&1) && return 1
+  line_only=$(bash "${SCRIPT_DIR}/post_comment.sh" acme/widgets 12 'Note.' '' '' 8 2>&1) && return 1
+  short_commit=$(bash "${SCRIPT_DIR}/post_comment.sh" acme/widgets 12 'Note.' 0123456 src/a.cs 8 2>&1) && return 1
+  not_number=$(bash "${SCRIPT_DIR}/post_comment.sh" acme/widgets 12 'Note.' "$COMMENT_REVIEWED_SHA" src/a.cs 8a 2>&1) && return 1
 
   # THEN each is refused with a reason, and curl never runs
   assert_contains "$no_file" 'a review comment needs COMMIT and FILE_PATH' &&
@@ -188,7 +188,7 @@ test_reply_posts_to_a_review_thread() {
 
   # GIVEN a review thread id and a reply
   local output
-  output=$(bash "${SCRIPT_DIR}/reply_comment.sh" fake-token acme/widgets PRRT_1 'Fixed in abc1234.' 2>&1) || {
+  output=$(bash "${SCRIPT_DIR}/reply_comment.sh" acme/widgets PRRT_1 'Fixed in abc1234.' 2>&1) || {
     printf '%s\n' "$output" >&2
     return 1
   }
@@ -211,7 +211,7 @@ test_reply_quotes_a_general_comment() {
   # GIVEN a general comment by nigel that opens with a quote of an earlier comment, then a line
   # whose code spans hold a mention and a PR reference
   local output long_line deleted code_cut
-  output=$(bash "${SCRIPT_DIR}/reply_comment.sh" fake-token acme/widgets IC_5 'Fixed in abc1234.' 2>&1) || {
+  output=$(bash "${SCRIPT_DIR}/reply_comment.sh" acme/widgets IC_5 'Fixed in abc1234.' 2>&1) || {
     printf '%s\n' "$output" >&2
     return 1
   }
@@ -226,14 +226,14 @@ test_reply_quotes_a_general_comment() {
   # AND a long first line is cut at 200 characters, and a deleted author gets a plain link
   long_line=$(printf 'x%.0s' $(seq 1 250))
   deleted=$(IC_AUTHOR='' IC_FIRST_LINE="$long_line" \
-    bash "${SCRIPT_DIR}/reply_comment.sh" fake-token acme/widgets IC_5 'Done.' 2>&1) || return 1
+    bash "${SCRIPT_DIR}/reply_comment.sh" acme/widgets IC_5 'Done.' 2>&1) || return 1
   jq -e --arg cut "${long_line:0:200}…" \
     '.content == "> [Comment](https://github.com/acme/widgets/pull/12#issuecomment-5):\n> \($cut)\n\nDone."' \
     <<<"$deleted" >/dev/null || return 1
 
   # AND a cut inside a code span closes the span
   code_cut=$(IC_FIRST_LINE="$(printf 'y%.0s' $(seq 1 190))\`$(printf 'z%.0s' $(seq 1 40))\`" \
-    bash "${SCRIPT_DIR}/reply_comment.sh" fake-token acme/widgets IC_5 'Done.' 2>&1) || return 1
+    bash "${SCRIPT_DIR}/reply_comment.sh" acme/widgets IC_5 'Done.' 2>&1) || return 1
   jq -e '.content | split("\n")[1] | endswith("…`")' <<<"$code_cut" >/dev/null
 }
 
@@ -248,8 +248,8 @@ test_reply_and_resolve_refuse_other_targets() {
 
   # GIVEN a comment on an issue rather than a PR, and a review comment id
   local issue review
-  issue=$(bash "${SCRIPT_DIR}/reply_comment.sh" fake-token acme/widgets IC_issue 'Reply.' 2>&1) && return 1
-  review=$(bash "${SCRIPT_DIR}/resolve_thread.sh" fake-token acme/widgets PRRC_1 resolve 2>&1) && return 1
+  issue=$(bash "${SCRIPT_DIR}/reply_comment.sh" acme/widgets IC_issue 'Reply.' 2>&1) && return 1
+  review=$(bash "${SCRIPT_DIR}/resolve_thread.sh" acme/widgets PRRC_1 resolve 2>&1) && return 1
 
   # THEN each is refused with its reason, and only the node lookups ran
   assert_contains "$issue" 'is not a comment on a pull request' &&
@@ -268,7 +268,7 @@ test_reply_refuses_a_review_comment_id() {
 
   # GIVEN the id of a review comment rather than of its thread
   local output
-  output=$(bash "${SCRIPT_DIR}/reply_comment.sh" fake-token acme/widgets PRRC_1 'Reply.' 2>&1) && return 1
+  output=$(bash "${SCRIPT_DIR}/reply_comment.sh" acme/widgets PRRC_1 'Reply.' 2>&1) && return 1
 
   # THEN nothing is posted, and the message points at the thread
   assert_contains "$output" 'reply to its thread' &&
@@ -286,8 +286,8 @@ test_resolve_and_unresolve_a_review_thread() {
 
   # GIVEN one thread, resolved and then reopened
   local resolved unresolved
-  resolved=$(bash "${SCRIPT_DIR}/resolve_thread.sh" fake-token acme/widgets PRRT_1 resolve 2>&1) &&
-    unresolved=$(bash "${SCRIPT_DIR}/resolve_thread.sh" fake-token acme/widgets PRRT_1 unresolve 2>&1) || {
+  resolved=$(bash "${SCRIPT_DIR}/resolve_thread.sh" acme/widgets PRRT_1 resolve 2>&1) &&
+    unresolved=$(bash "${SCRIPT_DIR}/resolve_thread.sh" acme/widgets PRRT_1 unresolve 2>&1) || {
       printf '%s\n%s\n' "${resolved:-}" "${unresolved:-}" >&2
       return 1
     }
@@ -309,8 +309,8 @@ test_resolve_and_unresolve_a_general_comment() {
 
   # GIVEN one general comment, resolved and then reopened
   local resolved unresolved not_taken
-  resolved=$(bash "${SCRIPT_DIR}/resolve_thread.sh" fake-token acme/widgets IC_5 resolve 2>&1) &&
-    unresolved=$(bash "${SCRIPT_DIR}/resolve_thread.sh" fake-token acme/widgets IC_5 unresolve 2>&1) || {
+  resolved=$(bash "${SCRIPT_DIR}/resolve_thread.sh" acme/widgets IC_5 resolve 2>&1) &&
+    unresolved=$(bash "${SCRIPT_DIR}/resolve_thread.sh" acme/widgets IC_5 unresolve 2>&1) || {
       printf '%s\n%s\n' "${resolved:-}" "${unresolved:-}" >&2
       return 1
     }
@@ -322,7 +322,7 @@ test_resolve_and_unresolve_a_general_comment() {
 
   # AND a hide that GitHub reports under another reason is a failure, not a resolve
   not_taken=$(MINIMIZED_STATE='{"isMinimized":true,"minimizedReason":"outdated"}' \
-    bash "${SCRIPT_DIR}/resolve_thread.sh" fake-token acme/widgets IC_5 resolve 2>&1) && return 1
+    bash "${SCRIPT_DIR}/resolve_thread.sh" acme/widgets IC_5 resolve 2>&1) && return 1
   assert_contains "$not_taken" 'does not report the resolved state'
 }
 
@@ -374,8 +374,8 @@ test_edit_dispatches_on_comment_type() {
 
   # GIVEN an issue comment and a review comment
   local issue review
-  issue=$(bash "${SCRIPT_DIR}/edit_comment.sh" fake-token acme/widgets IC_1 'New text.' 2>&1) &&
-    review=$(bash "${SCRIPT_DIR}/edit_comment.sh" fake-token acme/widgets PRRC_1 'Other text.' 2>&1) || {
+  issue=$(bash "${SCRIPT_DIR}/edit_comment.sh" acme/widgets IC_1 'New text.' 2>&1) &&
+    review=$(bash "${SCRIPT_DIR}/edit_comment.sh" acme/widgets PRRC_1 'Other text.' 2>&1) || {
       printf '%s\n%s\n' "${issue:-}" "${review:-}" >&2
       return 1
     }
@@ -396,7 +396,7 @@ test_edit_fails_when_the_stored_text_differs() {
 
   # GIVEN an update whose response still holds the old text
   local output status
-  output=$(bash "${SCRIPT_DIR}/edit_comment.sh" fake-token acme/widgets IC_1 'New text.' 2>&1)
+  output=$(bash "${SCRIPT_DIR}/edit_comment.sh" acme/widgets IC_1 'New text.' 2>&1)
   status=$?
 
   # THEN the run fails rather than reporting success
@@ -413,8 +413,8 @@ test_delete_dispatches_on_comment_type() {
 
   # GIVEN an issue comment and a review comment
   local issue review
-  issue=$(bash "${SCRIPT_DIR}/delete_comment.sh" fake-token acme/widgets IC_1 2>&1) &&
-    review=$(bash "${SCRIPT_DIR}/delete_comment.sh" fake-token acme/widgets PRRC_1 2>&1) || {
+  issue=$(bash "${SCRIPT_DIR}/delete_comment.sh" acme/widgets IC_1 2>&1) &&
+    review=$(bash "${SCRIPT_DIR}/delete_comment.sh" acme/widgets PRRC_1 2>&1) || {
       printf '%s\n%s\n' "${issue:-}" "${review:-}" >&2
       return 1
     }
@@ -434,8 +434,8 @@ test_edit_and_delete_reject_unknown_node_type() {
 
   # GIVEN an id that names a user rather than a comment
   local edited deleted
-  edited=$(bash "${SCRIPT_DIR}/edit_comment.sh" fake-token acme/widgets MDQ_user 'Text.' 2>&1) && return 1
-  deleted=$(bash "${SCRIPT_DIR}/delete_comment.sh" fake-token acme/widgets MDQ_user 2>&1) && return 1
+  edited=$(bash "${SCRIPT_DIR}/edit_comment.sh" acme/widgets MDQ_user 'Text.' 2>&1) && return 1
+  deleted=$(bash "${SCRIPT_DIR}/delete_comment.sh" acme/widgets MDQ_user 2>&1) && return 1
 
   # THEN both refuse it by type, and no mutation runs
   assert_contains "$edited" "'MDQ_user' is not a pull request comment (found: User)" &&

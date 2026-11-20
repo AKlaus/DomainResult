@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # show_issue.sh — Show a GitHub issue with its comments, for the review of a PR that references it
-# Usage: bash show_issue.sh <GITHUB_TOKEN> <OWNER/REPO> <ISSUE>
+# Usage: bash show_issue.sh <OWNER/REPO> <ISSUE>
 #
 # The issues endpoint also answers for a pull request number, because GitHub numbers issues and
 # pull requests together. Such a number is refused: `review` reads a pull request.
@@ -8,15 +8,14 @@
 set -euo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 
-TOKEN="${1:?Missing GITHUB_TOKEN}"
-REPOSITORY="${2:?Missing GITHUB_REPOSITORY}"
-ISSUE="${3:?Missing ISSUE}"
+REPOSITORY="${1:?Missing GITHUB_REPOSITORY}"
+ISSUE="${2:?Missing ISSUE}"
 
 if [[ ! "$ISSUE" =~ ^[1-9][0-9]*$ ]]; then
   echo "ERROR: '${ISSUE}' is not an issue number." >&2
   exit 1
 fi
-gh_init "$TOKEN" "$REPOSITORY"
+gh_init "$REPOSITORY"
 
 ITEM=$(gh_get "${REPO_URL}/issues/${ISSUE}" "issue ${ISSUE} was not found.")
 if printf '%s' "$ITEM" | jq -e 'has("pull_request")' >/dev/null; then

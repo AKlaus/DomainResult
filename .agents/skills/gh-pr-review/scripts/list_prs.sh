@@ -1,14 +1,13 @@
 #!/usr/bin/env bash
 # list_prs.sh — List pull requests in the GitHub repository
-# Usage: bash list_prs.sh <GITHUB_TOKEN> <OWNER/REPO> [STATUS]
+# Usage: bash list_prs.sh <OWNER/REPO> [STATUS]
 #
 # STATUS: open (default) | merged | closed | all. closed lists PRs closed without a merge.
 set -euo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 
-TOKEN="${1:?Missing GITHUB_TOKEN}"
-REPOSITORY="${2:?Missing GITHUB_REPOSITORY}"
-STATUS="${3:-open}"
+REPOSITORY="${1:?Missing GITHUB_REPOSITORY}"
+STATUS="${2:-open}"
 
 # GitHub knows open and closed; merged is a closed PR with merged_at set. The statuses split closed
 # in two, so a merged PR and an abandoned one can be listed apart.
@@ -23,7 +22,7 @@ case "$STATUS" in
     ;;
 esac
 
-gh_init "$TOKEN" "$REPOSITORY"
+gh_init "$REPOSITORY"
 
 PR_ITEMS=$(gh_get_pages "${REPO_URL}/pulls?state=${API_STATE}" "Pull requests were not listed.")
 

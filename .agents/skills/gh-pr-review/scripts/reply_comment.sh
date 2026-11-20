@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # reply_comment.sh — Reply to a review thread or a general comment on a GitHub pull request
-# Usage: bash reply_comment.sh <GITHUB_TOKEN> <OWNER/REPO> <ID> <COMMENT>
+# Usage: bash reply_comment.sh <OWNER/REPO> <ID> <COMMENT>
 #
 # ID is an id as review prints it. A review thread (PRRT_…) gets the reply nested in the thread. A
 # general comment (IC_…) has no thread on GitHub, so the reply is a new general comment that quotes
@@ -9,12 +9,11 @@
 set -euo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 
-TOKEN="${1:?Missing GITHUB_TOKEN}"
-REPOSITORY="${2:?Missing GITHUB_REPOSITORY}"
-TARGET_ID="${3:?Missing THREAD_OR_COMMENT_ID}"
-COMMENT="${4:?Missing COMMENT}"
+REPOSITORY="${1:?Missing GITHUB_REPOSITORY}"
+TARGET_ID="${2:?Missing THREAD_OR_COMMENT_ID}"
+COMMENT="${3:?Missing COMMENT}"
 
-gh_init "$TOKEN" "$REPOSITORY"
+gh_init "$REPOSITORY"
 warn_body_text "the reply" "$COMMENT"
 
 NODE=$(gh_graphql '

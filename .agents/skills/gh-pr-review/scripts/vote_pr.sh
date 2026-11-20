@@ -1,17 +1,16 @@
 #!/usr/bin/env bash
 # vote_pr.sh — Submit a review on a GitHub pull request
-# Usage: bash vote_pr.sh <GITHUB_TOKEN> <OWNER/REPO> <PR> <approve|request-changes|comment> [BODY]
+# Usage: bash vote_pr.sh <OWNER/REPO> <PR> <approve|request-changes|comment> [BODY]
 #
 # approve submits APPROVE, request-changes REQUEST_CHANGES, and comment COMMENT. The last two need
 # a BODY. A submitted review stays; a later review by the same user replaces its state.
 set -euo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 
-TOKEN="${1:?Missing GITHUB_TOKEN}"
-REPOSITORY="${2:?Missing GITHUB_REPOSITORY}"
-PR="${3:?Missing PR}"
-VOTE="${4:?Missing EVENT}"
-REVIEW_BODY="${5:-}"
+REPOSITORY="${1:?Missing GITHUB_REPOSITORY}"
+PR="${2:?Missing PR}"
+VOTE="${3:?Missing EVENT}"
+REVIEW_BODY="${4:-}"
 
 gh_require_pr_number "$PR"
 case "$VOTE" in
@@ -29,7 +28,7 @@ if [[ "$EVENT" != APPROVE && -z "$REVIEW_BODY" ]]; then
   exit 1
 fi
 
-gh_init "$TOKEN" "$REPOSITORY"
+gh_init "$REPOSITORY"
 warn_body_text "the review" "$REVIEW_BODY"
 
 BODY=$(jq -n --arg event "$EVENT" --arg body "$REVIEW_BODY" \

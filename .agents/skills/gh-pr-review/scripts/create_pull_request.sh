@@ -1,16 +1,15 @@
 #!/usr/bin/env bash
 # create_pull_request.sh — Create a GitHub pull request
-# Usage: bash create_pull_request.sh <GITHUB_TOKEN> <OWNER/REPO> <SOURCE_BRANCH> <TARGET_BRANCH> <TITLE> [DESCRIPTION] [--ready]
+# Usage: bash create_pull_request.sh <OWNER/REPO> <SOURCE_BRANCH> <TARGET_BRANCH> <TITLE> [DESCRIPTION] [--ready]
 #        Use -- before a DESCRIPTION that begins with --. Branches may be short names or refs/heads/ refs.
 set -euo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 
-TOKEN="${1:?Missing GITHUB_TOKEN}"
-REPOSITORY="${2:?Missing GITHUB_REPOSITORY}"
-SOURCE_BRANCH="${3:?Missing SOURCE_BRANCH}"
-TARGET_BRANCH="${4:?Missing TARGET_BRANCH}"
-TITLE="${5:?Missing TITLE}"
-shift 5
+REPOSITORY="${1:?Missing GITHUB_REPOSITORY}"
+SOURCE_BRANCH="${2:?Missing SOURCE_BRANCH}"
+TARGET_BRANCH="${3:?Missing TARGET_BRANCH}"
+TITLE="${4:?Missing TITLE}"
+shift 4
 
 DESCRIPTION=""
 DESCRIPTION_SET=false
@@ -50,7 +49,7 @@ while (( $# > 0 )); do
   shift
 done
 
-gh_init "$TOKEN" "$REPOSITORY"
+gh_init "$REPOSITORY"
 warn_unexpanded_quoting "the title" "$TITLE"
 warn_body_text "the description" "$DESCRIPTION"
 

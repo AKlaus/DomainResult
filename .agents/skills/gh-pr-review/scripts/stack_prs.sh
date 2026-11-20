@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # stack_prs.sh — Read and manage GitHub pull request stacks
-# Usage: bash stack_prs.sh <GITHUB_TOKEN> <OWNER/REPO> list
-#        bash stack_prs.sh <GITHUB_TOKEN> <OWNER/REPO> show <pr>
-#        bash stack_prs.sh <GITHUB_TOKEN> <OWNER/REPO> create <pr> [<pr> ...]   # bottom to top
-#        bash stack_prs.sh <GITHUB_TOKEN> <OWNER/REPO> add <stack> <pr> [<pr> ...]   # above the current top
-#        bash stack_prs.sh <GITHUB_TOKEN> <OWNER/REPO> unstack <stack>
+# Usage: bash stack_prs.sh <OWNER/REPO> list
+#        bash stack_prs.sh <OWNER/REPO> show <pr>
+#        bash stack_prs.sh <OWNER/REPO> create <pr> [<pr> ...]   # bottom to top
+#        bash stack_prs.sh <OWNER/REPO> add <stack> <pr> [<pr> ...]   # above the current top
+#        bash stack_prs.sh <OWNER/REPO> unstack <stack>
 #
 # A stack is GitHub's own object, numbered per repository; `show <pr>` finds the one that holds a
 # pull request. `create` and `add` take pull request numbers from the bottom up, and GitHub
@@ -20,12 +20,11 @@
 set -euo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 
-TOKEN="${1:?Missing GITHUB_TOKEN}"
-REPOSITORY="${2:?Missing GITHUB_REPOSITORY}"
-SUBCOMMAND="${3:?Missing subcommand: list | show | create | add | unstack}"
-shift 3
+REPOSITORY="${1:?Missing GITHUB_REPOSITORY}"
+SUBCOMMAND="${2:?Missing subcommand: list | show | create | add | unstack}"
+shift 2
 
-gh_init "$TOKEN" "$REPOSITORY"
+gh_init "$REPOSITORY"
 GH_API_VERSION="$GH_STACK_API_VERSION"
 
 # STACK_JQ — the one shape a stack prints in, and the status of a pull request in it, shared by

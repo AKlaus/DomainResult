@@ -10,7 +10,7 @@ test_gh_init_and_path_helpers() {
   source "${SCRIPT_DIR}/lib.sh"
 
   # GIVEN an owner/repo pair
-  gh_init fake-token AKlaus/DomainResult
+  gh_init AKlaus/DomainResult
 
   # THEN the REST root is repository-scoped, and refs and paths are normalised for GitHub
   [[ "$REPO_URL" == "https://api.github.com/repos/AKlaus/DomainResult" ]] &&
@@ -19,7 +19,7 @@ test_gh_init_and_path_helpers() {
     [[ "$(gh_ref_to_branch feature/x)" == 'feature/x' ]] &&
     [[ "$(gh_repo_path /src/Common/a.cs)" == 'src/Common/a.cs' ]] &&
     # AND a repository name without its owner is refused
-    ! (gh_init fake-token DomainResult) 2>/dev/null
+    ! (gh_init DomainResult) 2>/dev/null
 }
 
 test_body_guards_cover_bodies_but_not_titles() {
@@ -32,9 +32,9 @@ test_body_guards_cover_bodies_but_not_titles() {
   # GIVEN plain-text references sent to a PR description and a PR title
   local body_output title_output
   body_output=$(bash "${SCRIPT_DIR}/update_description.sh" \
-    fake-token o/r 42 'Follows PR 41.' 2>&1)
+    o/r 42 'Follows PR 41.' 2>&1)
   title_output=$(bash "${SCRIPT_DIR}/update_title.sh" \
-    fake-token o/r 42 'PR 41 follow-up' 2>&1)
+    o/r 42 'PR 41 follow-up' 2>&1)
 
   # THEN the body is warned about the reference
   assert_contains "$body_output" 'the description names a pull request as plain text' &&
@@ -47,7 +47,7 @@ test_body_guards_cover_bodies_but_not_titles() {
 test_gh_git_offers_the_token_to_github_only() {
   # GIVEN gh_git with a token, and no other Git configuration or prompt
   source "${SCRIPT_DIR}/lib.sh"
-  gh_init fake-token acme/widgets
+  gh_init acme/widgets
   export GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_NOSYSTEM=1 GIT_TERMINAL_PROMPT=0 GIT_ASKPASS='' SSH_ASKPASS=''
 
   # WHEN Git asks it for credentials for github.com over HTTPS, a look-alike host, and plain HTTP
@@ -60,6 +60,41 @@ test_gh_git_offers_the_token_to_github_only() {
   assert_contains "$github" 'password=fake-token' &&
     assert_not_contains "$lookalike" 'fake-token' &&
     assert_not_contains "$http" 'fake-token'
+}
+
+test_gh_api_keeps_the_token_out_of_the_command_line() {
+  set -euo pipefail
+  source "${SCRIPT_DIR}/lib.sh"
+  GH_CURL_LOG=$(mktemp)
+  trap "rm -f '$GH_CURL_LOG'" EXIT
+  curl() {
+    local arg header_file=''
+    printf 'args: %s\n' "$*" >"$GH_CURL_LOG"
+    for arg in "$@"; do
+      if [[ "$arg" == @* && "$arg" != @- ]]; then header_file="${arg#@}"; fi
+    done
+    printf 'file: %s\nmode: %s\n' "$header_file" "$(ls -l "$header_file" | cut -c1-10)" >>"$GH_CURL_LOG"
+    cat "$header_file" >>"$GH_CURL_LOG"
+    printf '%s' '{"ok":true}'
+  }
+
+  # GIVEN a token in the environment
+  export GITHUB_TOKEN=secret-token
+  gh_init acme/widgets
+
+  # WHEN a request is sent
+  local output log header_file
+  output=$(gh_api GET "${REPO_URL}/pulls/1")
+  log=$(cat "$GH_CURL_LOG")
+  header_file=$(sed -n 's/^file: //p' "$GH_CURL_LOG")
+
+  # THEN no curl argument holds the token, and a file that only the owner can read sends it
+  [[ "$output" == '{"ok":true}' ]] &&
+    assert_not_contains "$(sed -n 's/^args: //p' "$GH_CURL_LOG")" 'secret-token' &&
+    assert_contains "$log" 'mode: -rw-------' &&
+    assert_contains "$log" 'Authorization: Bearer secret-token' &&
+    # AND the file is gone after the call
+    [[ -n "$header_file" && ! -e "$header_file" ]]
 }
 
 run_test 'all scripts parse' test_all_scripts_parse
@@ -209,3 +244,4 @@ run_test 'PR reference match flags each unlinked form' test_pr_reference_match_f
 run_test 'PR reference match passes linked and unrelated text' test_pr_reference_match_passes_linked_and_unrelated_text
 run_test 'every prose-carrying script calls its guard' test_every_prose_script_calls_its_guard
 run_test 'gh_git offers the token to github.com over HTTPS only' test_gh_git_offers_the_token_to_github_only
+run_test 'gh_api keeps the token out of the command line' test_gh_api_keeps_the_token_out_of_the_command_line

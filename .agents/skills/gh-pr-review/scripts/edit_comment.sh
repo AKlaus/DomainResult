@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # edit_comment.sh — Replace the text of an existing comment on a GitHub pull request
-# Usage: bash edit_comment.sh <GITHUB_TOKEN> <OWNER/REPO> <COMMENT_ID> <COMMENT>
+# Usage: bash edit_comment.sh <OWNER/REPO> <COMMENT_ID> <COMMENT>
 #
 # COMMENT_ID is a comment id as review prints it: IC_… for a general comment, PRRC_… for a review
 # comment. The comment keeps its id, position and replies. GitHub lets only the author, or a
@@ -8,12 +8,11 @@
 set -euo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 
-TOKEN="${1:?Missing GITHUB_TOKEN}"
-REPOSITORY="${2:?Missing GITHUB_REPOSITORY}"
-COMMENT_ID="${3:?Missing COMMENT_ID}"
-COMMENT="${4:?Missing COMMENT}"
+REPOSITORY="${1:?Missing GITHUB_REPOSITORY}"
+COMMENT_ID="${2:?Missing COMMENT_ID}"
+COMMENT="${3:?Missing COMMENT}"
 
-gh_init "$TOKEN" "$REPOSITORY"
+gh_init "$REPOSITORY"
 warn_body_text "the comment" "$COMMENT"
 
 # The id alone names its kind: an issue comment (a general comment) and a review comment use

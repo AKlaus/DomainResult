@@ -18,7 +18,7 @@ test_retarget_changes_the_base_branch() {
 
   # WHEN it is retargeted
   local output
-  output=$(bash "${SCRIPT_DIR}/retarget_pr.sh" fake-token acme/widgets 42 refs/heads/feature/parent 2>&1) || {
+  output=$(bash "${SCRIPT_DIR}/retarget_pr.sh" acme/widgets 42 refs/heads/feature/parent 2>&1) || {
     printf '%s\n' "$output" >&2
     return 1
   }
@@ -39,7 +39,7 @@ test_retarget_reports_the_refusal() {
 
   # WHEN the retarget runs
   local output status
-  output=$(bash "${SCRIPT_DIR}/retarget_pr.sh" fake-token acme/widgets 42 nope 2>&1)
+  output=$(bash "${SCRIPT_DIR}/retarget_pr.sh" acme/widgets 42 nope 2>&1)
   status=$?
 
   # THEN the run fails with GitHub's reason
@@ -72,7 +72,7 @@ test_stack_show_prints_the_stack_holding_a_pull_request() {
 
   # WHEN its stack is shown
   local output
-  output=$(bash "${SCRIPT_DIR}/stack_prs.sh" fake-token acme/widgets show 42 2>&1) || {
+  output=$(bash "${SCRIPT_DIR}/stack_prs.sh" acme/widgets show 42 2>&1) || {
     printf '%s\n' "$output" >&2
     return 1
   }
@@ -96,7 +96,7 @@ test_stack_show_names_a_pull_request_outside_any_stack() {
 
   # WHEN its stack is shown
   local output status
-  output=$(bash "${SCRIPT_DIR}/stack_prs.sh" fake-token acme/widgets show 42 2>&1)
+  output=$(bash "${SCRIPT_DIR}/stack_prs.sh" acme/widgets show 42 2>&1)
   status=$?
 
   # THEN the run fails and says so
@@ -121,7 +121,7 @@ test_stack_create_sends_the_pull_requests_bottom_first() {
 
   # WHEN a stack is created from them
   local output
-  output=$(bash "${SCRIPT_DIR}/stack_prs.sh" fake-token acme/widgets create 41 42 43 2>&1) || {
+  output=$(bash "${SCRIPT_DIR}/stack_prs.sh" acme/widgets create 41 42 43 2>&1) || {
     printf '%s\n' "$output" >&2
     return 1
   }
@@ -131,7 +131,7 @@ test_stack_create_sends_the_pull_requests_bottom_first() {
 
   # AND a single pull request cannot form a stack
   local refusal status
-  refusal=$(bash "${SCRIPT_DIR}/stack_prs.sh" fake-token acme/widgets create 41 2>&1)
+  refusal=$(bash "${SCRIPT_DIR}/stack_prs.sh" acme/widgets create 41 2>&1)
   status=$?
   [[ $status -ne 0 ]] && assert_contains "$refusal" 'create takes at least two pull request numbers'
 }
@@ -153,7 +153,7 @@ test_stack_list_prints_every_stack() {
 
   # WHEN the stacks are listed
   local output
-  output=$(bash "${SCRIPT_DIR}/stack_prs.sh" fake-token acme/widgets list 2>&1) || {
+  output=$(bash "${SCRIPT_DIR}/stack_prs.sh" acme/widgets list 2>&1) || {
     printf '%s\n' "$output" >&2
     return 1
   }
@@ -176,7 +176,7 @@ test_stack_show_fails_on_a_non_array_response() {
 
   # WHEN the stack is shown
   local output status
-  output=$(bash "${SCRIPT_DIR}/stack_prs.sh" fake-token acme/widgets show 42 2>&1)
+  output=$(bash "${SCRIPT_DIR}/stack_prs.sh" acme/widgets show 42 2>&1)
   status=$?
 
   # THEN the run fails instead of printing a jq error and exiting 0
@@ -190,9 +190,9 @@ test_stack_rejects_bad_arguments_before_http() {
 
   # WHEN a call carries a bad number or a stray argument
   local bad_pr bad_stack stray
-  bad_pr=$(bash "${SCRIPT_DIR}/stack_prs.sh" fake-token acme/widgets create 41 x 2>&1) && return 1
-  bad_stack=$(bash "${SCRIPT_DIR}/stack_prs.sh" fake-token acme/widgets unstack x 2>&1) && return 1
-  stray=$(bash "${SCRIPT_DIR}/stack_prs.sh" fake-token acme/widgets show 41 42 2>&1) && return 1
+  bad_pr=$(bash "${SCRIPT_DIR}/stack_prs.sh" acme/widgets create 41 x 2>&1) && return 1
+  bad_stack=$(bash "${SCRIPT_DIR}/stack_prs.sh" acme/widgets unstack x 2>&1) && return 1
+  stray=$(bash "${SCRIPT_DIR}/stack_prs.sh" acme/widgets show 41 42 2>&1) && return 1
 
   # THEN each fails with its own message
   assert_contains "$bad_pr" "'x' is not a pull request number." &&
@@ -221,11 +221,11 @@ test_stack_add_appends_above_the_top_and_reports_the_refusal() {
 
   # WHEN each is added
   local output refusal status
-  output=$(bash "${SCRIPT_DIR}/stack_prs.sh" fake-token acme/widgets add 8 44 2>&1) || {
+  output=$(bash "${SCRIPT_DIR}/stack_prs.sh" acme/widgets add 8 44 2>&1) || {
     printf '%s\n' "$output" >&2
     return 1
   }
-  refusal=$(bash "${SCRIPT_DIR}/stack_prs.sh" fake-token acme/widgets add 8 45 2>&1)
+  refusal=$(bash "${SCRIPT_DIR}/stack_prs.sh" acme/widgets add 8 45 2>&1)
   status=$?
 
   # THEN the first joins the top and the second fails with GitHub's reason
@@ -249,8 +249,8 @@ test_stack_unstack_reports_dissolution_or_the_remaining_stack() {
 
   # WHEN each is unstacked
   local dissolved kept
-  dissolved=$(bash "${SCRIPT_DIR}/stack_prs.sh" fake-token acme/widgets unstack 8 2>/dev/null) || return 1
-  kept=$(bash "${SCRIPT_DIR}/stack_prs.sh" fake-token acme/widgets unstack 9 2>&1) || return 1
+  dissolved=$(bash "${SCRIPT_DIR}/stack_prs.sh" acme/widgets unstack 8 2>/dev/null) || return 1
+  kept=$(bash "${SCRIPT_DIR}/stack_prs.sh" acme/widgets unstack 9 2>&1) || return 1
 
   # THEN the 204 is reported as dissolved and the 200 names what stayed and why
   jq -e '. == {stack: 8, dissolved: true}' <<<"$dissolved" >/dev/null &&
