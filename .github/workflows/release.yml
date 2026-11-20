@@ -4,33 +4,31 @@ on:
   push:
     tags:
     - '*.*.*'
+  # A manual run builds, tests and packs, but does not publish to nuget.org
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v7
       with:
         fetch-depth: 100
 
       # Install all SDK versions targeted in DomainResults.MVC project
-    - name: Setup .NET 7
-      uses: actions/setup-dotnet@v1
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v6
       with:
-        dotnet-version: 7.x
-    - name: Setup .NET 8
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 8.x
-    - name: Setup .NET 9
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 9.x
-    - name: Setup .NET 10
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 10.x
+        dotnet-version: |
+          7.x
+          8.x
+          9.x
+          10.x
 
     - name: Install dependencies
       run: dotnet restore
@@ -39,17 +37,18 @@ jobs:
       run: dotnet build --configuration Release --no-restore
 
     - name: Test
-      run: dotnet test --no-restore --verbosity normal
+      run: dotnet test --configuration Release --no-build --verbosity normal
 
     - name: Pack DomainResult (Common)
       run: dotnet pack ./src/Common/DomainResults.Common.csproj --output nuget-packages --configuration Release
     - name: Pack DomainResult (full)
       run: dotnet pack ./src/Mvc/DomainResults.Mvc.csproj --output nuget-packages --configuration Release
     - name: NuGet publish
+      if: github.event_name == 'push'
       run: find nuget-packages -name '*.nupkg' | xargs -i dotnet nuget push {} --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
 
     - name: Artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: nuget-packages
         path: nuget-packages/**/*

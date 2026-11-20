@@ -8,6 +8,10 @@ on:
     branches: [ master ]
     # Avoid running the CI on draft PRs (https://github.com/orgs/community/discussions/25722#discussioncomment-3248919)
     types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+
 jobs:
   build:
     # Avoid running the CI on draft PRs (https://github.com/orgs/community/discussions/25722#discussioncomment-3248919)
@@ -15,28 +19,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v7
       with:
         # Fix for MinVer
         fetch-depth: 100
 
     # Install all SDK versions targeted in the Test project
-    - name: Setup .NET 7
-      uses: actions/setup-dotnet@v1
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v6
       with:
-        dotnet-version: 7.x
-    - name: Setup .NET 8
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 8.x
-    - name: Setup .NET 9
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 9.x
-    - name: Setup .NET 10
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 10.x
+        dotnet-version: |
+          7.x
+          8.x
+          9.x
+          10.x
 
     - name: Install dependencies
       run: dotnet restore
@@ -45,18 +41,17 @@ jobs:
       run: dotnet build --configuration Release --no-restore
 
     # Test each targeted framework independently to spot errors faster
-    # Generate coverage report for the latest framework only, as coverage on multiple is not supported   
+    # Generate coverage report for the latest framework only, as coverage on multiple is not supported
     - name: Test on .NET 10
       run: dotnet test --no-restore --verbosity normal --framework net10.0 /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
     - name: Test on .NET 9
-      run: dotnet test --no-restore --verbosity normal --framework net9.0 /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
+      run: dotnet test --no-restore --verbosity normal --framework net9.0
     - name: Test on .NET 8
-      run: dotnet test --no-restore --verbosity normal --framework net8.0 /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
+      run: dotnet test --no-restore --verbosity normal --framework net8.0
     - name: Test on .NET 7
-      run: dotnet test --no-restore --verbosity normal --framework net7.0 /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
+      run: dotnet test --no-restore --verbosity normal --framework net7.0
 
     - name: Publish coverage report to coveralls.io
-      uses: coverallsapp/github-action@master
+      uses: coverallsapp/github-action@8d6379e14d29928660c4ba802d8e85393440b329 # v2.3.8
       with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        path-to-lcov: ./tests/DomainResults.Tests/TestResults/coverage.net7.0.info 
+        file: ./tests/DomainResults.Tests/TestResults/coverage.net10.0.info
