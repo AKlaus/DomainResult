@@ -25,6 +25,7 @@ public class To_200_OkResult_TupleValue_Tests
 		var okResult = actionRes as OkObjectResult;
 		Assert.NotNull(okResult);
 		Assert.NotNull(actionResOfT);
+		Assert.Null(actionResOfT.Result);
 
 		// and value remains there
 		Assert.Equal(tupleValue.Item1!, okResult!.Value);
@@ -68,6 +69,7 @@ public class To_200_OkResult_TupleValue_Tests
 		var okResult = actionRes as OkObjectResult;
 		Assert.NotNull(okResult);
 		Assert.NotNull(actionResOfT);
+		Assert.Null(actionResOfT.Result);
 
 		// and value remains there
 		Assert.Equal((await tupleValueTask).Item1!, okResult!.Value);
