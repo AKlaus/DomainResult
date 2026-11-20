@@ -394,6 +394,10 @@ app.MapGet("/",
                             }))
 ```
 
+Both conversions set `type` to the RFC link that ASP.NET Core has for the HTTP code, unless the `errorAction` sets it.
+The `IActionResult` conversion builds the response with the MVC `ProblemDetailsFactory`, as `ControllerBase.Problem()` does.
+So the response also has `traceId` and the `AddProblemDetails()` customisation.
+
 ## Alternative solutions
 
 The problem solved here is not unique, so how does _DomainResult_ stand out?
