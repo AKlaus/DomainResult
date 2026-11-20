@@ -28,6 +28,12 @@
 		<!-- Prefix for tag names MinVer -->
 		<MinVerTagPrefix>v</MinVerTagPrefix>
 
+		<!-- Package validation fails the pack on an API break or a dropped target framework against the baseline.
+			 Record an intended break in the project's CompatibilitySuppressions.xml.
+			 After a release, set the baseline to the released version and delete the suppression files. -->
+		<EnablePackageValidation>true</EnablePackageValidation>
+		<PackageValidationBaselineVersion>3.4.0</PackageValidationBaselineVersion>
+
 		<!-- Reference README file for nuget.org (https://devblogs.microsoft.com/nuget/add-a-readme-to-your-nuget-package/)-->
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 
