@@ -25,6 +25,7 @@ public class To_200_OkResult_TupleValue_Tests
 		var okResult = actionRes as OkObjectResult;
 		Assert.NotNull(okResult);
 		Assert.NotNull(actionResOfT);
+		Assert.Null(actionResOfT.Result);
 
 		// and value remains there
 		Assert.Equal(tupleValue.Item1!, okResult!.Value);
@@ -47,6 +48,7 @@ public class To_200_OkResult_TupleValue_Tests
 	public static readonly IEnumerable<object[]> SuccessfulTestCases = new List<object[]>
 	{
 		new object[] { (10,  IDomainResult.Success()) },
+		new object[] { (0,   IDomainResult.Success()) },	// A default value is a value
 		new object[] { ("1", IDomainResult.Success()) },
 		new object[] { (new TestDto("1"), IDomainResult.Success()) }
 	};
@@ -67,6 +69,7 @@ public class To_200_OkResult_TupleValue_Tests
 		var okResult = actionRes as OkObjectResult;
 		Assert.NotNull(okResult);
 		Assert.NotNull(actionResOfT);
+		Assert.Null(actionResOfT.Result);
 
 		// and value remains there
 		Assert.Equal((await tupleValueTask).Item1!, okResult!.Value);
@@ -89,6 +92,7 @@ public class To_200_OkResult_TupleValue_Tests
 	public static readonly IEnumerable<object[]> SuccessfulTaskTestCases = new List<object[]>
 	{
 		new object[] { Task.FromResult((10,  IDomainResult.Success())) },
+		new object[] { Task.FromResult((0,   IDomainResult.Success())) },	// A default value is a value
 		new object[] { Task.FromResult(("1", IDomainResult.Success())) },
 		new object[] { Task.FromResult((new TestDto("1"), IDomainResult.Success())) }
 	};

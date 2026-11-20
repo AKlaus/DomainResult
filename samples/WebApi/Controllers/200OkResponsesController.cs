@@ -16,6 +16,10 @@ public class SuccessResponsesController : ControllerBase
 		=> _service.GetSuccessWithNumericValue().ToActionResult();
 
 	[HttpGet("[action]")]
+	public IActionResult Get200OkWithDefaultNumber() 
+		=> _service.GetSuccessWithDefaultNumericValue().ToActionResult();
+
+	[HttpGet("[action]")]
 	public Task<IActionResult> Get200OkWithNumberTask() 
 		=> _service.GetSuccessWithNumericValueTask().ToActionResult();
 

@@ -25,6 +25,7 @@ public class To_200_OkResult_DomainResult_Tests
 		var okResult = actionRes as OkObjectResult;
 		Assert.NotNull(okResult);
 		Assert.NotNull(actionResOfT);
+		Assert.Null(actionResOfT.Result);
 
 		// and value remains there
 		Assert.Equal(domainValue.Value!, okResult!.Value);
@@ -60,6 +61,7 @@ public class To_200_OkResult_DomainResult_Tests
 		var okResult = actionRes as OkObjectResult;
 		Assert.NotNull(okResult);
 		Assert.NotNull(actionResOfT);
+		Assert.Null(actionResOfT.Result);
 
 		// and value remains there
 		var domainValue = await domainValueTask;
@@ -86,6 +88,7 @@ public class To_200_OkResult_DomainResult_Tests
 			{ 
 				GetTestCase(10,  true, wrapInTask),			// E.g. { DomainResult.Success(10), res => res.Value }
 				GetTestCase(10,  false, wrapInTask),
+				GetTestCase(0,   false, wrapInTask),		// A default value is a value
 				GetTestCase("1", true, wrapInTask),
 				GetTestCase("1", false, wrapInTask),
 				GetTestCase(new TestDto("1"), true, wrapInTask) 

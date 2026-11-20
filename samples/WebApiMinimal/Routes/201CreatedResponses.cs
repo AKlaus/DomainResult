@@ -46,6 +46,18 @@ internal static partial class RoutesExtension
 		   .WithTags("Success: 201 Created")
 		   .Produces<int>(StatusCodes.Status201Created);
 
+		app.MapPost("Post201CreatedOrNoContentForNullNumber",
+			   () => service
+							.GetSuccessWithNullNumericValue()
+							// The custom conversion receives a null value too
+							.ToCustomResult(val => val is null
+							                          ? TypedResults.NoContent()
+							                          : (IResult)TypedResults.CreatedAtRoute(val, "GetById", new { id = val }))
+			   )
+		   .WithTags("Success: 201 Created")
+		   .Produces<int>(StatusCodes.Status201Created)
+		   .Produces(StatusCodes.Status204NoContent);
+
 		app.MapGet("{id}", (int id) => TypedResults.Ok($"Sample properties of #{id} record"))
 		   .WithTags("Success: 201 Created")
 		   .WithName("GetById")

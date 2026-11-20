@@ -1,4 +1,6 @@
-﻿using DomainResults.Common;
+﻿using System.Diagnostics.CodeAnalysis;
+
+using DomainResults.Common;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
@@ -26,7 +28,7 @@ public static partial class DomainResultExtensions
 	/// <param name="errorAction"> Optional processing in case of an error </param>
 	public static IResult ToResult<T>(this IDomainResult<T> domainResult,
 									  Action<ProblemDetails, IDomainResult<T>>? errorAction = null)
-		=> ToResult(domainResult.Value, domainResult, errorAction, value => TypedResults.Ok(value));
+		=> ToResult(domainResult.Value, domainResult, errorAction, ToOkOrNoContentResult);
 
 	/// <summary>
 	///		Returns HTTP code 200 (OK) with a value or a 4xx code in case of an error.
@@ -43,7 +45,7 @@ public static partial class DomainResultExtensions
 	                                              Action<ProblemDetails, IDomainResult<T>>? errorAction = null)
 	{
 		var domainResult = await domainResultTask;
-		return ToResult(domainResult.Value, domainResult, errorAction, value => TypedResults.Ok(value));
+		return ToResult(domainResult.Value, domainResult, errorAction, ToOkOrNoContentResult);
 	}
 
 	/// <summary>
@@ -60,7 +62,7 @@ public static partial class DomainResultExtensions
 	public static IResult ToResult<V, R>(this (V, R) domainResult,
 										 Action<ProblemDetails, R>? errorAction = null)
 										 where R : IDomainResult
-		=> domainResult.ToCustomResult(value => TypedResults.Ok(value), errorAction);
+		=> domainResult.ToCustomResult(ToOkOrNoContentResult, errorAction);
 
 	/// <summary>
 	///		Returns HTTP code 200 (OK) with a value or a 4xx code in case of an error.
@@ -79,6 +81,15 @@ public static partial class DomainResultExtensions
 													 where R : IDomainResult
 	{
 		var domainResult = await domainResultTask;
-		return domainResult.ToCustomResult(value => TypedResults.Ok(value), errorAction);
+		return domainResult.ToCustomResult(ToOkOrNoContentResult, errorAction);
 	}
+
+	/// <summary>
+	///		Returns HTTP code 200 (OK) with the value, or 204 (NoContent) for a <c>null</c> value
+	/// </summary>
+	/// <remarks>
+	///		A default value, such as 0 or false, is a value
+	/// </remarks>
+	private static IResult ToOkOrNoContentResult<V>([AllowNull] V value)
+		=> value is null ? TypedResults.NoContent() : TypedResults.Ok(value);
 }

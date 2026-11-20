@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using DomainResults.Common;
 using DomainResults.Mvc;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Xunit;
 
@@ -60,4 +61,45 @@ public class To_204_NoContentResult_Success_Tests
 		// THEN the response type is NoContent
 		res.AssertNoContentResultType();
 	}
+
+	[Theory]
+	[MemberData(nameof(NullValueTestCases))]
+	public void DomainResult_With_Null_Value_Converted_To_NoContent<TValue>(IDomainResult<TValue> domainRes, (TValue, IDomainResult) tupleRes)
+	{
+		// GIVEN a successful domain result with a null value, in each result shape
+
+		// WHEN convert it to ActionResult
+		IActionResult[] actionRes = [domainRes.ToActionResult(), tupleRes.ToActionResult()];
+		// and to ActionResult<T>
+		ActionResult<TValue>[] actionResOfT = [domainRes.ToActionResultOfT(), tupleRes.ToActionResultOfT()];
+
+		// THEN the response type is NoContent
+		Assert.All(actionRes, res => Assert.IsType<NoContentResult>(res));
+		Assert.All(actionResOfT, res => Assert.IsType<NoContentResult>(res.Result));
+	}
+
+	[Theory]
+	[MemberData(nameof(NullValueTestCases))]
+	public void DomainResult_With_Null_Value_Converted_To_NoContent_of_IResult<TValue>(IDomainResult<TValue> domainRes, (TValue, IDomainResult) tupleRes)
+	{
+		// GIVEN a successful domain result with a null value, in each result shape
+
+		// WHEN convert it to IResult
+		IResult[] results = [domainRes.ToResult(), tupleRes.ToResult()];
+
+		// THEN the response type is NoContent
+		Assert.All(results, res => res.AssertNoContentResultType());
+	}
+
+	/// <summary>
+	///		Null values of a reference type and a nullable value type
+	/// </summary>
+	public static readonly IEnumerable<object[]> NullValueTestCases =
+	[
+		GetTestCase<TestDto?>(null),
+		GetTestCase<int?>(null)
+	];
+
+	private static object[] GetTestCase<T>(T value)
+		=> [DomainResult.Success(value), IDomainResult.Success(value)];
 }

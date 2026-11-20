@@ -219,7 +219,7 @@ The mapping rules are built around `IDomainResult.Status`:
 
 | `IDomainResult.Status`    | Returned `IActionResult`/`IResult` type with default HTTP code                                                                                                                                                                                                 |
 |---------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `Success`                 | If no value is returned then `204 NoContent` ([docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/204)), otherwise - `200 OK` ([docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/200))<br>Supports custom codes (e.g. `201 Created`) |
+| `Success`                 | If no value or a `null` value is returned then `204 NoContent` ([docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/204)), otherwise - `200 OK` ([docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/200)), a default value (e.g. `0` or `false`) included<br>Supports custom codes (e.g. `201 Created`) |
 | `NotFound`                | HTTP code `404 NotFound` ([docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404))                                                                                                                                                                |
 | `Failed`                  | HTTP code `400` ([docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400)) or can be configured to `422` ([docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/422)) or any other code                                                  |
 | `Unauthorized`            | HTTP code `403 Forbidden` ([docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/403))                                                                                                                                                               |
@@ -290,6 +290,8 @@ There is a way to tune the Problem Details output case-by-case.
 When returning a standard `200` or `204` HTTP code is not enough, there are extension methods to knock yourself out:
 - `ToCustomActionResult()` and `ToCustomActionResultOfT()` for returning `IActionResult`
 - `ToCustomResult()` for returning `IResult`
+
+The custom conversion runs for a `null` value too, and decides the response itself.
 
 Examples of returning [201 Created](https://httpstatuses.com/201) along with a location header field pointing to the created resource (as per [RFC7231](https://tools.ietf.org/html/rfc7231#section-7.2)):
 
