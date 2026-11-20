@@ -86,7 +86,7 @@ public class To_200_OkResult_DomainResult_Tests
 	private static IEnumerable<object[]> GetTestCases(bool wrapInTask)
 		=> new List<object[]> 
 			{ 
-				GetTestCase(10,  wrapInTask),			// E.g. { DomainResult.Success(10) }
+				GetTestCase(10,  wrapInTask),
 				GetTestCase(0,   wrapInTask),			// A default value is a value
 				GetTestCase("1", wrapInTask),
 				GetTestCase(new TestDto("1"), wrapInTask)
