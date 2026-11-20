@@ -1,0 +1,253 @@
+#!/usr/bin/env bash
+# lib.sh — helpers for the GitHub pull request scripts.
+#
+# This file is *sourced* by the worker scripts, never executed directly. It sets no
+# `set -euo pipefail` of its own — it inherits the caller's shell options — and defines only
+# functions and the REPO_URL/GRAPHQL_URL/GH_OWNER/GH_REPO globals via gh_init. The token comes from
+# the GITHUB_TOKEN environment variable, which run.sh exports.
+#
+# Every worker sources it with:
+#   source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
+
+# fail_with_body <response> <message>
+# Print an error and exit 1. From a JSON error object it prints `.message` and every entry of
+# `.errors[]`: a REST error such as 404 puts the whole cause in `.message`, a 422 answers
+# "Validation Failed" there and the cause, such as "line must be part of the diff", in `.errors`,
+# and GraphQL reports only `.errors`. Any other body is printed raw. Piping jq straight to stderr
+# would abort on a non-JSON body (HTML sign-in or proxy page) before `exit 1`, losing the detail
+# and returning jq's status instead of 1.
+fail_with_body() {
+  local response="$1" message="$2" detail
+  echo "ERROR: ${message}" >&2
+  if [[ -n "$response" ]]; then
+    detail=$(printf '%s' "$response" | jq -r '
+      if type == "object" then
+        . as $body
+        | [.message, (.errors[]? | if type == "object" then (.message // tojson) else tostring end)]
+        | map(select(. != null and . != ""))
+        | if length > 0 then join("\n") else ($body | tojson) end
+      else . end' 2>/dev/null) || detail="$response"
+    printf '%s\n' "$detail" >&2
+  fi
+  exit 1
+}
+
+# require_json_field <response> <jq-filter> <message>
+# Assert the response satisfies <jq-filter> (e.g. '.id', '.pullRequestId', 'has("vote")');
+# otherwise fail via fail_with_body. Guards against an API error rendering as a null result
+# and exiting 0, so a call that never took effect cannot read as success.
+require_json_field() {
+  local response="$1" filter="$2" message="$3"
+  printf '%s' "$response" | jq -e "$filter" >/dev/null 2>&1 || fail_with_body "$response" "$message"
+}
+
+# warn_unexpanded_quoting <label> <text>
+# Warn on stderr when <text> carries the fingerprints of quoting the caller's shell did not
+# expand, and return 0 regardless: this reports, it never repairs. A body that genuinely quotes
+# an escape sequence as its subject — a review comment about `\n`, say — is legitimate, so
+# rewriting the text would corrupt the honest case to rescue the careless one.
+#
+# Both fingerprints come from ANSI-C quoting, `$'line one\nline two'`, reaching a shell that has
+# no such syntax. PowerShell is the one that matters: it is the only shell some callers have, it
+# passes `$'...'` through as literal characters, and the result posts successfully and reads
+# plausibly. See .agents/skills/gh-pr-review/references/writing.md, "Multiline content", for the forms that work.
+warn_unexpanded_quoting() {
+  local label="$1" text="$2"
+
+  # A leading dollar sign, with or without the apostrophe. PowerShell strips the apostrophes of
+  # $'...' while building the native command line, so bash receives a bare `$` and the narrower
+  # $'-only test would never fire for the caller most likely to make this mistake. Matching the
+  # bare `$` costs a false positive on prose that opens with a price or a variable name; that is
+  # the cheaper error for a warning that neither blocks nor rewrites.
+  if [[ "$text" == \$\'* ]]; then
+    printf "WARNING: %s starts with a literal \$' — ANSI-C quoting reached a shell that does not expand it.\n" "$label" >&2
+    printf '         The text will post exactly as written, dollar sign and all. See .agents/skills/gh-pr-review/references/writing.md, "Multiline content".\n' >&2
+  elif [[ "$text" == \$* ]]; then
+    printf 'WARNING: %s starts with a literal $ — this is how unexpanded ANSI-C quoting arrives from PowerShell.\n' "$label" >&2
+    printf '         Ignore this if the text genuinely opens with a dollar sign. See .agents/skills/gh-pr-review/references/writing.md, "Multiline content".\n' >&2
+  fi
+
+  # Two characters, backslash then n, rather than a newline. Checked separately: a body can carry
+  # this without the $' prefix, and each fingerprint names a different half of the same mistake.
+  if [[ "$text" == *'\n'* ]]; then
+    printf 'WARNING: %s contains a literal backslash-n rather than a newline.\n' "$label" >&2
+    printf '         The service renders it as visible text. Ignore this if the backslash belongs to the\n' >&2
+    printf '         content itself — a path like C:\\nightly, an escape sequence you are quoting.\n' >&2
+  fi
+}
+
+# names_unlinked_pr <text>
+# Succeed when <text> names a pull request as "PR 12", "PR #12" or "pull request 12", the forms
+# that GitHub does not link. A hand-built "[PR 12](url)" link matches too. A bare
+# number needs two digits, so "PR 2 of the stack" stays silent; the # form always matches.
+# warn_unlinked_pr_reference prints the advice.
+names_unlinked_pr() {
+  local pattern='(^|[^[:alnum:]])(PR|[Pp]ull [Rr]equest) (#[0-9]+|[0-9]{2,})([^[:alnum:]]|$)'
+  [[ "$1" =~ $pattern ]]
+}
+
+GH_API_URL='https://api.github.com'
+GH_API_VERSION='2022-11-28'
+# GH_STACK_API_VERSION — the API version that holds the stack endpoints, the asynchronous merge
+# endpoints and the `stack` object on a pull request. complete and stack switch to it.
+GH_STACK_API_VERSION='2026-03-10'
+
+# gh_init <OWNER/REPO>
+# Validates the repository and the GITHUB_TOKEN variable, and populates the globals the other
+# helpers rely on. REPO_URL is the repository-scoped REST root.
+gh_init() {
+  : "${GITHUB_TOKEN:?Missing GITHUB_TOKEN}"
+  local repository="${1:?Missing GITHUB_REPOSITORY}"
+  if [[ ! "$repository" =~ ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$ ]]; then
+    echo "ERROR: GITHUB_REPOSITORY must be <owner>/<repo>, got '${repository}'." >&2
+    exit 1
+  fi
+  GH_OWNER="${repository%%/*}"
+  GH_REPO="${repository#*/}"
+  REPO_URL="${GH_API_URL}/repos/${GH_OWNER}/${GH_REPO}"
+  GRAPHQL_URL="${GH_API_URL}/graphql"
+}
+
+# gh_curl <curl arguments>...
+# Run curl with the token in its Authorization header. The header comes from a file that only the
+# owner can read, made for this call and removed after it: in an argument, the token would show in
+# the process list, which other accounts on the host can read.
+gh_curl() {
+  local header_file header_path status
+  header_file=$(mktemp) || return 1
+  printf 'Authorization: Bearer %s\n' "$GITHUB_TOKEN" >"$header_file"
+  header_path="$header_file"
+  # The native curl of Git Bash reads a Windows path.
+  if command -v cygpath >/dev/null 2>&1; then
+    header_path=$(cygpath -m "$header_file")
+  fi
+  if curl -H "@${header_path}" "$@"; then status=0; else status=$?; fi
+  rm -f "$header_file"
+  return "$status"
+}
+
+# gh_api <VERB> <url> [body]
+# Authenticated REST request. Prints the response body on stdout and returns non-zero on an HTTP
+# error, with the error body still on stdout so the caller can pass it to fail_with_body.
+#
+# A body is sent on stdin via --data-binary @-, not as a `-d "$body"` argument: on Windows a curl
+# argument containing non-ASCII text is re-decoded via the ANSI codepage, so an em dash or curly
+# quote would reach the API as invalid UTF-8.
+gh_api() {
+  local verb="$1" url="$2"
+  local args=(--fail-with-body -sS -X "$verb"
+    -H 'Accept: application/vnd.github+json'
+    -H "X-GitHub-Api-Version: ${GH_API_VERSION}")
+  if (( $# >= 3 )); then
+    printf '%s' "$3" | gh_curl "${args[@]}" -H 'Content-Type: application/json' --data-binary @- "$url"
+  else
+    gh_curl "${args[@]}" "$url"
+  fi
+}
+
+# gh_get <url> <message>
+# REST GET that prints the body, or fails with <message> and the error detail.
+gh_get() {
+  local response
+  response=$(gh_api GET "$1") || fail_with_body "$response" "$2"
+  printf '%s' "$response"
+}
+
+# gh_get_raw <url>
+# GET with the raw media type, for file content. Streams the body unchanged; an HTTP error returns
+# non-zero with the error body on stdout, so a failed fetch cannot be mistaken for file content.
+gh_get_raw() {
+  gh_curl --fail-with-body -sS \
+    -H 'Accept: application/vnd.github.raw+json' \
+    -H "X-GitHub-Api-Version: ${GH_API_VERSION}" \
+    "$1"
+}
+
+# gh_get_pages <url> <message>
+# GET every page of a REST list endpoint and print one JSON array. <url> must already hold a query
+# string. Pages hold 100 items; a shorter page is the last. Nothing is printed if a page fails, so
+# a caller never reads a partial list as the whole.
+gh_get_pages() {
+  local url="$1" message="$2" page=1 page_body count items='[]'
+  while true; do
+    page_body=$(gh_get "${url}&per_page=100&page=${page}" "$message")
+    require_json_field "$page_body" 'arrays' "$message"
+    items=$(printf '%s\n%s\n' "$items" "$page_body" | jq -s '.[0] + .[1]')
+    count=$(printf '%s' "$page_body" | jq 'length')
+    (( count < 100 )) && break
+    page=$((page + 1))
+  done
+  printf '%s' "$items"
+}
+
+# gh_graphql <query> <variables_json> <message>
+# Run one GraphQL operation and print its `.data`. GraphQL reports most failures with HTTP 200 and
+# an `.errors` array, so a response with errors fails here too, rather than reading as empty data.
+gh_graphql() {
+  local query="$1" variables="$2" message="$3" body response
+  body=$(jq -n --arg query "$query" --argjson variables "$variables" '{query: $query, variables: $variables}')
+  response=$(gh_api POST "$GRAPHQL_URL" "$body") || fail_with_body "$response" "$message"
+  if ! printf '%s' "$response" | jq -e '(.errors // []) | length == 0' >/dev/null 2>&1; then
+    fail_with_body "$response" "$message"
+  fi
+  require_json_field "$response" '.data' "$message"
+  printf '%s' "$response" | jq '.data'
+}
+
+# gh_git <git arguments>...
+# Run git with the token as the credential for https://github.com only. The helper reads
+# GITHUB_TOKEN from the environment, so the token stays out of the command line and the Git config.
+# It answers no other protocol or host, so a remote elsewhere never receives the token. A remote
+# over SSH ignores the helper.
+gh_git() {
+  # shellcheck disable=SC2016 # The helper's variables expand when Git runs it, not here.
+  local helper='!f() { test "$1" = get || exit 0; protocol=; host=; while IFS== read -r key value; do case "$key" in protocol) protocol=$value ;; host) host=$value ;; "") break ;; esac; done; test "$protocol" = https && test "$host" = github.com || exit 0; echo username=x-access-token; echo "password=${GITHUB_TOKEN}"; }; f'
+  # No terminal prompt: when GitHub rejects the token, Git fails instead of waiting for a username.
+  GIT_TERMINAL_PROMPT=0 git -c credential.helper= -c "credential.helper=${helper}" "$@"
+}
+
+# gh_require_pr_number <value>
+# Reject a pull request number that is not a positive integer before it reaches a URL.
+gh_require_pr_number() {
+  if [[ ! "$1" =~ ^[1-9][0-9]*$ ]]; then
+    echo "ERROR: '$1' is not a pull request number." >&2
+    exit 1
+  fi
+}
+
+# gh_ref_to_branch <ref>
+# Strip a refs/heads/ prefix, so a caller can pass a full ref as well as a branch name.
+gh_ref_to_branch() {
+  printf '%s' "${1#refs/heads/}"
+}
+
+# gh_repo_path <path>
+# GitHub paths are repository-relative, so strip a leading slash a caller may pass.
+gh_repo_path() {
+  printf '%s' "${1#/}"
+}
+
+# warn_unlinked_pr_reference <label> <text>
+# Warn on stderr when names_unlinked_pr matches <text>, and return 0 regardless. GitHub links only
+# the #12 form. The text is not rewritten: it can quote a commit subject, and that quotation must
+# post as written. Titles are left out: GitHub appends " (#<n>)" to the squash commit itself.
+warn_unlinked_pr_reference() {
+  names_unlinked_pr "$2" || return 0
+  printf 'WARNING: %s names a pull request as plain text, which GitHub does not link.\n' "$1" >&2
+  printf '         Write #<n>, such as #42. Ignore this if the text quotes a commit subject.\n' >&2
+  printf '         See "References" in .agents/skills/gh-pr-review/references/writing.md.\n' >&2
+}
+
+# GH_COMMENT_RESOLVED_JQ — the jq definition of a resolved general comment, shared by review and
+# resolve so that the two cannot disagree. A general comment has no thread; resolve hides it with
+# the classifier RESOLVED, which GitHub reports back as the minimizedReason "resolved".
+GH_COMMENT_RESOLVED_JQ='def comment_resolved: .isMinimized and .minimizedReason == "resolved";'
+
+# warn_body_text <label> <text>
+# Run every guard that applies to body text: descriptions, comments, and replies. A worker calls
+# this for a body and warn_unexpanded_quoting for a title, so that a guard added later reaches
+# every body without an edit to each worker.
+warn_body_text() {
+  warn_unexpanded_quoting "$1" "$2"
+  warn_unlinked_pr_reference "$1" "$2"
+}

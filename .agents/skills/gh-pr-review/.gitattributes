@@ -1,0 +1,3 @@
+# Bash reads a CR as part of a command, so a CRLF checkout, the Git for Windows default, breaks
+# every script. LF also keeps the KEY=VALUE files byte-identical in a diff.
+* text=auto eol=lf

@@ -337,7 +337,7 @@ app.MapPost("/",
 
 ### Custom error handling
 
-The default HTTP codes for the supported statuses (`Failed`, `NotFound`, etc.) are defined in `ActionResultConventions` class. The default values are:
+The default HTTP codes for the supported statuses (`Failed`, `NotFound`, etc.) are defined in the `HttpCodeConvention` class. The default values are:
 
 ```csharp
 // The HTTP code to return when a request 'failed' (also can be 422)
