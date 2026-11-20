@@ -300,6 +300,38 @@ test_issue_shows_the_issue_and_its_comments() {
     <<<"$output" >/dev/null
 }
 
+# A comment list over 1 MiB exceeds the argument limit of macOS, and 128 KiB the one of Linux.
+test_issue_reads_a_long_comment_list() {
+  # The page sits in a file: as an exported variable, it would exceed the limit of every exec.
+  ISSUE_PAGE_FILE=$(mktemp)
+  trap "rm -f '$ISSUE_PAGE_FILE'" EXIT
+  jq -nc '[range(1; 101) | {user: {login: "u\(.)"}, created_at: "2026-11-01T00:00:00Z",
+    body: ("x" * 11000)}]' >"$ISSUE_PAGE_FILE"
+  export ISSUE_PAGE_FILE
+  curl() {
+    case "$*" in
+      *'-X GET'*'/repos/acme/widgets/issues/88')
+        printf '%s' '{"number":88,"title":"T","state":"open","user":{"login":"alex"},"html_url":"u","body":"B"}'
+        ;;
+      *'/issues/88/comments?sort=created&per_page=100&page=1') cat "$ISSUE_PAGE_FILE" ;;
+      *'/issues/88/comments?sort=created&per_page=100&page=2') printf '%s' '[]' ;;
+      *) return 90 ;;
+    esac
+  }
+  export -f curl
+
+  # GIVEN an issue with 100 comments of 11,000 characters each
+  # WHEN the issue is shown
+  local output
+  output=$(bash "${SCRIPT_DIR}/show_issue.sh" fake-token acme/widgets 88 2>&1) || {
+    printf '%s\n' "${output:0:500}" >&2
+    return 1
+  }
+
+  # THEN every comment is reported
+  jq -e '.comments | length == 100 and .[99].author == "u100"' <<<"$output" >/dev/null
+}
+
 test_issue_refuses_a_pull_request_number() {
   curl() {
     case "$*" in
@@ -331,4 +363,5 @@ run_test 'fetch encodes the path and the ref' test_fetch_encodes_path_and_ref
 run_test 'fetch preserves exact file bytes' test_fetch_preserves_exact_file_bytes
 run_test 'fetch propagates HTTP failures' test_fetch_propagates_http_failure
 run_test 'issue shows the issue and its comments' test_issue_shows_the_issue_and_its_comments
+run_test 'issue reads a comment list over the argument limit' test_issue_reads_a_long_comment_list
 run_test 'issue refuses a pull request number' test_issue_refuses_a_pull_request_number

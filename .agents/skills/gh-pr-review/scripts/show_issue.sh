@@ -27,7 +27,8 @@ fi
 COMMENTS=$(gh_get_pages "${REPO_URL}/issues/${ISSUE}/comments?sort=created" \
   "the comments of issue ${ISSUE} were not listed.")
 
-printf '%s' "$ITEM" | jq --argjson comments "$COMMENTS" '{
+# The comments reach jq on stdin. As an argument, a long list exceeds the argument limit.
+printf '%s\n%s\n' "$ITEM" "$COMMENTS" | jq -s '.[1] as $comments | .[0] | {
     id: .number,
     title: .title,
     state: .state,
