@@ -1,8 +1,9 @@
 # msbuild.awk — List the references an MSBuild file declares, as key<TAB>value rows for compare.awk.
 #
 # Variables:
-#   kind=version   PackageVersion name and version, as Directory.Packages.props declares them
-#   kind=package   PackageReference name, and its version when the project pins one
+#   kind=package   PackageReference name with its Condition, if any, and its version when the
+#                  project pins one. A package can appear once per condition, as MinVer does in
+#                  src/Directory.Build.props, so the condition is part of the key.
 #   kind=project   ProjectReference folder, resolved to a repository path
 #   dir            the folder of the file, against which a ProjectReference resolves
 
@@ -32,15 +33,10 @@ function resolve(base, relative,   parts, n, kept, m, i, out) {
   return out
 }
 
-kind == "version" && /<PackageVersion[ \t]/ {
-  name = attribute($0, "Include")
-  if (name == "") name = attribute($0, "Update")
-  if (name != "") print name "\t" attribute($0, "Version")
-}
-
 kind == "package" && /<PackageReference[ \t]/ {
   name = attribute($0, "Include")
-  if (name != "") print name "\t" attribute($0, "Version")
+  condition = attribute($0, "Condition")
+  if (name != "") print name (condition == "" ? "" : " if " condition) "\t" attribute($0, "Version")
 }
 
 kind == "project" && /<ProjectReference[ \t]/ {

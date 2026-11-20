@@ -18,7 +18,7 @@ test_gh_init_and_path_helpers() {
     [[ "$(gh_ref_to_branch refs/heads/bugfix/#912729)" == 'bugfix/#912729' ]] &&
     [[ "$(gh_ref_to_branch feature/x)" == 'feature/x' ]] &&
     [[ "$(gh_repo_path /src/Common/a.cs)" == 'src/Common/a.cs' ]] &&
-    # AND an Azure DevOps style repository name is refused
+    # AND a repository name without its owner is refused
     ! (gh_init fake-token DomainResult) 2>/dev/null
 }
 
@@ -151,12 +151,11 @@ test_pr_reference_match_passes_linked_and_unrelated_text() {
   set -euo pipefail
   source "${SCRIPT_DIR}/lib.sh"
 
-  # GIVEN the GitHub form, a printed link, a legacy Azure DevOps reference, a hash that starts with
-  # digits, and a small ordinal
+  # GIVEN the GitHub form, a printed link, a hash that starts with digits, and a small ordinal
   local text
-  for text in 'Stacked on #41, for AB#964805.' \
+  for text in 'Stacked on #41, for #93.' \
     'Fixed in [DomainResult\#42](https://github.com/AKlaus/DomainResult/pull/42).' \
-    'Stacked on !198265, for #964805.' 'On merged PR 6794b75e75 the rows are gone.' \
+    'On merged PR 6794b75e75 the rows are gone.' \
     'This is PR 2 of the stack.'; do
     # THEN the shared match stays silent
     ! names_unlinked_pr "$text" || {
@@ -170,9 +169,8 @@ test_every_prose_script_calls_its_guard() {
   set -euo pipefail
 
   # GIVEN the workers that carry free text into the API, identified by the jq --arg names that
-  # hold prose rather than a field name: a *Field arg names a work item field, it never holds
-  # the body. Deriving the list means a worker added later is covered without editing this test.
-  local body_args='--arg (body|content|description|desc|criteria|notes|repro|details|text) '
+  # hold prose. Deriving the list means a worker added later is covered without editing this test.
+  local body_args='--arg (body|content) '
   local script name missing=()
   for script in "${SCRIPT_DIR}"/*.sh; do
     name=$(basename "$script")

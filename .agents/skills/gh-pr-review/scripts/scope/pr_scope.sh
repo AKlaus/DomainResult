@@ -5,7 +5,7 @@
 # BASE defaults to origin/master and HEAD to HEAD. The report covers the diff from the merge base
 # of the two to HEAD, which is the diff a GitHub PR shows. It reads committed Git objects only:
 # uncommitted edits do not count, and nothing contacts GitHub, so no token is needed.
-# The output is Markdown for the PR description. It counts what changed, such as endpoints, and
+# The output is Markdown for the PR description. It counts what changed, such as dependencies, and
 # never prints line counts. The budget result goes to stderr: the author and the reviewer act on
 # it, but the description does not show it. references/scope.md explains both.
 
@@ -16,17 +16,23 @@ set -euo pipefail
 # syntax only, so the C locale changes no result.
 export LC_ALL=C
 
-# The budget, in changed lines (added plus deleted). AGENTS.md states the same numbers: change both
-# places together.
-PRODUCTION_TARGET=500
-PRODUCTION_CEILING=1000
-REVIEWABLE_CEILING=2000
+SCOPE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# The budget, in changed lines (added plus deleted), from the table in AGENTS.md, which holds the
+# only copy of the numbers.
+AGENTS_FILE="$(cd "${SCOPE_DIR}/../../../../.." && pwd)/AGENTS.md"
+read -r PRODUCTION_TARGET PRODUCTION_CEILING REVIEWABLE_CEILING < <(awk -F' *[|] *' '
+  $2 == "Production" { target = $3; ceiling = $4 }
+  $2 == "Production and tests" { reviewable = $4 }
+  END { print target, ceiling, reviewable }' "$AGENTS_FILE" 2>/dev/null) || true
+if [[ ! "${PRODUCTION_TARGET:-}/${PRODUCTION_CEILING:-}/${REVIEWABLE_CEILING:-}" =~ ^[0-9]+/[0-9]+/[0-9]+$ ]]; then
+  echo "ERROR: the budget table in ${AGENTS_FILE} was not read." >&2
+  exit 1
+fi
 
 # Each detail list shows at most this many rows. This shortens a long list, but it does not bound
 # the whole report: a row can hold several names.
 MAX_ROWS=15
-
-SCOPE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 if (( $# > 2 )); then
   echo "ERROR: scope takes at most 2 arguments, but received $#." >&2
@@ -109,18 +115,6 @@ change_label() {
   esac
 }
 
-# The folder that names a service or an app: the part of the path before its source folder.
-owner_of() {
-  local path="$1" marker
-  for marker in /Api/ /Controllers/ /src/; do
-    if [[ "$path" == *"$marker"* ]]; then
-      printf '%s' "${path%%"$marker"*}"
-      return
-    fi
-  done
-  printf '%s' "${path%/*}"
-}
-
 compare() { awk -f "${SCOPE_DIR}/compare.awk" "$1" "$2" | sort; }
 
 # Records one tangible change for the table: kind, then a file status (A, D, R, M) or a compare.awk
@@ -145,7 +139,7 @@ record_dependencies() { # kind label
   done >>"${WORK}/dependencies"
 }
 
-for section_file in controllers endpoints endpoints.changed dependencies configuration workflows; do
+for section_file in dependencies configuration workflows; do
   : >"${WORK}/${section_file}"
 done
 
@@ -159,36 +153,6 @@ while IFS=$'\t' read -r category status first second; do
   path="${new:-$old}"
   name="${path##*/}"
   change=$(change_label "$status")
-  # Endpoints: note each controller class touched, as its folder and its file name before the first
-  # dot. A partial class spreads over XController.cs and XController.Query.cs, so the whole class
-  # is compared below, not the one file. A *ControllerBase.cs file holds shared plumbing.
-  if [[ "$category" == production && "$name" == *Controller*.cs && "$name" != *ControllerBase.cs ]]; then
-    for controller_path in "$old" "$new"; do
-      [[ -n "$controller_path" ]] || continue
-      controller_file="${controller_path##*/}"
-      printf '%s\t%s\n' "${controller_path%/*}" "${controller_file%%.*}" >>"${WORK}/controllers"
-    done
-    if [[ -n "$old" && -n "$new" ]]; then
-      # -w: spacing within a line is not a change. --no-ext-diff and --no-color keep the hunk
-      # headers that the user's diff settings could replace. A pure deletion has no head lines, so
-      # it is recorded by its base lines.
-      git diff --no-ext-diff --no-color -U0 -w -M "$MERGE_BASE" "$HEAD_REV" -- "$old" "$new" \
-        | awk -v old_file="$old" -v new_file="$new" '
-          function side(sign) {
-            match($0, sign "[0-9]+(,[0-9]+)?")
-            split(substr($0, RSTART + 1, RLENGTH - 1), part, ",")
-            first = part[1]
-            count = (2 in part) ? part[2] : 1
-          }
-          /^@@/ {
-            side("\\+")
-            if (count > 0) { print new_file "\t" first "\t" first + count - 1 "\thead"; next }
-            side("-")
-            print old_file "\t" first "\t" first + count - 1 "\tbase"
-          }' >>"${WORK}/endpoints.changed"
-    fi
-  fi
-
   # Projects and dependencies: what each project builds on, which is the architecture.
   if [[ "$category" == production ]]; then
     case "$name" in
@@ -199,11 +163,6 @@ while IFS=$'\t' read -r category status first second; do
         ;;
     esac
     case "$name" in
-      Directory.Packages.props)
-        content_at base | awk -v kind=version -f "${SCOPE_DIR}/msbuild.awk" >"${WORK}/deps.base"
-        content_at head | awk -v kind=version -f "${SCOPE_DIR}/msbuild.awk" >"${WORK}/deps.head"
-        record_dependencies 'Package dependencies' NuGet
-        ;;
       *.csproj)
         content_at base | awk -v kind=project -v dir="${old%/*}" -f "${SCOPE_DIR}/msbuild.awk" >"${WORK}/deps.base"
         content_at head | awk -v kind=project -v dir="${new%/*}" -f "${SCOPE_DIR}/msbuild.awk" >"${WORK}/deps.head"
@@ -253,42 +212,8 @@ while IFS=$'\t' read -r category status first second; do
   fi
 done <"${WORK}/inventory"
 
-# The endpoints of every touched controller class at one revision, each row led by its service.
-# A partial file without its own [Route] or policy takes them from the class's main file,
-# XController.cs.
-endpoints_at() { # revision
-  local revision="$1" dir class main inherited file
-  sort -u "${WORK}/controllers" | while IFS=$'\t' read -r dir class; do
-    main="${dir}/${class}.cs"
-    inherited=$( { git show "${revision}:${main}" 2>/dev/null || true; } | awk -v mode=class -f "${SCOPE_DIR}/endpoints.awk")
-    git -c core.quotepath=off ls-tree --name-only "$revision" -- "${dir}/" | while IFS= read -r file; do
-      case "${file##*/}" in
-        "${class}.cs")
-          git show "${revision}:${file}" | awk -v file="$file" -f "${SCOPE_DIR}/endpoints.awk"
-          ;;
-        "${class}".*.cs)
-          git show "${revision}:${file}" | awk -v file="$file" -v inherited_route="${inherited%%$'\t'*}" \
-            -v inherited_policy="${inherited#*$'\t'}" -f "${SCOPE_DIR}/endpoints.awk"
-          ;;
-      esac
-    done | awk -v service="$(owner_of "${dir}/")" '{ print service "\t" $0 }'
-  done
-}
-
-if [[ -s "${WORK}/controllers" ]]; then
-  endpoints_at "$MERGE_BASE" >"${WORK}/endpoints.base"
-  endpoints_at "$HEAD_REV" >"${WORK}/endpoints.head"
-  awk -f "${SCOPE_DIR}/endpoint_changes.awk" \
-    "${WORK}/endpoints.changed" "${WORK}/endpoints.base" "${WORK}/endpoints.head" \
-    | sort | while IFS=$'\t' read -r endpoint_change service endpoint policy; do
-        printf '| `%s` | %s | `%s` | %s |\n' "$service" "$endpoint_change" "$endpoint" "$policy"
-        # A policy change is a change to the endpoint.
-        metric 'API endpoints' "$endpoint_change"
-      done >"${WORK}/endpoints"
-fi
-
 # Prints the metrics as one table row per kind, in a fixed order. A zero prints as an empty cell.
-METRIC_ORDER='Project references|Package dependencies|API endpoints|Configuration keys|CI workflows'
+METRIC_ORDER='Project references|Package dependencies|Configuration keys|CI workflows'
 print_metrics() {
   awk -F'\t' -v order="$METRIC_ORDER" '
     function cell(n) { return n > 0 ? n : "" }
@@ -347,7 +272,6 @@ section() { # title file [table header lines...]
     echo
     echo "**Areas**: ${AREAS}"
   fi
-  section 'API endpoints' "${WORK}/endpoints" '| Service | Change | Endpoint | Policy |' '|---|---|---|---|'
   section 'Projects and dependencies' "${WORK}/dependencies"
   section 'Configuration' "${WORK}/configuration"
   section 'CI workflows' "${WORK}/workflows"

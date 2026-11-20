@@ -76,7 +76,7 @@ test_list_prs_rejects_unknown_status_before_http() {
   curl() { return 90; }
   export -f curl
 
-  # GIVEN an Azure DevOps status name that GitHub does not use
+  # GIVEN a status name that list does not accept
   # WHEN it is passed to list
   local output
   output=$(bash "${SCRIPT_DIR}/list_prs.sh" fake-token acme/widgets abandoned 2>&1) && return 1

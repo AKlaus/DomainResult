@@ -5,9 +5,14 @@
 
 # Creates an empty repository in $1 and makes it the working directory of the caller's subshell.
 # Git runs inside $1 and takes no path: run_tests.sh turns off MSYS path conversion, so Git for
-# Windows would read a /tmp/... argument as a path on the current drive.
+# Windows would read a /tmp/... argument as a path on the current drive. A folder that cannot be
+# entered, or that already sits in a repository, ends the case: the case would commit to that one.
 scope_init_repo() {
-  cd "$1" || return 1
+  mkdir -p "$1" && cd "$1" || exit 1
+  if command git rev-parse --git-dir >/dev/null 2>&1; then
+    printf 'ERROR: %s is inside a Git repository.\n' "$1" >&2
+    exit 1
+  fi
   command git init -q
   command git config core.autocrlf false
   command git config user.name 'Test User'
@@ -293,306 +298,16 @@ test_scope_reads_files_with_a_byte_order_mark() {
     assert_contains "$budget" 'Budget: within the 500-line'
 }
 
-scope_widget_controller() { # head|base
-  mkdir -p svc/Api/Controllers
-  {
-    printf '%s\n' \
-      'namespace Svc.Api.Controllers;' \
-      '' \
-      '[ApiController]' \
-      '[Authorize(Policy = Policies.RequireUser)]' \
-      '[Route("api/widgets")]' \
-      'public class WidgetController(IWidgetService service) : ControllerBase' \
-      '{' \
-      '	/// <summary>' \
-      '	/// Lists widgets.' \
-      '	/// </summary>' \
-      '	[HttpGet]' \
-      '	public async Task<ActionResult<WidgetsResponse>> List(' \
-      '		[FromQuery] int page,' \
-      '		CancellationToken ct)' \
-      '	{'
-    if [[ "$1" == head ]]; then
-      printf '%s\n' '		var widgets = await service.List(page, pageSize: 50, ct);'
-    else
-      printf '%s\n' '		var widgets = await service.List(page, pageSize: 20, ct);'
-    fi
-    printf '%s\n' \
-      '		return widgets.ToActionResult();' \
-      '	}' \
-      ''
-    printf '%s\n' '	#region Commands'
-    if [[ "$1" == head ]]; then
-      printf '%s\n' \
-        '	[HttpPost]' \
-        '	public Task<ActionResult<long>> Create([FromBody] CreateWidgetRequest request, CancellationToken ct)' \
-        '		=> service.Create(request, ct).ToActionResultOfT();' \
-        ''
-    else
-      printf '%s\n' \
-        '	[HttpDelete("{id:long}")]' \
-        '	public Task<IActionResult> Delete(long id, CancellationToken ct)' \
-        '		=> service.Delete(id, ct).ToActionResult();' \
-        ''
-    fi
-    printf '%s\n' '	#endregion' ''
-    printf '%s\n' \
-      '	[HttpGet("{id:long}")]' \
-      '	public async Task<ActionResult<WidgetResponse>> Get(long id, CancellationToken ct)' \
-      '	{' \
-      '		var widget = await service.Get(id, ct);' \
-      '		return Map(widget);' \
-      '	}' \
-      '' \
-      '	private static ActionResult<WidgetResponse> Map(IDomainResult<Widget> widget)' \
-      '	{'
-    if [[ "$1" == head ]]; then
-      printf '%s\n' '		return widget.ToActionResultOfT(w => new WidgetResponse(w.Id, w.Name));'
-    else
-      printf '%s\n' '		return widget.ToActionResultOfT(w => new WidgetResponse(w.Id));'
-    fi
-    printf '%s\n' \
-      '	}' \
-      '}'
-  } >svc/Api/Controllers/WidgetController.cs
-}
-
-test_scope_classifies_endpoint_changes() {
-  local temp_root output
-  temp_root=$(mktemp -d)
-  trap "rm -rf '$temp_root'" EXIT
-  scope_init_repo "$temp_root"
-
-  scope_widget_controller base
-  scope_commit base
-  scope_widget_controller head
-  scope_commit head
-
-  output=$(scope_run base head 2>&1) || {
-    printf '%s\n' "$output" >&2
-    return 1
-  }
-
-  assert_contains "$output" '| API endpoints | 1 | 1 | 1 |' &&
-    assert_contains "$output" '| `svc` | Added | `POST api/widgets` | RequireUser |' &&
-    assert_contains "$output" '| `svc` | Removed | `DELETE api/widgets/{id:long}` | RequireUser |' &&
-    assert_contains "$output" '| `svc` | Changed | `GET api/widgets` | RequireUser |' &&
-    # Only the private helper below Get changed. It must not read as a change to Get.
-    assert_not_contains "$output" '`GET api/widgets/{id:long}`'
-}
-
-test_scope_reports_policy_change() {
-  local temp_root output
-  temp_root=$(mktemp -d)
-  trap "rm -rf '$temp_root'" EXIT
-  scope_init_repo "$temp_root"
-
-  scope_widget_controller base
-  scope_commit base
-  # awk, not sed: BSD sed on macOS does not read \n or \t in a replacement.
-  awk '{ print } /\[HttpDelete/ { print "\t[Authorize(Policies.RequireAdmin)]" }' \
-    svc/Api/Controllers/WidgetController.cs >svc/Api/Controllers/WidgetController.cs.new
-  mv svc/Api/Controllers/WidgetController.cs.new svc/Api/Controllers/WidgetController.cs
-  scope_commit head
-
-  output=$(scope_run base head 2>&1) || {
-    printf '%s\n' "$output" >&2
-    return 1
-  }
-
-  assert_contains "$output" '| Policy changed | `DELETE api/widgets/{id:long}` | RequireUser -> RequireAdmin |'
-}
-
-# Deleting the first line of an action leaves no head line inside it, so its base span decides.
-test_scope_marks_a_deleted_first_attribute() {
-  local temp_root output
-  temp_root=$(mktemp -d)
-  trap "rm -rf '$temp_root'" EXIT
-  scope_init_repo "$temp_root"
-
-  scope_widget_controller base
-  awk '/\[HttpGet\("\{id:long\}"\)\]/ { print "\t[RequestSizeLimit(1024)]" } { print }' \
-    svc/Api/Controllers/WidgetController.cs >svc/Api/Controllers/WidgetController.cs.new
-  mv svc/Api/Controllers/WidgetController.cs.new svc/Api/Controllers/WidgetController.cs
-  scope_commit base
-  scope_widget_controller base
-  scope_commit head
-
-  output=$(scope_run base head 2>&1) || {
-    printf '%s\n' "$output" >&2
-    return 1
-  }
-
-  assert_contains "$output" '| API endpoints |  | 1 |  |' &&
-    assert_contains "$output" '| `svc` | Changed | `GET api/widgets/{id:long}` | RequireUser |'
-}
-
-# A partial class keeps its [Route] and policy in XController.cs. An action that moves to another
-# file of the class is not a change; a new action there takes the class route and policy.
-test_scope_reads_partial_controller_files() {
-  local temp_root output
-  temp_root=$(mktemp -d)
-  trap "rm -rf '$temp_root'" EXIT
-  scope_init_repo "$temp_root"
-
-  mkdir -p svc/Api/Controllers
-  printf '%s\n' '[ApiController]' '[Authorize(Policy = Policies.RequireUser)]' '[Route("api/widgets")]' \
-    'public partial class WidgetController(IWidgetService service) : ControllerBase' '{' \
-    '	[HttpGet]' '	public Task<IActionResult> List(CancellationToken ct) => service.List(ct);' '' \
-    '	[HttpPost]' '	public Task<IActionResult> Create(CreateWidgetRequest request, CancellationToken ct)' \
-    '		=> service.Create(request, ct);' '}' >svc/Api/Controllers/WidgetController.cs
-  scope_commit base
-
-  printf '%s\n' '[ApiController]' '[Authorize(Policy = Policies.RequireUser)]' '[Route("api/widgets")]' \
-    'public partial class WidgetController(IWidgetService service) : ControllerBase' '{' \
-    '	[HttpGet]' '	public Task<IActionResult> List(CancellationToken ct) => service.List(ct);' '}' \
-    >svc/Api/Controllers/WidgetController.cs
-  printf '%s\n' 'public partial class WidgetController' '{' \
-    '	[HttpPost]' '	public Task<IActionResult> Create(CreateWidgetRequest request, CancellationToken ct)' \
-    '		=> service.Create(request, ct);' '' \
-    '	[HttpDelete("{id:long}")]' '	public Task<IActionResult> Delete(long id, CancellationToken ct) => service.Delete(id, ct);' \
-    '}' >svc/Api/Controllers/WidgetController.Command.cs
-  scope_commit head
-
-  output=$(scope_run base head 2>&1) || {
-    printf '%s\n' "$output" >&2
-    return 1
-  }
-
-  assert_contains "$output" '| `svc` | Added | `DELETE api/widgets/{id:long}` | RequireUser |' &&
-    assert_not_contains "$output" '`POST api/widgets`'
-}
-
-# Arguments: the head's Create message, the head's with-delete or without-delete, the endpoint that
-# must read as its change, and an endpoint that must not appear. The base passes "created" and has
-# Delete.
-test_scope_bounds_actions() {
-  local message="$1" delete="$2" expected="$3" unexpected="$4" temp_root output
-  temp_root=$(mktemp -d)
-  trap "rm -rf '$temp_root'" EXIT
-  scope_init_repo "$temp_root"
-
-  scope_controller() { # message with-delete|without-delete
-    printf '%s\n' '[Route("api/widgets")]' 'public class WidgetController(IWidgetService service) : ControllerBase' '{' \
-      '	[HttpPost]' '	public Task<IActionResult> Create(CreateWidgetRequest request, CancellationToken ct)' \
-      '		=> service.Create(request, ct)' "			.ToActionResult(\"$1\");" ''
-    if [[ "$2" == with-delete ]]; then
-      printf '%s\n' '	[HttpDelete("{id:long}")]' '	public Task<IActionResult> Delete(long id, CancellationToken ct)' \
-        '		=> service.Delete(id, ct).ToActionResult();' ''
-    fi
-    printf '%s\n' '	[HttpGet("{id:long}")]' '	public Task<IActionResult> Get(long id, CancellationToken ct)' \
-      '		=> service.Get(id, ct).ToActionResult();' '}'
-  }
-  mkdir -p svc/Api/Controllers
-  scope_controller created with-delete >svc/Api/Controllers/WidgetController.cs
-  scope_commit base
-  scope_controller "$message" "$delete" >svc/Api/Controllers/WidgetController.cs
-  scope_commit head
-
-  output=$(scope_run base head 2>&1) || {
-    printf '%s\n' "$output" >&2
-    return 1
-  }
-
-  assert_contains "$output" "$expected" &&
-    assert_not_contains "$output" "$unexpected"
-}
-
-# Arguments: the action that the head takes out of WidgetController.cs (post, in the middle, or
-# delete, at the end), moves or removed, and a line that the report must hold. A move to
-# WidgetController.Command.cs is no change. Neither a move nor a removal marks an action as changed.
-test_scope_takes_out_an_action() {
-  local action="$1" fate="$2" expected="$3" temp_root output kept
-  temp_root=$(mktemp -d)
-  trap "rm -rf '$temp_root'" EXIT
-  scope_init_repo "$temp_root"
-
-  scope_action() { # get|post|delete
-    case "$1" in
-      get) printf '%s\n' '	[HttpGet]' '	public Task<IActionResult> List(CancellationToken ct)' '		=> service.List(ct);' ;;
-      post) printf '%s\n' '	[HttpPost]' '	public Task<IActionResult> Create(CreateWidgetRequest request, CancellationToken ct)' \
-        '		=> service.Create(request, ct);' ;;
-      delete) printf '%s\n' '	[HttpDelete("{id:long}")]' '	public Task<IActionResult> Delete(long id, CancellationToken ct)' \
-        '		=> service.Delete(id, ct);' ;;
-    esac
-  }
-  scope_main_controller() { # actions...
-    local first=1 name
-    printf '%s\n' '[Route("api/widgets")]' 'public partial class WidgetController(IWidgetService service) : ControllerBase' '{'
-    for name in "$@"; do
-      (( first )) || printf '\n'
-      first=0
-      scope_action "$name"
-    done
-    printf '}\n'
-  }
-  mkdir -p svc/Api/Controllers
-  scope_main_controller get post delete >svc/Api/Controllers/WidgetController.cs
-  scope_commit base
-
-  kept=(get post delete)
-  kept=("${kept[@]/$action/}")
-  scope_main_controller ${kept[*]} >svc/Api/Controllers/WidgetController.cs
-  if [[ "$fate" == moves ]]; then
-    { printf '%s\n' 'public partial class WidgetController' '{'; scope_action "$action"; printf '}\n'; } \
-      >svc/Api/Controllers/WidgetController.Command.cs
-  fi
-  scope_commit head
-
-  output=$(scope_run base head 2>&1) || {
-    printf '%s\n' "$output" >&2
-    return 1
-  }
-
-  assert_contains "$output" "$expected" &&
-    assert_not_contains "$output" '| Changed | `'
-}
-
-# Two services can both serve POST api/admin/sync. Removing it from one service
-# is a removal, even when the other service keeps it.
-test_scope_keys_endpoints_by_service() {
-  local temp_root output service
-  temp_root=$(mktemp -d)
-  trap "rm -rf '$temp_root'" EXIT
-  scope_init_repo "$temp_root"
-
-  for service in alpha beta; do
-    mkdir -p "${service}/Api/Controllers"
-    printf '%s\n' '[Route("api/admin")]' 'public class SyncController : ControllerBase' '{' \
-      '	[HttpPost("sync")]' '	public IActionResult Sync() => Ok();' '}' >"${service}/Api/Controllers/SyncController.cs"
-  done
-  scope_commit base
-
-  printf '%s\n' '[Route("api/admin")]' 'public class SyncController : ControllerBase' '{' \
-    '	[HttpPost("sync")]' '	public IActionResult Sync() => NoContent();' '}' >alpha/Api/Controllers/SyncController.cs
-  printf '%s\n' '[Route("api/admin")]' 'public class SyncController : ControllerBase' '{' '}' \
-    >beta/Api/Controllers/SyncController.cs
-  scope_commit head
-
-  output=$(scope_run base head 2>&1) || {
-    printf '%s\n' "$output" >&2
-    return 1
-  }
-
-  assert_contains "$output" '| API endpoints |  | 1 | 1 |' &&
-    assert_contains "$output" '| `alpha` | Changed | `POST api/admin/sync` | none |' &&
-    assert_contains "$output" '| `beta` | Removed | `POST api/admin/sync` | none |'
-}
-
-# Directory.Packages.props holds the central NuGet versions. A list stops at 15 rows with a count of
-# the rest.
-test_scope_lists_central_versions_and_cuts_long_lists() {
+# A list stops at 15 rows with a count of the rest.
+test_scope_cuts_long_lists() {
   local temp_root output keys i
   temp_root=$(mktemp -d)
   trap "rm -rf '$temp_root'" EXIT
   scope_init_repo "$temp_root"
 
-  printf '%s\n' '<Project>' '  <ItemGroup>' '    <PackageVersion Include="CsvHelper" Version="30.0.1" />' \
-    '  </ItemGroup>' '</Project>' >Directory.Packages.props
+  printf 'readme\n' >README.txt
   scope_commit base
 
-  printf '%s\n' '<Project>' '  <ItemGroup>' '    <PackageVersion Include="CsvHelper" Version="33.0.1" />' \
-    '  </ItemGroup>' '</Project>' >Directory.Packages.props
   mkdir -p svc/Api
   # 20 files of 8 long keys: the list stops at 15 rows.
   keys=$(printf '"AVeryLongConfigurationKeyForTheWidgetService%s": 0, ' a b c d e f g h)
@@ -604,8 +319,77 @@ test_scope_lists_central_versions_and_cuts_long_lists() {
     return 1
   }
 
-  assert_contains "$output" '- NuGet: changed `CsvHelper` 30.0.1 -> 33.0.1' &&
-    assert_contains "$output" '- and 5 more'
+  assert_contains "$output" '- and 5 more'
+}
+
+# src/Directory.Build.props pins one version of a package per target framework. Each condition is
+# its own reference, so an edit elsewhere in the file is no package change.
+test_scope_keys_package_references_by_condition() {
+  local temp_root output
+  temp_root=$(mktemp -d)
+  trap "rm -rf '$temp_root'" EXIT
+  scope_init_repo "$temp_root"
+
+  # GIVEN two conditional versions of one package
+  mkdir -p src
+  scope_props() { # property value, version of the second condition
+    printf '%s\n' '<Project>' "  <PropertyGroup><Deterministic>$1</Deterministic></PropertyGroup>" '  <ItemGroup>' \
+      "    <PackageReference Include=\"MinVer\" Version=\"4.2.0\" Condition=\"'\$(TargetFramework)'=='net7.0'\" />" \
+      "    <PackageReference Include=\"MinVer\" Version=\"$2\" Condition=\"'\$(TargetFramework)'!='net7.0'\" />" \
+      '  </ItemGroup>' '</Project>' >src/Directory.Build.props
+  }
+  scope_props true 6.1.0
+  scope_commit base
+  scope_props false 6.1.0
+  scope_commit edit
+  scope_props false 7.0.0
+  scope_commit head
+
+  # WHEN the file changes elsewhere, and then in one version
+  local unrelated
+  unrelated=$(scope_run base edit 2>&1) && output=$(scope_run edit head 2>&1) || {
+    printf '%s\n%s\n' "${unrelated:-}" "${output:-}" >&2
+    return 1
+  }
+
+  # THEN only the version change is reported, under its condition
+  assert_contains "$unrelated" 'No tangible change' &&
+    assert_contains "$output" "changed \`MinVer if '\$(TargetFramework)'!='net7.0'\` 6.1.0 -> 7.0.0" &&
+    assert_not_contains "$output" '4.2.0'
+}
+
+# The budget comes from the table in AGENTS.md. A copy of the skill below a repository root with
+# its own AGENTS.md reads that table, and fails when the table is missing.
+test_scope_reads_the_budget_from_agents_md() {
+  local temp_root output skill
+  temp_root=$(mktemp -d)
+  trap "rm -rf '$temp_root'" EXIT
+  skill="${temp_root}/tooling/.agents/skills/gh-pr-review"
+  mkdir -p "${skill}/scripts/scope"
+  cp "${SCRIPT_DIR}/run.sh" "${SCRIPT_DIR}/config.sh" "${skill}/scripts/"
+  cp "${SCRIPT_DIR}"/scope/* "${skill}/scripts/scope/"
+  printf '%s\n' '| Lines | Target | Ceiling |' '|---|---|---|' '| Production | 10 | 20 |' \
+    '| Production and tests | none | 30 |' >"${temp_root}/tooling/AGENTS.md"
+
+  # GIVEN a change of 11 production lines, and a table whose target is 10
+  scope_init_repo "${temp_root}/repo"
+  printf 'readme\n' >README.txt
+  scope_commit base
+  scope_lines svc/Domain/Widget.cs 11
+  scope_commit head
+
+  # WHEN scope runs, with the table and then without it
+  output=$(bash "${skill}/scripts/run.sh" scope base head 2>&1 >/dev/null) || {
+    printf '%s\n' "$output" >&2
+    return 1
+  }
+  printf '# No table\n' >"${temp_root}/tooling/AGENTS.md"
+
+  # THEN the table sets the budget, and a missing table fails the run
+  assert_contains "$output" 'Budget: over the 10-line production target' &&
+    output=$(bash "${skill}/scripts/run.sh" scope base head 2>&1) && return 1
+  assert_contains "$output" 'the budget table in' &&
+    assert_contains "$output" 'tooling/AGENTS.md was not read'
 }
 
 run_test 'scope budget: 500 production lines are within the target' test_scope_budget 'Budget: within the 500-line' svc/Domain/Widget.cs:500
@@ -650,14 +434,6 @@ run_test 'scope lists areas, not projects' test_scope_lists_areas
 run_test 'scope lists dependency and configuration key changes' test_scope_lists_dependencies_and_configuration_keys
 run_test 'scope lists CI workflows' test_scope_lists_ci_workflows
 run_test 'scope reads files with a byte-order mark' test_scope_reads_files_with_a_byte_order_mark
-run_test 'scope classifies added, removed, and changed endpoints' test_scope_classifies_endpoint_changes
-run_test 'scope reports an endpoint policy change' test_scope_reports_policy_change
-run_test 'scope: deleting the first attribute of an action changes it' test_scope_marks_a_deleted_first_attribute
-run_test 'scope reads partial controller files' test_scope_reads_partial_controller_files
-run_test 'scope: deleting an action does not mark its neighbours' test_scope_bounds_actions created without-delete '| Removed | `DELETE api/widgets/{id:long}` |' '| Changed | `'
-run_test 'scope: a wrapped expression body belongs to its action' test_scope_bounds_actions 'widget created' with-delete '| Changed | `POST api/widgets` |' '`DELETE'
-run_test 'scope: moving a middle action to a partial file is no change' test_scope_takes_out_an_action post moves 'No tangible change'
-run_test 'scope: removing the final action marks no other action' test_scope_takes_out_an_action delete removed '| Removed | `DELETE api/widgets/{id:long}` | none |'
-run_test 'scope: moving the final action to a partial file is no change' test_scope_takes_out_an_action delete moves 'No tangible change'
-run_test 'scope keys endpoints by service' test_scope_keys_endpoints_by_service
-run_test 'scope lists central package versions and cuts long lists' test_scope_lists_central_versions_and_cuts_long_lists
+run_test 'scope cuts long lists' test_scope_cuts_long_lists
+run_test 'scope keys package references by condition' test_scope_keys_package_references_by_condition
+run_test 'scope reads the budget from AGENTS.md' test_scope_reads_the_budget_from_agents_md

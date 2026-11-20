@@ -18,6 +18,11 @@ export MSYS2_ARG_CONV_EXCL='*'
 SCRIPT_DIR="$(cd "${SKILL_TEST_DIR}/../scripts" && pwd)"
 CASE_DIR="${SKILL_TEST_DIR}/cases"
 
+# Every case starts in a scratch directory. A case that writes or runs Git before it changes
+# directory then cannot touch the repository that runs the suite.
+SUITE_WORK_DIR=$(mktemp -d)
+cd "$SUITE_WORK_DIR" || exit 1
+
 PASSED=0
 FAILED=0
 
@@ -25,7 +30,8 @@ FAILED=0
 # level takes this whole shell with it, skipping the printf and the counts, and `exit 0` would then
 # read as a clean run of a suite that stopped halfway.
 TALLY_REACHED=false
-trap 'if [[ "$TALLY_REACHED" != true ]]; then
+trap 'rm -rf "$SUITE_WORK_DIR"
+      if [[ "$TALLY_REACHED" != true ]]; then
         printf "ERROR: the suite exited before it reported a tally.\n" >&2
         exit 1
       fi' EXIT

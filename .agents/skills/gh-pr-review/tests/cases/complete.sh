@@ -19,7 +19,7 @@ complete_pull_json() {
 complete_enter_temp_dir() {
   COMPLETE_TEMP_DIR=$(mktemp -d)
   trap 'rm -rf "$COMPLETE_TEMP_DIR"' EXIT
-  cd "$COMPLETE_TEMP_DIR"
+  cd "$COMPLETE_TEMP_DIR" || exit 1
 }
 
 # complete_origin_fixture
@@ -70,7 +70,7 @@ export COMPLETE_OUTSIDE_A_CLONE
 
 test_complete_squash_merges_with_the_description() {
   complete_origin_fixture
-  COMPLETE_PULL=$(complete_pull_json open false false '"### Why\n\nA reason — with an em dash.\n\nRelated: AB#123456"')
+  COMPLETE_PULL=$(complete_pull_json open false false '"### Why\n\nA reason — with an em dash.\n\nCloses #88"')
   export COMPLETE_PULL
   curl() {
     local body
@@ -83,7 +83,7 @@ test_complete_squash_merges_with_the_description() {
           merge_method: "squash",
           merge_action: "direct_merge",
           commit_title: "Admin: add the thing (#42)",
-          commit_message: "### Why\n\nA reason — with an em dash.\n\nRelated: AB#123456",
+          commit_message: "### Why\n\nA reason — with an em dash.\n\nCloses #88",
           sha: $sha
         }' <<<"$body" >/dev/null || return 91
         complete_async_pending u1

@@ -222,7 +222,7 @@ test_fetch_encodes_path_and_ref() {
   }
   export -f curl
 
-  # GIVEN an Azure-style leading slash, a path with a space and #, and a full ref with #
+  # GIVEN a leading slash, a path with a space and #, and a full ref with #
   local output
   output=$(bash "${SCRIPT_DIR}/fetch_file.sh" fake-token acme/widgets \
     '/docs/My File#1.md' 'refs/heads/bugfix/#912729' 2>&1) || {

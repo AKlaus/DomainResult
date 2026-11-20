@@ -2,10 +2,10 @@
 
 ## The budget
 
-`scope` counts changed lines, added plus deleted, against the target and the ceiling in
-`AGENTS.md`. It prints only the result, on stderr. No description or report shows a line count.
+`scope` counts changed lines, added plus deleted, against the target and the ceiling that it reads
+from the table in `AGENTS.md`. It prints only the result, on stderr. No description or report shows a line count.
 
-The ceiling is twice the target, for a slice that is atomic but not small, such as a new
+The ceiling leaves room for a slice that is atomic but not small, such as a new
 `DomainOperationStatus` value. Tests have no target, because a PR must carry its tests.
 
 ### What counts
@@ -92,8 +92,7 @@ reads "No tangible change that `scope` detects".
 | Kind | Source | It cannot see |
 |---|---|---|
 | Project references | `ProjectReference` in each changed `*.csproj` | a reference that only a `Directory.Build.props` adds |
-| Package dependencies | `PackageReference` in each changed production `*.csproj` and `Directory.Build.props`, and `PackageVersion` in `Directory.Packages.props` | a `FrameworkReference`; the test project's packages; a second, conditional version of one package, as `src/Directory.Build.props` pins for `net7.0` |
-| API endpoints | verb and route attributes in each touched controller class: the sample controllers in `samples/WebApi/Controllers/` | the minimal-API routes in `samples/WebApiMinimal/Routes/` |
+| Package dependencies | `PackageReference` in each changed production `*.csproj` and `Directory.Build.props`, one reference per `Condition` | a `FrameworkReference`; the test project's packages |
 | Configuration keys | keys added to or removed from `appsettings*.json` in `samples/` | changed values |
 | CI workflows | `.github/workflows/*.yml` | the effect of the change |
 
@@ -104,8 +103,6 @@ reads "No tangible change that `scope` detects".
    - **Public API**: each public type or member that the PR adds, changes, or removes.
    - **Behaviour**: a changed HTTP code, `ProblemDetails` field, or `HttpCodeConvention` default
      behind an unchanged signature.
-   - **Sample routes**: each minimal-API route in `samples/WebApiMinimal/Routes/` that the PR
-     adds, changes, or removes.
    - **Target frameworks**: a `TargetFramework` or `TargetFrameworks` change.
    - **Package metadata**: a change to the package ID, description, tags, or version settings.
 3. Mark each change that breaks a consumer as **Breaking**.
