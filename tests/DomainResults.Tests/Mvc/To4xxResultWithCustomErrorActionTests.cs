@@ -46,9 +46,7 @@ public class To_4xx_Result_With_Custom_ErrorAction_Tests
 		Assert.Equal(CustomInstance, problemDetails.Instance);
 		Assert.Equal(CustomExtensionValue, problemDetails.Extensions[CustomExtensionKey]);
 		Assert.Equal(1234, problemDetails.Extensions["errorCode"]);
-		Assert.Equal(403, problemDetails.Status);
-		Assert.Equal("Forbidden", problemDetails.Title);
-		Assert.Equal("You don't have permission", problemDetails.Detail);
+		res.AssertObjectResultTypeWithProblemDetails(403, "Forbidden", "You don't have permission");
 	}
 
 	[Fact]
