@@ -5,6 +5,9 @@ using DomainResults.Mvc;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.Extensions.DependencyInjection;
+
 using Xunit;
 
 namespace DomainResults.Tests.Mvc;
@@ -16,10 +19,10 @@ public class To_4xx_ActionResult_Tests
 {
 	[Theory]
 	[MemberData(nameof(FailedResultWithValueCases))]
-	public void Failed_DomainResult_With_Value<TValue>(IDomainResult<TValue> domainValue, int expectedCode, string expectedTitle, string expectedErrorMsg)
+	public async Task Failed_DomainResult_With_Value<TValue>(IDomainResult<TValue> domainValue, int expectedCode, string expectedTitle, string expectedErrorMsg)
 	{
 		var actionRes = domainValue.ToActionResult();
-		Then_Response_Is_ActionResult_Type_And_ProblemDetails_StatusAndText_Correct(actionRes, expectedCode, expectedTitle, expectedErrorMsg);
+		await Then_Response_Is_ActionResult_Type_And_ProblemDetails_StatusAndText_Correct(actionRes, expectedCode, expectedTitle, expectedErrorMsg);
 		
 		var res = domainValue.ToResult();
 		Then_Response_Is_IResult_Type_And_ProblemDetails_StatusAndText_Correct(res, expectedCode, expectedTitle, expectedErrorMsg);
@@ -31,7 +34,7 @@ public class To_4xx_ActionResult_Tests
 	public async Task Failed_DomainResult_With_Value_Task<TValue>(Task<IDomainResult<TValue>> domainValueTask, int expectedCode, string expectedTitle, string expectedErrorMsg)
 	{
 		var actionRes = await domainValueTask.ToActionResult();
-		Then_Response_Is_ActionResult_Type_And_ProblemDetails_StatusAndText_Correct(actionRes, expectedCode, expectedTitle, expectedErrorMsg);
+		await Then_Response_Is_ActionResult_Type_And_ProblemDetails_StatusAndText_Correct(actionRes, expectedCode, expectedTitle, expectedErrorMsg);
 
 		var res = await domainValueTask.ToResult();
 		Then_Response_Is_IResult_Type_And_ProblemDetails_StatusAndText_Correct(res, expectedCode, expectedTitle, expectedErrorMsg);
@@ -40,10 +43,10 @@ public class To_4xx_ActionResult_Tests
 
 	[Theory]
 	[MemberData(nameof(FailedResultCases))]
-	public void Failed_DomainResult(IDomainResult domainValue, int expectedCode, string expectedTitle, string expectedErrorMsg)
+	public async Task Failed_DomainResult(IDomainResult domainValue, int expectedCode, string expectedTitle, string expectedErrorMsg)
 	{
 		var actionRes = domainValue.ToActionResult();
-		Then_Response_Is_ActionResult_Type_And_ProblemDetails_StatusAndText_Correct(actionRes, expectedCode, expectedTitle, expectedErrorMsg);
+		await Then_Response_Is_ActionResult_Type_And_ProblemDetails_StatusAndText_Correct(actionRes, expectedCode, expectedTitle, expectedErrorMsg);
 
 		var res = domainValue.ToResult();
 		Then_Response_Is_IResult_Type_And_ProblemDetails_StatusAndText_Correct(res, expectedCode, expectedTitle, expectedErrorMsg);
@@ -55,7 +58,7 @@ public class To_4xx_ActionResult_Tests
 	public async Task Failed_DomainResult_Task(Task<IDomainResult> domainValueTask, int expectedCode, string expectedTitle, string expectedErrorMsg)
 	{
 		var actionRes = await domainValueTask.ToActionResult();
-		Then_Response_Is_ActionResult_Type_And_ProblemDetails_StatusAndText_Correct(actionRes, expectedCode, expectedTitle, expectedErrorMsg);
+		await Then_Response_Is_ActionResult_Type_And_ProblemDetails_StatusAndText_Correct(actionRes, expectedCode, expectedTitle, expectedErrorMsg);
 
 		var res = await domainValueTask.ToResult();
 		Then_Response_Is_IResult_Type_And_ProblemDetails_StatusAndText_Correct(res, expectedCode, expectedTitle, expectedErrorMsg);
@@ -64,10 +67,10 @@ public class To_4xx_ActionResult_Tests
 
 	[Theory]
 	[MemberData(nameof(FailedValueTestCases))]
-	public void Failed_ValueResult((int, IDomainResult) domainValue, int expectedCode, string expectedTitle, string expectedErrorMsg)
+	public async Task Failed_ValueResult((int, IDomainResult) domainValue, int expectedCode, string expectedTitle, string expectedErrorMsg)
 	{
 		var actionRes = domainValue.ToActionResult();
-		Then_Response_Is_ActionResult_Type_And_ProblemDetails_StatusAndText_Correct(actionRes, expectedCode, expectedTitle, expectedErrorMsg);
+		await Then_Response_Is_ActionResult_Type_And_ProblemDetails_StatusAndText_Correct(actionRes, expectedCode, expectedTitle, expectedErrorMsg);
 
 		var res = domainValue.ToResult();
 		Then_Response_Is_IResult_Type_And_ProblemDetails_StatusAndText_Correct(res, expectedCode, expectedTitle, expectedErrorMsg);
@@ -79,33 +82,92 @@ public class To_4xx_ActionResult_Tests
 	public async Task Failed_ValueResult_Task(Task<(int, IDomainResult)> domainValueTask, int expectedCode, string expectedTitle, string expectedErrorMsg)
 	{
 		var actionRes = await domainValueTask.ToActionResult();
-		Then_Response_Is_ActionResult_Type_And_ProblemDetails_StatusAndText_Correct(actionRes, expectedCode, expectedTitle, expectedErrorMsg);
+		await Then_Response_Is_ActionResult_Type_And_ProblemDetails_StatusAndText_Correct(actionRes, expectedCode, expectedTitle, expectedErrorMsg);
 
 		var res = await domainValueTask.ToResult();
 		Then_Response_Is_IResult_Type_And_ProblemDetails_StatusAndText_Correct(res, expectedCode, expectedTitle, expectedErrorMsg);
 	}
 	[Theory]
 	[MemberData(nameof(FailedValueTaskTestCases))]
-	public void Failed_ValueResult_Task_ActionOfT(Task<(int, IDomainResult)> domainValueTask, int expectedCode, string expectedTitle, string expectedErrorMsg)
+	public async Task Failed_ValueResult_Task_ActionOfT(Task<(int, IDomainResult)> domainValueTask, int expectedCode, string expectedTitle, string expectedErrorMsg)
 	{
 		var actionResTask = domainValueTask.ToActionResult();
-		Then_Response_Is_ActionResult_Type_And_ProblemDetails_StatusAndText_Correct(actionResTask.Result, expectedCode, expectedTitle, expectedErrorMsg);
+		await Then_Response_Is_ActionResult_Type_And_ProblemDetails_StatusAndText_Correct(actionResTask.Result, expectedCode, expectedTitle, expectedErrorMsg);
 
 		var resTask = domainValueTask.ToResult();
 		Then_Response_Is_IResult_Type_And_ProblemDetails_StatusAndText_Correct(resTask.Result, expectedCode, expectedTitle, expectedErrorMsg);
 	}
 	public static readonly IEnumerable<object[]> FailedValueTaskTestCases = TestCases(DomainResult.Failed, DomainResult.NotFound, DomainResult.Unauthorized, DomainResult.Conflict, DomainResult.ContentTooLarge, DomainResult.CriticalDependencyError, v => Task.FromResult((10, v)));
 
+	[Theory]
+	[MemberData(nameof(FailedResultWithValueCases))]
+	public async Task Failed_DomainResult_With_Value_ActionResultOfT<TValue>(IDomainResult<TValue> domainValue, int expectedCode, string expectedTitle, string expectedErrorMsg)
+	{
+		var actionRes = ToActionResult(domainValue.ToActionResultOfT());
+		await Then_Response_Is_ActionResult_Type_And_ProblemDetails_StatusAndText_Correct(actionRes, expectedCode, expectedTitle, expectedErrorMsg);
+	}
+
+	[Theory]
+	[MemberData(nameof(FailedValueTestCases))]
+	public async Task Failed_ValueResult_ActionResultOfT((int, IDomainResult) domainValue, int expectedCode, string expectedTitle, string expectedErrorMsg)
+	{
+		var actionRes = ToActionResult(domainValue.ToActionResultOfT());
+		await Then_Response_Is_ActionResult_Type_And_ProblemDetails_StatusAndText_Correct(actionRes, expectedCode, expectedTitle, expectedErrorMsg);
+	}
+
+	[Theory]
+	[MemberData(nameof(FailedResultWithValueCases))]
+	public async Task Failed_DomainResult_With_Value_CustomActionResult<TValue>(IDomainResult<TValue> domainValue, int expectedCode, string expectedTitle, string expectedErrorMsg)
+	{
+		var actionRes = domainValue.ToCustomActionResult(v => new CreatedResult("/", v));
+		await Then_Response_Is_ActionResult_Type_And_ProblemDetails_StatusAndText_Correct(actionRes, expectedCode, expectedTitle, expectedErrorMsg);
+	}
+
+	[Fact]
+	public async Task NotFound_DomainResult_Type_Is_Rfc_Link()
+	{
+		// GIVEN a domain result with the 'NotFound' status
+		var domainResult = DomainResult.NotFound("1");
+
+		// WHEN the IActionResult and the IResult conversions run
+		var (_, actionBody) = await domainResult.ToActionResult().ExecuteToJsonAsync();
+		var (_, resultBody) = await domainResult.ToResult().ExecuteToJsonAsync();
+
+		// THEN both conversions write the RFC link of the 404 code as 'type'
+		Assert.Equal(ExpectedNotFoundType, actionBody.GetProperty("type").GetString());
+		Assert.Equal(ExpectedNotFoundType, resultBody.GetProperty("type").GetString());
+	}
+
+	[Fact]
+	public async Task Failed_DomainResult_With_ProblemDetails_Customisation()
+	{
+		// GIVEN 'AddProblemDetails()' with a customisation that adds an extension
+		var domainResult = DomainResult.NotFound("1");
+
+		// WHEN the IActionResult conversion runs
+		var (_, body) = await domainResult.ToActionResult()
+		                                  .ExecuteToJsonAsync(services => services.AddProblemDetails(o => o.CustomizeProblemDetails = c => c.ProblemDetails.Extensions["customised"] = true));
+
+		// THEN the body has the extension of the customisation
+		Assert.True(body.GetProperty("customised").GetBoolean());
+	}
+
 	#region Auxiliary methods [PRIVATE] -----------------------------------
 
+#if NET8_0_OR_GREATER
+	private const string ExpectedNotFoundType = "https://tools.ietf.org/html/rfc9110#section-15.5.5";
+#else
+	private const string ExpectedNotFoundType = "https://tools.ietf.org/html/rfc7231#section-6.5.4";
+#endif
+
 	/// <summary>
-	///		The 'THEN' section of the tests, checking the Response type (<see cref="ActionResult"/>) and the nested <see cref="ProblemDetails"/>
+	///		The 'THEN' section of the tests, checking the Response type (<see cref="ActionResult"/>), the nested <see cref="ProblemDetails"/> and the response body
 	/// </summary>
 	/// <param name="actionResult"> The <see cref="IActionResult"/> in question </param>
 	/// <param name="expectedCode"> The expected HTTP code </param>
 	/// <param name="expectedTitle"> The expected title in the <see cref="ProblemDetails"/> </param>
 	/// <param name="expectedErrorMsg"> The expected description messages in the <see cref="ProblemDetails"/> </param>
-	private static void Then_Response_Is_ActionResult_Type_And_ProblemDetails_StatusAndText_Correct(IActionResult actionResult, int expectedCode, string expectedTitle, string expectedErrorMsg)
+	private static async Task Then_Response_Is_ActionResult_Type_And_ProblemDetails_StatusAndText_Correct(IActionResult actionResult, int expectedCode, string expectedTitle, string expectedErrorMsg)
 	{
 		// THEN the response type is correct
 		var objResult = actionResult as ObjectResult;
@@ -117,6 +179,17 @@ public class To_4xx_ActionResult_Tests
 		Assert.Equal(expectedCode, problemDetails!.Status);
 		Assert.Equal(expectedTitle, problemDetails.Title);
 		Assert.Equal(expectedErrorMsg, problemDetails.Detail);
+
+		// and the response body has the same values
+		var (statusCode, body) = await actionResult.ExecuteToJsonAsync();
+		Assert.Equal(expectedCode, statusCode);
+		Assert.Equal(expectedCode, body.GetProperty("status").GetInt32());
+		Assert.Equal(expectedTitle, body.GetProperty("title").GetString());
+		Assert.Equal(expectedErrorMsg, body.GetProperty("detail").GetString());
+		// and the 'type' of the IResult conversion
+		Assert.Equal(GetIResultType(expectedCode), body.TryGetProperty("type", out var type) ? type.GetString() : null);
+		// and a 'traceId', as 'ControllerBase.Problem()' writes
+		Assert.False(string.IsNullOrEmpty(body.GetProperty("traceId").GetString()));
 	}
 
 	/// <summary>
@@ -130,7 +203,16 @@ public class To_4xx_ActionResult_Tests
 	{
 		// THEN the response type is correct and the ProblemDetails properties are as expected
 		res.AssertObjectResultTypeWithProblemDetails(expectedCode, expectedTitle, expectedErrorMsg);
+		// and the 'type' is the default for the HTTP code
+		Assert.Equal(GetIResultType(expectedCode), ((res as IValueHttpResult)?.Value as ProblemDetails)?.Type);
 	}
+
+	/// <summary>
+	///		Gets the 'type' that ASP.NET Core sets for a <see cref="ProblemDetails"/> of the HTTP code in <c>TypedResults.Problem()</c>
+	/// </summary>
+	private static string? GetIResultType(int statusCode) => TypedResults.Problem(statusCode: statusCode).ProblemDetails.Type;
+
+	private static IActionResult ToActionResult<T>(ActionResult<T> actionResult) => ((IConvertToActionResult)actionResult).Convert();
 
 	/// <summary>
 	///		Get test cases (input test parameters for the <see cref="MemberDataAttribute"/>)

@@ -234,6 +234,32 @@ public class To_4xx_Result_With_Custom_ErrorAction_Tests
 		Assert.Equal("You don't have permission", problemDetails.Detail);
 	}
 
+	[Fact]
+	public async Task ErrorAction_Preserves_Custom_Properties_In_ActionResult_Response()
+	{
+		// GIVEN a failed domain result
+		var domainResult = DomainResult.Failed<int>("Validation failed");
+
+		// WHEN the ActionResult with an errorAction that sets the status, 'type' and extensions runs
+		var (statusCode, body) = await domainResult.ToActionResult((problemDetails, _) =>
+		{
+			problemDetails.Status = 422;
+			problemDetails.Type = CustomType;
+			problemDetails.Extensions["errorCode"] = 1234;
+			problemDetails.Extensions[CustomExtensionKey] = CustomExtensionValue;
+		}).ExecuteToJsonAsync();
+
+		// THEN the response keeps the status, 'type' and extension of the errorAction
+		Assert.Equal(422, statusCode);
+		Assert.Equal(422, body.GetProperty("status").GetInt32());
+		Assert.Equal(CustomType, body.GetProperty("type").GetString());
+		Assert.Equal(1234, body.GetProperty("errorCode").GetInt32());
+		// and the 'traceId' of the ProblemDetailsFactory replaces the one of the errorAction
+		var traceId = body.GetProperty(CustomExtensionKey).GetString();
+		Assert.False(string.IsNullOrEmpty(traceId));
+		Assert.NotEqual(CustomExtensionValue, traceId);
+	}
+
 	#endregion
 
 	#region Tests for Task<IDomainResult<T>> with errorAction
