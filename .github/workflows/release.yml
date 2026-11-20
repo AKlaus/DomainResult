@@ -76,4 +76,4 @@ jobs:
         # The nuget.org profile name of the package owner
         user: AlexKlaus
     - name: NuGet publish
-      run: find nuget-packages -name '*.nupkg' | xargs -i dotnet nuget push {} --api-key ${{ steps.nuget-login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+      run: find nuget-packages -name '*.nupkg' | xargs -i dotnet nuget push {} --api-key ${{ steps.nuget-login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
