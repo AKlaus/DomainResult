@@ -21,11 +21,11 @@ SCOPE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # The budget, in changed lines (added plus deleted), from the table in AGENTS.md, which holds the
 # only copy of the numbers.
 AGENTS_FILE="$(cd "${SCOPE_DIR}/../../../../.." && pwd)/AGENTS.md"
-read -r PRODUCTION_TARGET PRODUCTION_CEILING REVIEWABLE_CEILING < <(awk -F' *[|] *' '
+read -r PRODUCTION_TARGET PRODUCTION_CEILING PRODUCTION_AND_TEST_CEILING < <(awk -F' *[|] *' '
   $2 == "Production" { target = $3; ceiling = $4 }
-  $2 == "Production and tests" { reviewable = $4 }
-  END { print target, ceiling, reviewable }' "$AGENTS_FILE" 2>/dev/null) || true
-if [[ ! "${PRODUCTION_TARGET:-}/${PRODUCTION_CEILING:-}/${REVIEWABLE_CEILING:-}" =~ ^[0-9]+/[0-9]+/[0-9]+$ ]]; then
+  $2 == "Production and tests" { production_and_test = $4 }
+  END { print target, ceiling, production_and_test }' "$AGENTS_FILE" 2>/dev/null) || true
+if [[ ! "${PRODUCTION_TARGET:-}/${PRODUCTION_CEILING:-}/${PRODUCTION_AND_TEST_CEILING:-}" =~ ^[0-9]+/[0-9]+/[0-9]+$ ]]; then
   echo "ERROR: the budget table in ${AGENTS_FILE} was not read." >&2
   exit 1
 fi
@@ -77,7 +77,7 @@ lines() { # category → its changed lines, less the lines that do not count
 
 # Auxiliary files, docs, and binary files do not count.
 PRODUCTION_LINES=$(lines production)
-REVIEWABLE_LINES=$(( PRODUCTION_LINES + $(lines test) ))
+PRODUCTION_AND_TEST_LINES=$(( PRODUCTION_LINES + $(lines test) ))
 
 # ── Metrics ──────────────────────────────────────────────────────────────────────────────────────
 # One row per tangible change: kind, then added, changed, or removed. The table below counts them.
@@ -230,8 +230,8 @@ print_metrics() {
 }
 
 print_budget() {
-  if (( PRODUCTION_LINES > PRODUCTION_CEILING || REVIEWABLE_LINES > REVIEWABLE_CEILING )); then
-    echo "Budget: over the ceiling of ${PRODUCTION_CEILING} production lines, or ${REVIEWABLE_CEILING} production and test lines. Split the PR, or name its exemption in the description."
+  if (( PRODUCTION_LINES > PRODUCTION_CEILING || PRODUCTION_AND_TEST_LINES > PRODUCTION_AND_TEST_CEILING )); then
+    echo "Budget: over the ceiling of ${PRODUCTION_CEILING} production lines, or ${PRODUCTION_AND_TEST_CEILING} production and test lines. Split the PR, or name its exemption in the description."
   elif (( PRODUCTION_LINES > PRODUCTION_TARGET )); then
     echo "Budget: over the ${PRODUCTION_TARGET}-line production target. State in the description why the change cannot be split."
   else
