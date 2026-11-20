@@ -30,7 +30,8 @@
 
 		<!-- Package validation fails the pack on an API break or a dropped target framework against the baseline.
 			 Record an intended break in the project's CompatibilitySuppressions.xml.
-			 After a release, set the baseline to the released version and delete the suppression files. -->
+			 After a release, set the baseline to the released version and delete the suppression files.
+			 The release workflow stops when the baseline is not the previous release. -->
 		<EnablePackageValidation>true</EnablePackageValidation>
 		<PackageValidationBaselineVersion>3.4.0</PackageValidationBaselineVersion>
 
