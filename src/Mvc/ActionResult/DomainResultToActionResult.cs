@@ -72,6 +72,7 @@ public static partial class DomainResultExtensions
 	/// <remarks>
 	///		The response then matches <c>ControllerBase.Problem()</c>: the factory adds 'type' and 'traceId', and applies the <c>AddProblemDetails()</c> customisation.
 	///		The factory gets the fields that the 'errorAction' set, so it keeps them. Extensions that the factory also sets keep the factory value.
+	///		The customisation runs before the 'errorAction' extensions join the body, so it cannot read them. From .NET 8, the <c>IResult</c> conversion passes them to the customisation.
 	///		Without a registered factory, the response keeps the <see cref="ProblemDetails"/> as it is.
 	/// </remarks>
 	private sealed class ProblemDetailsObjectResult(ProblemDetails problemDetails) : ObjectResult(problemDetails)
