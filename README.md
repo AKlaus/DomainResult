@@ -206,8 +206,6 @@ Note that returning [Tuple](https://learn.microsoft.com/en-us/dotnet/csharp/lang
 In some cases, throwing an exception on failed statuses is the desired behaviour. Use `ThrowIfNoSuccess()` extension method to interrupt the flow with `DomainResultException` exception if the `IDomainResult.IsSuccess == false`:
 
 ```csharp
-using DomainResults.Common.Exceptions;              // The namespace of 'ThrowIfNoSuccess()' and 'DomainResultException'
-
 var failedResult = IDomainResult.Failed("Ahh!");
 failedResult.ThrowIfNoSuccess();                    // DomainResultException is thrown here 
 failedResult.ThrowIfNoSuccess<CustomException>();   // CustomException is thrown here 
