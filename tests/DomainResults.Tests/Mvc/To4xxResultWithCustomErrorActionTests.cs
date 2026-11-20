@@ -206,7 +206,7 @@ public class To_4xx_Result_With_Custom_ErrorAction_Tests
 	}
 
 	[Fact]
-	public void ErrorAction_Preserves_All_Custom_Properties_Together_For_ActionResult()
+	public async Task ErrorAction_Preserves_All_Custom_Properties_Together_For_ActionResult()
 	{
 		// GIVEN a failed domain result
 		var domainResult = DomainResult.Unauthorized<int>("Access denied");
@@ -217,6 +217,7 @@ public class To_4xx_Result_With_Custom_ErrorAction_Tests
 			problemDetails.Type = CustomType;
 			problemDetails.Instance = CustomInstance;
 			problemDetails.Extensions[CustomExtensionKey] = CustomExtensionValue;
+			problemDetails.Extensions["errorCode"] = 1234;
 			problemDetails.Status = 403; // Change from 401 to 403
 			problemDetails.Title = "Forbidden";
 			problemDetails.Detail = "You don't have permission";
@@ -232,27 +233,17 @@ public class To_4xx_Result_With_Custom_ErrorAction_Tests
 		Assert.Equal(403, problemDetails.Status);
 		Assert.Equal("Forbidden", problemDetails.Title);
 		Assert.Equal("You don't have permission", problemDetails.Detail);
-	}
 
-	[Fact]
-	public async Task ErrorAction_Preserves_Custom_Properties_In_ActionResult_Response()
-	{
-		// GIVEN a failed domain result
-		var domainResult = DomainResult.Failed<int>("Validation failed");
+		// WHEN the ActionResult runs
+		var (statusCode, body) = await actionRes.ExecuteToJsonAsync();
 
-		// WHEN the ActionResult with an errorAction that sets the status, 'type' and extensions runs
-		var (statusCode, body) = await domainResult.ToActionResult((problemDetails, _) =>
-		{
-			problemDetails.Status = 422;
-			problemDetails.Type = CustomType;
-			problemDetails.Extensions["errorCode"] = 1234;
-			problemDetails.Extensions[CustomExtensionKey] = CustomExtensionValue;
-		}).ExecuteToJsonAsync();
-
-		// THEN the response keeps the status, 'type' and extension of the errorAction
-		Assert.Equal(422, statusCode);
-		Assert.Equal(422, body.GetProperty("status").GetInt32());
+		// THEN the response keeps the properties and the extension of the errorAction
+		Assert.Equal(403, statusCode);
+		Assert.Equal(403, body.GetProperty("status").GetInt32());
 		Assert.Equal(CustomType, body.GetProperty("type").GetString());
+		Assert.Equal(CustomInstance, body.GetProperty("instance").GetString());
+		Assert.Equal("Forbidden", body.GetProperty("title").GetString());
+		Assert.Equal("You don't have permission", body.GetProperty("detail").GetString());
 		Assert.Equal(1234, body.GetProperty("errorCode").GetInt32());
 		// and the 'traceId' of the ProblemDetailsFactory replaces the one of the errorAction
 		var traceId = body.GetProperty(CustomExtensionKey).GetString();

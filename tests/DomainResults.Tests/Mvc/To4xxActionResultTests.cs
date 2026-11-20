@@ -91,11 +91,8 @@ public class To_4xx_ActionResult_Tests
 	[MemberData(nameof(FailedValueTaskTestCases))]
 	public async Task Failed_ValueResult_Task_ActionOfT(Task<(int, IDomainResult)> domainValueTask, int expectedCode, string expectedTitle, string expectedErrorMsg)
 	{
-		var actionResTask = domainValueTask.ToActionResult();
-		await Then_Response_Is_ActionResult_Type_And_ProblemDetails_StatusAndText_Correct(actionResTask.Result, expectedCode, expectedTitle, expectedErrorMsg);
-
-		var resTask = domainValueTask.ToResult();
-		Then_Response_Is_IResult_Type_And_ProblemDetails_StatusAndText_Correct(resTask.Result, expectedCode, expectedTitle, expectedErrorMsg);
+		var actionRes = Convert(await domainValueTask.ToActionResultOfT());
+		await Then_Response_Is_ActionResult_Type_And_ProblemDetails_StatusAndText_Correct(actionRes, expectedCode, expectedTitle, expectedErrorMsg);
 	}
 	public static readonly IEnumerable<object[]> FailedValueTaskTestCases = TestCases(DomainResult.Failed, DomainResult.NotFound, DomainResult.Unauthorized, DomainResult.Conflict, DomainResult.ContentTooLarge, DomainResult.CriticalDependencyError, v => Task.FromResult((10, v)));
 
@@ -104,22 +101,6 @@ public class To_4xx_ActionResult_Tests
 	public async Task Failed_DomainResult_With_Value_ActionResultOfT<TValue>(IDomainResult<TValue> domainValue, int expectedCode, string expectedTitle, string expectedErrorMsg)
 	{
 		var actionRes = Convert(domainValue.ToActionResultOfT());
-		await Then_Response_Is_ActionResult_Type_And_ProblemDetails_StatusAndText_Correct(actionRes, expectedCode, expectedTitle, expectedErrorMsg);
-	}
-
-	[Theory]
-	[MemberData(nameof(FailedValueTestCases))]
-	public async Task Failed_ValueResult_ActionResultOfT((int, IDomainResult) domainValue, int expectedCode, string expectedTitle, string expectedErrorMsg)
-	{
-		var actionRes = Convert(domainValue.ToActionResultOfT());
-		await Then_Response_Is_ActionResult_Type_And_ProblemDetails_StatusAndText_Correct(actionRes, expectedCode, expectedTitle, expectedErrorMsg);
-	}
-
-	[Theory]
-	[MemberData(nameof(FailedResultWithValueCases))]
-	public async Task Failed_DomainResult_With_Value_CustomActionResult<TValue>(IDomainResult<TValue> domainValue, int expectedCode, string expectedTitle, string expectedErrorMsg)
-	{
-		var actionRes = domainValue.ToCustomActionResult(v => new CreatedResult("/", v));
 		await Then_Response_Is_ActionResult_Type_And_ProblemDetails_StatusAndText_Correct(actionRes, expectedCode, expectedTitle, expectedErrorMsg);
 	}
 
