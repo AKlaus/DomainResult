@@ -22,162 +22,6 @@ public class To_4xx_Result_With_Custom_ErrorAction_Tests
 	#region Tests for IDomainResult<T> with errorAction
 
 	[Fact]
-	public void ErrorAction_Modifies_ProblemDetails_Properties_For_IResult()
-	{
-		// GIVEN a failed domain result
-		var domainResult = DomainResult.Failed<int>("Validation failed");
-
-		// WHEN convert to IResult with errorAction that modifies properties
-		var res = domainResult.ToResult((problemDetails, _) =>
-		{
-			problemDetails.Status = 422;
-			problemDetails.Title = "Custom Title";
-			problemDetails.Detail = "Custom Detail";
-		});
-
-		// THEN the modified properties are present in the response
-		res.AssertObjectResultTypeWithProblemDetails(422, "Custom Title", "Custom Detail");
-	}
-
-	[Fact]
-	public void ErrorAction_Modifies_ProblemDetails_Properties_For_ActionResult()
-	{
-		// GIVEN a failed domain result
-		var domainResult = DomainResult.Failed<int>("Validation failed");
-
-		// WHEN convert to ActionResult with errorAction that modifies properties
-		var actionRes = domainResult.ToActionResult((problemDetails, _) =>
-		{
-			problemDetails.Status = 422;
-			problemDetails.Title = "Custom Title";
-			problemDetails.Detail = "Custom Detail";
-		}) as ObjectResult;
-
-		// THEN the modified properties are present in the response
-		Assert.NotNull(actionRes);
-		var problemDetailsResult = actionRes.Value as ProblemDetails;
-		Assert.NotNull(problemDetailsResult);
-		Assert.Equal(422, problemDetailsResult.Status);
-		Assert.Equal("Custom Title", problemDetailsResult.Title);
-		Assert.Equal("Custom Detail", problemDetailsResult.Detail);
-	}
-
-	[Fact]
-	public void ErrorAction_Preserves_Custom_Type_Property_For_IResult()
-	{
-		// GIVEN a failed domain result
-		var domainResult = DomainResult.NotFound<int>("User not found");
-
-		// WHEN convert to IResult with errorAction that sets Type
-		var res = domainResult.ToResult((problemDetails, _) =>
-		{
-			problemDetails.Type = CustomType;
-		});
-
-		// THEN the Type property is preserved
-		var problemDetails = (res as IValueHttpResult)?.Value as ProblemDetails;
-		Assert.NotNull(problemDetails);
-		Assert.Equal(CustomType, problemDetails.Type);
-	}
-
-	[Fact]
-	public void ErrorAction_Preserves_Custom_Type_Property_For_ActionResult()
-	{
-		// GIVEN a failed domain result
-		var domainResult = DomainResult.NotFound<int>("User not found");
-
-		// WHEN convert to ActionResult with errorAction that sets Type
-		var actionRes = domainResult.ToActionResult((problemDetails, _) =>
-		{
-			problemDetails.Type = CustomType;
-		}) as ObjectResult;
-
-		// THEN the Type property is preserved
-		Assert.NotNull(actionRes);
-		var problemDetails = actionRes.Value as ProblemDetails;
-		Assert.NotNull(problemDetails);
-		Assert.Equal(CustomType, problemDetails.Type);
-	}
-
-	[Fact]
-	public void ErrorAction_Preserves_Custom_Instance_Property_For_IResult()
-	{
-		// GIVEN a failed domain result
-		var domainResult = DomainResult.Conflict<int>("Resource conflict");
-
-		// WHEN convert to IResult with errorAction that sets Instance
-		var res = domainResult.ToResult((problemDetails, _) =>
-		{
-			problemDetails.Instance = CustomInstance;
-		});
-
-		// THEN the Instance property is preserved
-		var problemDetails = (res as IValueHttpResult)?.Value as ProblemDetails;
-		Assert.NotNull(problemDetails);
-		Assert.Equal(CustomInstance, problemDetails.Instance);
-	}
-
-	[Fact]
-	public void ErrorAction_Preserves_Custom_Instance_Property_For_ActionResult()
-	{
-		// GIVEN a failed domain result
-		var domainResult = DomainResult.Conflict<int>("Resource conflict");
-
-		// WHEN convert to ActionResult with errorAction that sets Instance
-		var actionRes = domainResult.ToActionResult((problemDetails, _) =>
-		{
-			problemDetails.Instance = CustomInstance;
-		}) as ObjectResult;
-
-		// THEN the Instance property is preserved
-		Assert.NotNull(actionRes);
-		var problemDetails = actionRes.Value as ProblemDetails;
-		Assert.NotNull(problemDetails);
-		Assert.Equal(CustomInstance, problemDetails.Instance);
-	}
-
-	[Fact]
-	public void ErrorAction_Preserves_Custom_Extensions_For_IResult()
-	{
-		// GIVEN a failed domain result
-		var domainResult = DomainResult.Failed<int>("Internal error");
-
-		// WHEN convert to IResult with errorAction that adds extensions
-		var res = domainResult.ToResult((problemDetails, _) =>
-		{
-			problemDetails.Extensions[CustomExtensionKey] = CustomExtensionValue;
-			problemDetails.Extensions["errorCode"] = 1234;
-		});
-
-		// THEN the Extensions are preserved
-		var problemDetails = (res as IValueHttpResult)?.Value as ProblemDetails;
-		Assert.NotNull(problemDetails);
-		Assert.Equal(CustomExtensionValue, problemDetails.Extensions[CustomExtensionKey]);
-		Assert.Equal(1234, problemDetails.Extensions["errorCode"]);
-	}
-
-	[Fact]
-	public void ErrorAction_Preserves_Custom_Extensions_For_ActionResult()
-	{
-		// GIVEN a failed domain result
-		var domainResult = DomainResult.Failed<int>("Internal error");
-
-		// WHEN convert to ActionResult with errorAction that adds extensions
-		var actionRes = domainResult.ToActionResult((problemDetails, _) =>
-		{
-			problemDetails.Extensions[CustomExtensionKey] = CustomExtensionValue;
-			problemDetails.Extensions["errorCode"] = 1234;
-		}) as ObjectResult;
-
-		// THEN the Extensions are preserved
-		Assert.NotNull(actionRes);
-		var problemDetails = actionRes.Value as ProblemDetails;
-		Assert.NotNull(problemDetails);
-		Assert.Equal(CustomExtensionValue, problemDetails.Extensions[CustomExtensionKey]);
-		Assert.Equal(1234, problemDetails.Extensions["errorCode"]);
-	}
-
-	[Fact]
 	public void ErrorAction_Preserves_All_Custom_Properties_Together_For_IResult()
 	{
 		// GIVEN a failed domain result
@@ -189,6 +33,7 @@ public class To_4xx_Result_With_Custom_ErrorAction_Tests
 			problemDetails.Type = CustomType;
 			problemDetails.Instance = CustomInstance;
 			problemDetails.Extensions[CustomExtensionKey] = CustomExtensionValue;
+			problemDetails.Extensions["errorCode"] = 1234;
 			problemDetails.Status = 403; // Change from 401 to 403
 			problemDetails.Title = "Forbidden";
 			problemDetails.Detail = "You don't have permission";
@@ -200,6 +45,7 @@ public class To_4xx_Result_With_Custom_ErrorAction_Tests
 		Assert.Equal(CustomType, problemDetails.Type);
 		Assert.Equal(CustomInstance, problemDetails.Instance);
 		Assert.Equal(CustomExtensionValue, problemDetails.Extensions[CustomExtensionKey]);
+		Assert.Equal(1234, problemDetails.Extensions["errorCode"]);
 		Assert.Equal(403, problemDetails.Status);
 		Assert.Equal("Forbidden", problemDetails.Title);
 		Assert.Equal("You don't have permission", problemDetails.Detail);
@@ -230,6 +76,7 @@ public class To_4xx_Result_With_Custom_ErrorAction_Tests
 		Assert.Equal(CustomType, problemDetails.Type);
 		Assert.Equal(CustomInstance, problemDetails.Instance);
 		Assert.Equal(CustomExtensionValue, problemDetails.Extensions[CustomExtensionKey]);
+		Assert.Equal(1234, problemDetails.Extensions["errorCode"]);
 		Assert.Equal(403, problemDetails.Status);
 		Assert.Equal("Forbidden", problemDetails.Title);
 		Assert.Equal("You don't have permission", problemDetails.Detail);
@@ -253,216 +100,50 @@ public class To_4xx_Result_With_Custom_ErrorAction_Tests
 
 	#endregion
 
-	#region Tests for Task<IDomainResult<T>> with errorAction
+	#region Tests for the other result shapes with errorAction
 
-	[Fact]
-	public async Task ErrorAction_Preserves_Custom_Properties_For_Task_IResult()
+	[Theory]
+	[MemberData(nameof(ResultShapeCases))]
+	[SuppressMessage("Usage", "xUnit1026:Theory methods should use all of their parameters", Justification = "The shape names the test case")]
+	public async Task ErrorAction_Preserves_Custom_Properties_For_Shape_IResult(string shape, Func<Task<IResult>> convert)
 	{
-		// GIVEN a failed domain result task
-		var domainResultTask = DomainResult.FailedTask<int>("Async error");
-
-		// WHEN convert to IResult with errorAction
-		var res = await domainResultTask.ToResult((problemDetails, _) =>
-		{
-			problemDetails.Type = CustomType;
-			problemDetails.Extensions[CustomExtensionKey] = CustomExtensionValue;
-		});
+		// GIVEN a failed domain result of the shape
+		// WHEN convert to IResult with errorAction that sets custom properties
+		var res = await convert();
 
 		// THEN custom properties are preserved
-		var problemDetails = (res as IValueHttpResult)?.Value as ProblemDetails;
-		Assert.NotNull(problemDetails);
-		Assert.Equal(CustomType, problemDetails.Type);
-		Assert.Equal(CustomExtensionValue, problemDetails.Extensions[CustomExtensionKey]);
+		Then_ProblemDetails_Has_Custom_Properties((res as IValueHttpResult)?.Value as ProblemDetails);
 	}
-
-	[Fact]
-	public async Task ErrorAction_Preserves_Custom_Properties_For_Task_ActionResult()
-	{
-		// GIVEN a failed domain result task
-		var domainResultTask = DomainResult.FailedTask<int>("Async error");
-
-		// WHEN convert to ActionResult with errorAction
-		var actionRes = await domainResultTask.ToActionResult((problemDetails, _) =>
+	public static readonly TheoryData<string, Func<Task<IResult>>> ResultShapeCases = new()
 		{
-			problemDetails.Type = CustomType;
-			problemDetails.Extensions[CustomExtensionKey] = CustomExtensionValue;
-		}) as ObjectResult;
+			{ "Task<IDomainResult<T>>",		() => DomainResult.FailedTask<int>("Error").ToResult((problemDetails, _) => SetCustomProperties(problemDetails)) },
+			{ "(T, IDomainResult)",			() => Task.FromResult((10, DomainResult.Failed("Error")).ToResult((problemDetails, _) => SetCustomProperties(problemDetails))) },
+			{ "Task<(T, IDomainResult)>",	() => Task.FromResult((10, DomainResult.Failed("Error"))).ToResult((problemDetails, _) => SetCustomProperties(problemDetails)) },
+			{ "IDomainResult",				() => Task.FromResult(DomainResult.Failed("Error").ToResult((problemDetails, _) => SetCustomProperties(problemDetails))) },
+			{ "Task<IDomainResult>",		() => DomainResult.FailedTask("Error").ToResult((problemDetails, _) => SetCustomProperties(problemDetails)) },
+		};
+
+	[Theory]
+	[MemberData(nameof(ActionResultShapeCases))]
+	[SuppressMessage("Usage", "xUnit1026:Theory methods should use all of their parameters", Justification = "The shape names the test case")]
+	public async Task ErrorAction_Preserves_Custom_Properties_For_Shape_ActionResult(string shape, Func<Task<IActionResult>> convert)
+	{
+		// GIVEN a failed domain result of the shape
+		// WHEN convert to ActionResult with errorAction that sets custom properties
+		var actionRes = await convert() as ObjectResult;
 
 		// THEN custom properties are preserved
 		Assert.NotNull(actionRes);
-		var problemDetails = actionRes.Value as ProblemDetails;
-		Assert.NotNull(problemDetails);
-		Assert.Equal(CustomType, problemDetails.Type);
-		Assert.Equal(CustomExtensionValue, problemDetails.Extensions[CustomExtensionKey]);
+		Then_ProblemDetails_Has_Custom_Properties(actionRes.Value as ProblemDetails);
 	}
-
-	#endregion
-
-	#region Tests for (Value, IDomainResult) tuples with errorAction
-
-	[Fact]
-	public void ErrorAction_Preserves_Custom_Properties_For_Tuple_IResult()
-	{
-		// GIVEN a failed tuple result
-		var tupleResult = (10, DomainResult.Failed("Tuple error"));
-
-		// WHEN convert to IResult with errorAction
-		var res = tupleResult.ToResult((problemDetails, _) =>
+	public static readonly TheoryData<string, Func<Task<IActionResult>>> ActionResultShapeCases = new()
 		{
-			problemDetails.Type = CustomType;
-			problemDetails.Instance = CustomInstance;
-		});
-
-		// THEN custom properties are preserved
-		var problemDetails = (res as IValueHttpResult)?.Value as ProblemDetails;
-		Assert.NotNull(problemDetails);
-		Assert.Equal(CustomType, problemDetails.Type);
-		Assert.Equal(CustomInstance, problemDetails.Instance);
-	}
-
-	[Fact]
-	public void ErrorAction_Preserves_Custom_Properties_For_Tuple_ActionResult()
-	{
-		// GIVEN a failed tuple result
-		var tupleResult = (10, DomainResult.Failed("Tuple error"));
-
-		// WHEN convert to ActionResult with errorAction
-		var actionRes = tupleResult.ToActionResult((problemDetails, _) =>
-		{
-			problemDetails.Type = CustomType;
-			problemDetails.Instance = CustomInstance;
-		}) as ObjectResult;
-
-		// THEN custom properties are preserved
-		Assert.NotNull(actionRes);
-		var problemDetails = actionRes.Value as ProblemDetails;
-		Assert.NotNull(problemDetails);
-		Assert.Equal(CustomType, problemDetails.Type);
-		Assert.Equal(CustomInstance, problemDetails.Instance);
-	}
-
-	[Fact]
-	public async Task ErrorAction_Preserves_Custom_Properties_For_Tuple_Task_IResult()
-	{
-		// GIVEN a failed tuple result task
-		var tupleResultTask = Task.FromResult((10, DomainResult.Failed("Async tuple error")));
-
-		// WHEN convert to IResult with errorAction
-		var res = await tupleResultTask.ToResult((problemDetails, _) =>
-		{
-			problemDetails.Extensions["requestId"] = "req-456";
-		});
-
-		// THEN custom extensions are preserved
-		var problemDetails = (res as IValueHttpResult)?.Value as ProblemDetails;
-		Assert.NotNull(problemDetails);
-		Assert.Equal("req-456", problemDetails.Extensions["requestId"]);
-	}
-
-	[Fact]
-	public async Task ErrorAction_Preserves_Custom_Properties_For_Tuple_Task_ActionResult()
-	{
-		// GIVEN a failed tuple result task
-		var tupleResultTask = Task.FromResult((10, DomainResult.Failed("Async tuple error")));
-
-		// WHEN convert to ActionResult with errorAction
-		var actionRes = await tupleResultTask.ToActionResult((problemDetails, _) =>
-		{
-			problemDetails.Extensions["requestId"] = "req-456";
-		}) as ObjectResult;
-
-		// THEN custom extensions are preserved
-		Assert.NotNull(actionRes);
-		var problemDetails = actionRes.Value as ProblemDetails;
-		Assert.NotNull(problemDetails);
-		Assert.Equal("req-456", problemDetails.Extensions["requestId"]);
-	}
-
-	#endregion
-
-	#region Tests for IDomainResult (no value) with errorAction
-
-	[Fact]
-	public void ErrorAction_Preserves_Custom_Properties_For_IDomainResult_IResult()
-	{
-		// GIVEN a failed domain result (no value)
-		var domainResult = DomainResult.NotFound("Resource not found");
-
-		// WHEN convert to IResult with errorAction
-		var res = domainResult.ToResult((problemDetails, _) =>
-		{
-			problemDetails.Type = CustomType;
-			problemDetails.Extensions["resourceType"] = "User";
-		});
-
-		// THEN custom properties are preserved
-		var problemDetails = (res as IValueHttpResult)?.Value as ProblemDetails;
-		Assert.NotNull(problemDetails);
-		Assert.Equal(CustomType, problemDetails.Type);
-		Assert.Equal("User", problemDetails.Extensions["resourceType"]);
-	}
-
-	[Fact]
-	public void ErrorAction_Preserves_Custom_Properties_For_IDomainResult_ActionResult()
-	{
-		// GIVEN a failed domain result (no value)
-		var domainResult = DomainResult.NotFound("Resource not found");
-
-		// WHEN convert to ActionResult with errorAction
-		var actionRes = domainResult.ToActionResult((problemDetails, _) =>
-		{
-			problemDetails.Type = CustomType;
-			problemDetails.Extensions["resourceType"] = "User";
-		}) as ObjectResult;
-
-		// THEN custom properties are preserved
-		Assert.NotNull(actionRes);
-		var problemDetails = actionRes.Value as ProblemDetails;
-		Assert.NotNull(problemDetails);
-		Assert.Equal(CustomType, problemDetails.Type);
-		Assert.Equal("User", problemDetails.Extensions["resourceType"]);
-	}
-
-	[Fact]
-	public async Task ErrorAction_Preserves_Custom_Properties_For_IDomainResult_Task_IResult()
-	{
-		// GIVEN a failed domain result task (no value)
-		var domainResultTask = DomainResult.ConflictTask("Conflict detected");
-
-		// WHEN convert to IResult with errorAction
-		var res = await domainResultTask.ToResult((problemDetails, _) =>
-		{
-			problemDetails.Instance = CustomInstance;
-			problemDetails.Extensions["conflictType"] = "DuplicateKey";
-		});
-
-		// THEN custom properties are preserved
-		var problemDetails = (res as IValueHttpResult)?.Value as ProblemDetails;
-		Assert.NotNull(problemDetails);
-		Assert.Equal(CustomInstance, problemDetails.Instance);
-		Assert.Equal("DuplicateKey", problemDetails.Extensions["conflictType"]);
-	}
-
-	[Fact]
-	public async Task ErrorAction_Preserves_Custom_Properties_For_IDomainResult_Task_ActionResult()
-	{
-		// GIVEN a failed domain result task (no value)
-		var domainResultTask = DomainResult.ConflictTask("Conflict detected");
-
-		// WHEN convert to ActionResult with errorAction
-		var actionRes = await domainResultTask.ToActionResult((problemDetails, _) =>
-		{
-			problemDetails.Instance = CustomInstance;
-			problemDetails.Extensions["conflictType"] = "DuplicateKey";
-		}) as ObjectResult;
-
-		// THEN custom properties are preserved
-		Assert.NotNull(actionRes);
-		var problemDetails = actionRes.Value as ProblemDetails;
-		Assert.NotNull(problemDetails);
-		Assert.Equal(CustomInstance, problemDetails.Instance);
-		Assert.Equal("DuplicateKey", problemDetails.Extensions["conflictType"]);
-	}
+			{ "Task<IDomainResult<T>>",		() => DomainResult.FailedTask<int>("Error").ToActionResult((problemDetails, _) => SetCustomProperties(problemDetails)) },
+			{ "(T, IDomainResult)",			() => Task.FromResult((10, DomainResult.Failed("Error")).ToActionResult((problemDetails, _) => SetCustomProperties(problemDetails))) },
+			{ "Task<(T, IDomainResult)>",	() => Task.FromResult((10, DomainResult.Failed("Error"))).ToActionResult((problemDetails, _) => SetCustomProperties(problemDetails)) },
+			{ "IDomainResult",				() => Task.FromResult(DomainResult.Failed("Error").ToActionResult((problemDetails, _) => SetCustomProperties(problemDetails))) },
+			{ "Task<IDomainResult>",		() => DomainResult.FailedTask("Error").ToActionResult((problemDetails, _) => SetCustomProperties(problemDetails)) },
+		};
 
 	#endregion
 
@@ -486,31 +167,24 @@ public class To_4xx_Result_With_Custom_ErrorAction_Tests
 		Assert.Contains("Error 2", capturedState.Errors);
 	}
 
-	[Fact]
-	public void ErrorAction_Can_Conditionally_Modify_Based_On_Errors()
+	#endregion
+
+	#region Auxiliary methods [PRIVATE] -----------------------------------
+
+	private static void SetCustomProperties(ProblemDetails problemDetails)
 	{
-		// GIVEN two domain results - one with errors, one without
-		var domainResultWithErrors = DomainResult.Failed<int>(["Error 1"]);
-		var domainResultNoErrors = DomainResult.Failed<int>();
-
-		// WHEN convert with conditional errorAction
-		var resWithErrors = domainResultWithErrors.ToResult((problemDetails, state) =>
-		{
-			problemDetails.Title = state.Errors.Count != 0 ? "Has Errors" : "No Errors";
-		});
-
-		var resNoErrors = domainResultNoErrors.ToResult((problemDetails, state) =>
-		{
-			problemDetails.Title = state.Errors.Count != 0 ? "Has Errors" : "No Errors";
-		});
-
-		// THEN titles are set correctly based on error presence
-		var problemDetailsWithErrors = (resWithErrors as IValueHttpResult)?.Value as ProblemDetails;
-		var problemDetailsNoErrors = (resNoErrors as IValueHttpResult)?.Value as ProblemDetails;
-
-		Assert.Equal("Has Errors", problemDetailsWithErrors?.Title);
-		Assert.Equal("No Errors", problemDetailsNoErrors?.Title);
+		problemDetails.Type = CustomType;
+		problemDetails.Instance = CustomInstance;
+		problemDetails.Extensions["errorCode"] = 1234;
 	}
 
-	#endregion
+	private static void Then_ProblemDetails_Has_Custom_Properties(ProblemDetails? problemDetails)
+	{
+		Assert.NotNull(problemDetails);
+		Assert.Equal(CustomType, problemDetails.Type);
+		Assert.Equal(CustomInstance, problemDetails.Instance);
+		Assert.Equal(1234, problemDetails.Extensions["errorCode"]);
+	}
+
+	#endregion // Auxiliary methods [PRIVATE] -----------------------------
 }

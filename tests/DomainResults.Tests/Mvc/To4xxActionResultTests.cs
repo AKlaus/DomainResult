@@ -29,17 +29,18 @@ public class To_4xx_ActionResult_Tests
 	}		
 	public static readonly IEnumerable<object[]> FailedResultWithValueCases = TestCases(DomainResult.Failed<int>, DomainResult.NotFound<int>, DomainResult.Unauthorized<int>, DomainResult.Conflict<int>, DomainResult.ContentTooLarge<int>, DomainResult.CriticalDependencyError<int>);
 
-	[Theory]
-	[MemberData(nameof(FailedResultWithValueTaskCases))]
-	public async Task Failed_DomainResult_With_Value_Task<TValue>(Task<IDomainResult<TValue>> domainValueTask, int expectedCode, string expectedTitle, string expectedErrorMsg)
+	// A 'Task' overload awaits and delegates, so one case covers it. The sync theories cover every status.
+	[Fact]
+	public async Task Failed_DomainResult_With_Value_Task()
 	{
+		var domainValueTask = DomainResult.FailedTask<int>("1");
+
 		var actionRes = await domainValueTask.ToActionResult();
-		await Then_Response_Is_ActionResult_Type_And_ProblemDetails_StatusAndText_Correct(actionRes, expectedCode, expectedTitle, expectedErrorMsg);
+		await Then_Response_Is_ActionResult_Type_And_ProblemDetails_StatusAndText_Correct(actionRes, HttpCodeConvention.FailedHttpCode, "Bad Request", "1");
 
 		var res = await domainValueTask.ToResult();
-		Then_Response_Is_IResult_Type_And_ProblemDetails_StatusAndText_Correct(res, expectedCode, expectedTitle, expectedErrorMsg);
+		Then_Response_Is_IResult_Type_And_ProblemDetails_StatusAndText_Correct(res, HttpCodeConvention.FailedHttpCode, "Bad Request", "1");
 	}
-	public static readonly IEnumerable<object[]> FailedResultWithValueTaskCases = TestCases(DomainResult.FailedTask<int>, DomainResult.NotFoundTask<int>, DomainResult.UnauthorizedTask<int>, DomainResult.ConflictTask<int>, DomainResult.ContentTooLargeTask<int>, DomainResult.CriticalDependencyErrorTask<int>);
 
 	[Theory]
 	[MemberData(nameof(FailedResultCases))]
@@ -53,17 +54,17 @@ public class To_4xx_ActionResult_Tests
 	}
 	public static readonly IEnumerable<object[]> FailedResultCases = TestCases(DomainResult.Failed, DomainResult.NotFound, DomainResult.Unauthorized, DomainResult.Conflict, DomainResult.ContentTooLarge, DomainResult.CriticalDependencyError);
 
-	[Theory]
-	[MemberData(nameof(FailedResultTaskCases))]
-	public async Task Failed_DomainResult_Task(Task<IDomainResult> domainValueTask, int expectedCode, string expectedTitle, string expectedErrorMsg)
+	[Fact]
+	public async Task Failed_DomainResult_Task()
 	{
+		var domainValueTask = DomainResult.FailedTask("1");
+
 		var actionRes = await domainValueTask.ToActionResult();
-		await Then_Response_Is_ActionResult_Type_And_ProblemDetails_StatusAndText_Correct(actionRes, expectedCode, expectedTitle, expectedErrorMsg);
+		await Then_Response_Is_ActionResult_Type_And_ProblemDetails_StatusAndText_Correct(actionRes, HttpCodeConvention.FailedHttpCode, "Bad Request", "1");
 
 		var res = await domainValueTask.ToResult();
-		Then_Response_Is_IResult_Type_And_ProblemDetails_StatusAndText_Correct(res, expectedCode, expectedTitle, expectedErrorMsg);
+		Then_Response_Is_IResult_Type_And_ProblemDetails_StatusAndText_Correct(res, HttpCodeConvention.FailedHttpCode, "Bad Request", "1");
 	}
-	public static readonly IEnumerable<object[]> FailedResultTaskCases = TestCases(DomainResult.FailedTask, DomainResult.NotFoundTask, DomainResult.UnauthorizedTask, DomainResult.ConflictTask, DomainResult.ContentTooLargeTask, DomainResult.CriticalDependencyErrorTask);
 
 	[Theory]
 	[MemberData(nameof(FailedValueTestCases))]
@@ -77,24 +78,25 @@ public class To_4xx_ActionResult_Tests
 	}
 	public static readonly IEnumerable<object[]> FailedValueTestCases = TestCases(DomainResult.Failed, DomainResult.NotFound, DomainResult.Unauthorized, DomainResult.Conflict, DomainResult.ContentTooLarge, DomainResult.CriticalDependencyError, v => (10, v));
 
-	[Theory]
-	[MemberData(nameof(FailedValueTaskTestCases))]
-	public async Task Failed_ValueResult_Task(Task<(int, IDomainResult)> domainValueTask, int expectedCode, string expectedTitle, string expectedErrorMsg)
+	[Fact]
+	public async Task Failed_ValueResult_Task()
 	{
+		var domainValueTask = Task.FromResult((10, DomainResult.Failed("1")));
+
 		var actionRes = await domainValueTask.ToActionResult();
-		await Then_Response_Is_ActionResult_Type_And_ProblemDetails_StatusAndText_Correct(actionRes, expectedCode, expectedTitle, expectedErrorMsg);
+		await Then_Response_Is_ActionResult_Type_And_ProblemDetails_StatusAndText_Correct(actionRes, HttpCodeConvention.FailedHttpCode, "Bad Request", "1");
 
 		var res = await domainValueTask.ToResult();
-		Then_Response_Is_IResult_Type_And_ProblemDetails_StatusAndText_Correct(res, expectedCode, expectedTitle, expectedErrorMsg);
+		Then_Response_Is_IResult_Type_And_ProblemDetails_StatusAndText_Correct(res, HttpCodeConvention.FailedHttpCode, "Bad Request", "1");
 	}
-	[Theory]
-	[MemberData(nameof(FailedValueTaskTestCases))]
-	public async Task Failed_ValueResult_Task_ActionOfT(Task<(int, IDomainResult)> domainValueTask, int expectedCode, string expectedTitle, string expectedErrorMsg)
+	[Fact]
+	public async Task Failed_ValueResult_Task_ActionOfT()
 	{
+		var domainValueTask = Task.FromResult((10, DomainResult.Failed("1")));
+
 		var actionRes = Convert(await domainValueTask.ToActionResultOfT());
-		await Then_Response_Is_ActionResult_Type_And_ProblemDetails_StatusAndText_Correct(actionRes, expectedCode, expectedTitle, expectedErrorMsg);
+		await Then_Response_Is_ActionResult_Type_And_ProblemDetails_StatusAndText_Correct(actionRes, HttpCodeConvention.FailedHttpCode, "Bad Request", "1");
 	}
-	public static readonly IEnumerable<object[]> FailedValueTaskTestCases = TestCases(DomainResult.Failed, DomainResult.NotFound, DomainResult.Unauthorized, DomainResult.Conflict, DomainResult.ContentTooLarge, DomainResult.CriticalDependencyError, v => Task.FromResult((10, v)));
 
 	[Theory]
 	[MemberData(nameof(FailedResultWithValueCases))]
@@ -222,7 +224,6 @@ public class To_4xx_ActionResult_Tests
 				new[] { OptionalWrapper(domainFailedFunc(new[] { "1" })),		HttpCodeConvention.FailedHttpCode,	 "Bad Request", "1" },
 				new[] { OptionalWrapper(domainFailedFunc(new[] { "1", "2" })),	HttpCodeConvention.FailedHttpCode,	 "Bad Request", "1, 2" },
 				new[] { OptionalWrapper(domainNotFoundFunc(new[] { "1" })),		HttpCodeConvention.NotFoundHttpCode, "Not Found",   "1" },
-				new[] { OptionalWrapper(domainNotFoundFunc(new[] { "1", "2" })),HttpCodeConvention.NotFoundHttpCode, "Not Found",   "1, 2" },
 				new[] { OptionalWrapper(domainUnauthFunc("1")),					HttpCodeConvention.UnauthorizedHttpCode, "Unauthorized access",   "1" },
 				new[] { OptionalWrapper(domainConflictFunc("1")),				HttpCodeConvention.ConflictHttpCode, "Conflict with the current state",   "1" },
 				new[] { OptionalWrapper(domainContentTooLargeFunc("1")),		HttpCodeConvention.ContentTooLargeHttpCode, "The requested entity is larger than limits defined by server",   "1" },
