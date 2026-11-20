@@ -24,9 +24,7 @@ public static partial class DomainResultExtensions
 			DomainOperationStatus.Failed		 => CreateProblemResponse(HttpCodeConvention.FailedHttpCode,	 	HttpCodeConvention.FailedProblemDetailsTitle,			errorDetails, errorAction),
 			DomainOperationStatus.CriticalDependencyError
 												 => CreateProblemResponse(HttpCodeConvention.CriticalDependencyErrorHttpCode,HttpCodeConvention.CriticalDependencyErrorProblemDetailsTitle, errorDetails, errorAction),
-			DomainOperationStatus.Success		 => value is null
-																	? new NoContentResult() as ActionResult // No value, means returning HTTP status 204. A default value, such as 0 or false, is a value
-																	: valueToActionResultFunc(value),
+			DomainOperationStatus.Success		 => valueToActionResultFunc(value),
 			_ => throw new ArgumentOutOfRangeException(nameof(errorDetails)),
 		};
 }

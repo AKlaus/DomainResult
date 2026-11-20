@@ -43,9 +43,7 @@ public static partial class DomainResultExtensions
 			DomainOperationStatus.Failed		 => CreateProblemResult(HttpCodeConvention.FailedHttpCode,			HttpCodeConvention.FailedProblemDetailsTitle,			errorDetails, errorAction),
 			DomainOperationStatus.CriticalDependencyError
 												 => CreateProblemResult(HttpCodeConvention.CriticalDependencyErrorHttpCode,	HttpCodeConvention.CriticalDependencyErrorProblemDetailsTitle,	errorDetails, errorAction),
-			DomainOperationStatus.Success		 => value is null
-																	? TypedResults.NoContent()			// No value, means returning HTTP status 204. A default value, such as 0 or false, is a value. Since .NET 7 `TypedResults` provides better type safety
-																	: valueToResultFunc(value),
+			DomainOperationStatus.Success		 => valueToResultFunc(value),
 			_ => throw new ArgumentOutOfRangeException(),
 		};
 

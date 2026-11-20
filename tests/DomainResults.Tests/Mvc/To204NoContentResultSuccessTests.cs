@@ -91,47 +91,6 @@ public class To_204_NoContentResult_Success_Tests
 		Assert.All(results, res => res.AssertNoContentResultType());
 	}
 
-	[Theory]
-	[MemberData(nameof(NullValueTestCases))]
-	public void DomainResult_With_Null_Value_Custom_Converted_To_NoContent<TValue>(IDomainResult<TValue> domainRes, (TValue, IDomainResult) tupleRes)
-	{
-		// GIVEN a successful domain result with a null value, in each result shape
-
-		// WHEN convert it to ActionResult with a custom conversion to 201 Created
-		IActionResult[] actionRes =
-		[
-			domainRes.ToCustomActionResult(value => new CreatedResult(Location, value)),
-			tupleRes.ToCustomActionResult(value => new CreatedResult(Location, value))
-		];
-		// and to ActionResult<T>
-		ActionResult<TValue>[] actionResOfT =
-		[
-			domainRes.ToCustomActionResultOfT(value => new CreatedResult(Location, value)),
-			tupleRes.ToCustomActionResultOfT(value => new CreatedResult(Location, value))
-		];
-
-		// THEN the custom conversion is skipped and the response type is NoContent
-		Assert.All(actionRes, res => Assert.IsType<NoContentResult>(res));
-		Assert.All(actionResOfT, res => Assert.IsType<NoContentResult>(res.Result));
-	}
-
-	[Theory]
-	[MemberData(nameof(NullValueTestCases))]
-	public void DomainResult_With_Null_Value_Custom_Converted_To_NoContent_of_IResult<TValue>(IDomainResult<TValue> domainRes, (TValue, IDomainResult) tupleRes)
-	{
-		// GIVEN a successful domain result with a null value, in each result shape
-
-		// WHEN convert it to IResult with a custom conversion to 201 Created
-		IResult[] results =
-		[
-			domainRes.ToCustomResult(value => TypedResults.Created(Location, value)),
-			tupleRes.ToCustomResult(value => TypedResults.Created(Location, value))
-		];
-
-		// THEN the custom conversion is skipped and the response type is NoContent
-		Assert.All(results, res => res.AssertNoContentResultType());
-	}
-
 	/// <summary>
 	///		Null values of a reference type and a nullable value type
 	/// </summary>
@@ -140,8 +99,6 @@ public class To_204_NoContentResult_Success_Tests
 		GetTestCase<TestDto?>(null),
 		GetTestCase<int?>(null)
 	];
-
-	private static readonly Uri Location = new("http://localhost/");
 
 	private static object[] GetTestCase<T>(T value)
 		=> [DomainResult.Success(value), IDomainResult.Success(value)];

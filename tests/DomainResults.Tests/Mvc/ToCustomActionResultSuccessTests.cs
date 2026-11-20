@@ -141,6 +141,7 @@ public class To_Custom_ActionResult_Success_Tests
 			{
 				GetDomainResultTestCase(10,  wrapInTask),						// E.g. { DomainResult.Success(10), res => res.Value }
 				GetDomainResultTestCase(0,  wrapInTask),						// A default value is a value
+				GetDomainResultTestCase<TestDto?>(null,  wrapInTask),			// A null value reaches the custom conversion
 				GetDomainResultTestCase("1",  wrapInTask),
 				GetDomainResultTestCase(new TestDto("1"),  wrapInTask)
 			};
@@ -150,6 +151,7 @@ public class To_Custom_ActionResult_Success_Tests
 			{
 				GetValueResultTestCase(10,  wrapInTask),						// E.g. { DomainResult.Success(10), res => res.Value }
 				GetValueResultTestCase(0,  wrapInTask),						// A default value is a value
+				GetValueResultTestCase<TestDto?>(null,  wrapInTask),			// A null value reaches the custom conversion
 				GetValueResultTestCase("1",  wrapInTask),
 				GetValueResultTestCase(new TestDto("1"), wrapInTask)
 			};
