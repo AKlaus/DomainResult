@@ -7,7 +7,7 @@
 # source_config <path>
 # Config values are assigned literally instead of being sourced. Sourcing eats backslashes and
 # runs the rest of the line as a command, and the corruption is silent. Surrounding quotes are
-# stripped, so a value quoted for the old parser still reads the same.
+# stripped, so a quoted value reads the same.
 source_config() {
   local config_path="$1" line key value
 
@@ -61,8 +61,9 @@ load_project_config() {
 #   3. the GH_TOKEN, then the GITHUB_TOKEN environment variable, the GitHub CLI's own order
 #   4. the GitHub CLI, when it is signed in
 # A file that exists without the key falls through to the next place. Exit with every place it
-# checked when none holds a token. The Git credential helper is not a place: its credential can
-# belong to another account, which could then post comments on a public repository.
+# checked when none holds a token. The Git credential helper is not a place: it can start an
+# interactive sign-in when it holds nothing, and it holds what Git uses for clones and pushes, not a
+# token set for GitHub tools.
 load_github_token() {
   local skill_root="$1" from_gh_token="${GH_TOKEN:-}" from_github_token="${GITHUB_TOKEN:-}"
   local git_root="$skill_root" git_common_dir config cli_token
@@ -116,9 +117,7 @@ github_cli_token() {
 
 # require_max_positionals <action> <max> <argc>
 # Reject positionals past the last slot an action reads. Each action binds fixed slots and ignores
-# whatever follows, so a body that reaches bash already split into words — which is what an
-# unquoted native command line produces, Windows PowerShell 5.1 being the case that prompted this —
-# posted its first word and exited 0. Nothing in the response marked the text as truncated.
+# the rest, so a body that an unquoting shell split into words would post its first word only.
 require_max_positionals() {
   local action="$1" max="$2" argc="$3"
   if (( argc > max )); then

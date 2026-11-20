@@ -38,7 +38,7 @@ set -euo pipefail
 export MSYS2_ARG_CONV_EXCL='*'
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+SKILL_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
 source "${SCRIPT_DIR}/config.sh"
 
@@ -49,9 +49,9 @@ if [[ "${1:-}" == scope ]]; then
   exec bash "${SCRIPT_DIR}/scope/pr_scope.sh" "$@"
 fi
 
-load_project_config "$PROJECT_ROOT"
+load_project_config "$SKILL_ROOT"
 
-load_github_token "$PROJECT_ROOT"
+load_github_token "$SKILL_ROOT"
 # An environment variable or the GitHub CLI can hold another account's token, so name the source.
 if [[ "$GITHUB_TOKEN_SOURCE" != */PROJECT_CFG.Local.md ]]; then
   echo "Note: the GitHub token comes from ${GITHUB_TOKEN_SOURCE}." >&2

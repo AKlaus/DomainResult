@@ -74,9 +74,8 @@ test_run_names_a_token_that_no_file_holds() {
 }
 
 test_run_rejects_extra_positionals() {
-  # A body that reaches bash already split into words lands in the slots after the one the action
-  # reads. Those slots were ignored, so the call posted the first word and exited 0. The dispatcher
-  # must refuse the call instead, and must still accept every legitimate arity.
+  # A body that reaches bash split into words lands in the slots after the one the action reads.
+  # The dispatcher refuses such a call, and still accepts every legitimate arity.
   local temp_root output
   temp_root=$(make_skill_fixture)
   trap "rm -rf '${temp_root%/skill}'" EXIT

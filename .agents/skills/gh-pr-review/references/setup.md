@@ -42,7 +42,8 @@ GITHUB_TOKEN=your-github-token-here
 
 When the token comes from place 3 or 4, every action names the place on stderr. Such a token can
 belong to another account, or lack a permission from section 1. The scripts never use the Git
-credential helper, because its credential can belong to another account.
+credential helper: it can start an interactive sign-in, and it holds what Git uses for clones and
+pushes, not a token set for GitHub tools.
 
 ## 3. Pre-approve the commands
 
