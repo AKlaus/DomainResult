@@ -86,16 +86,14 @@ public class To_200_OkResult_DomainResult_Tests
 	private static IEnumerable<object[]> GetTestCases(bool wrapInTask)
 		=> new List<object[]> 
 			{ 
-				GetTestCase(10,  true, wrapInTask),			// E.g. { DomainResult.Success(10), res => res.Value }
-				GetTestCase(10,  false, wrapInTask),
-				GetTestCase(0,   false, wrapInTask),		// A default value is a value
-				GetTestCase("1", true, wrapInTask),
-				GetTestCase("1", false, wrapInTask),
-				GetTestCase(new TestDto("1"), true, wrapInTask) 
+				GetTestCase(10,  wrapInTask),
+				GetTestCase(0,   wrapInTask),			// A default value is a value
+				GetTestCase("1", wrapInTask),
+				GetTestCase(new TestDto("1"), wrapInTask)
 			};
 
-	private static object[] GetTestCase<T>(T domainValue, bool genericClass, bool wrapInTask = false)
-		=> wrapInTask 
-			? [ genericClass ? DomainResult<T>.SuccessTask(domainValue)	: DomainResult.SuccessTask(domainValue) ]
-			: [ genericClass ? DomainResult<T>.Success(domainValue)		: DomainResult.Success(domainValue) ];
+	private static object[] GetTestCase<T>(T domainValue, bool wrapInTask)
+		=> wrapInTask
+			? [ DomainResult.SuccessTask(domainValue) ]
+			: [ DomainResult.Success(domainValue) ];
 }
