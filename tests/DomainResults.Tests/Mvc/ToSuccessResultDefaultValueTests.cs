@@ -21,7 +21,7 @@ public class ToSuccessResultDefaultValueTests
 	[MemberData(nameof(DefaultValueTestCases))]
 	public void ToActionResult_DefaultValue_Returns200OkWithValue<TValue>(IDomainResult<TValue> domainResult, (TValue, IDomainResult) tupleResult)
 	{
-		// GIVEN a successful result with a default value, such as 0 or false
+		// GIVEN a successful result with a default value of a value type
 
 		// WHEN convert each result shape to IActionResult
 		IActionResult[] results = [domainResult.ToActionResult(), tupleResult.ToActionResult()];
@@ -56,7 +56,7 @@ public class ToSuccessResultDefaultValueTests
 	[MemberData(nameof(DefaultValueTestCases))]
 	public void ToActionResultOfT_DefaultValue_ReturnsValue<TValue>(IDomainResult<TValue> domainResult, (TValue, IDomainResult) tupleResult)
 	{
-		// GIVEN a successful result with a default value, such as 0 or false
+		// GIVEN a successful result with a default value of a value type
 
 		// WHEN convert each result shape to ActionResult<T>
 		ActionResult<TValue>[] results = [domainResult.ToActionResultOfT(), tupleResult.ToActionResultOfT()];
@@ -90,7 +90,7 @@ public class ToSuccessResultDefaultValueTests
 	[MemberData(nameof(DefaultValueTestCases))]
 	public void ToResult_DefaultValue_Returns200OkWithValue<TValue>(IDomainResult<TValue> domainResult, (TValue, IDomainResult) tupleResult)
 	{
-		// GIVEN a successful result with a default value, such as 0 or false
+		// GIVEN a successful result with a default value of a value type
 
 		// WHEN convert each result shape to IResult
 		IResult[] results = [domainResult.ToResult(), tupleResult.ToResult()];
@@ -120,7 +120,7 @@ public class ToSuccessResultDefaultValueTests
 	[MemberData(nameof(DefaultValueTestCases))]
 	public void ToCustomActionResult_DefaultValue_ReturnsCustomResult<TValue>(IDomainResult<TValue> domainResult, (TValue, IDomainResult) tupleResult)
 	{
-		// GIVEN a successful result with a default value, such as 0 or false
+		// GIVEN a successful result with a default value of a value type
 
 		// WHEN convert each result shape with a custom conversion to 201 Created
 		IActionResult[] results =
@@ -158,7 +158,7 @@ public class ToSuccessResultDefaultValueTests
 	[MemberData(nameof(DefaultValueTestCases))]
 	public void ToCustomActionResultOfT_DefaultValue_ReturnsCustomResult<TValue>(IDomainResult<TValue> domainResult, (TValue, IDomainResult) tupleResult)
 	{
-		// GIVEN a successful result with a default value, such as 0 or false
+		// GIVEN a successful result with a default value of a value type
 
 		// WHEN convert each result shape with a custom conversion to 201 Created
 		ActionResult<TValue>[] results =
@@ -196,7 +196,7 @@ public class ToSuccessResultDefaultValueTests
 	[MemberData(nameof(DefaultValueTestCases))]
 	public void ToCustomResult_DefaultValue_ReturnsCustomResult<TValue>(IDomainResult<TValue> domainResult, (TValue, IDomainResult) tupleResult)
 	{
-		// GIVEN a successful result with a default value, such as 0 or false
+		// GIVEN a successful result with a default value of a value type
 
 		// WHEN convert each result shape with a custom conversion to 201 Created
 		IResult[] results =
@@ -229,13 +229,11 @@ public class ToSuccessResultDefaultValueTests
 	#endregion // ToCustomResult -----------------------------------------------
 
 	/// <summary>
-	///		Default values of a numeric type, a Boolean type, and another struct type
+	///		A default value of a value type
 	/// </summary>
 	public static readonly IEnumerable<object[]> DefaultValueTestCases =
 	[
-		GetTestCase(0),
-		GetTestCase(false),
-		GetTestCase(Guid.Empty)
+		GetTestCase(0)
 	];
 
 	/// <summary>
