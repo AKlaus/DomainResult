@@ -21,8 +21,8 @@ jobs:
     steps:
     - uses: actions/checkout@v7
       with:
-        # Fix for MinVer
-        fetch-depth: 100
+        # MinVer needs the tags, and package validation needs the version from them
+        fetch-depth: 0
 
     # Install all SDK versions targeted in the Test project
     - name: Setup .NET
