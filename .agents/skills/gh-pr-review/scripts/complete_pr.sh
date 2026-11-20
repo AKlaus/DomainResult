@@ -207,24 +207,24 @@ git_remote_for_repository() {
 
 # clean_up_local_clone <remote outcome>
 # Delete the local head branch and fast-forward the local target branch, in the clone the script
-# runs in. Sets LOCAL_BRANCH and TARGET_BRANCH to the outcomes.
+# runs in. Sets LOCAL_BRANCH_OUTCOME and TARGET_BRANCH_OUTCOME to the outcomes.
 clean_up_local_clone() {
   local remote current error
   # Inside a .git directory or a bare repository, the command prints false and still exits 0.
   if [[ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" != true ]]; then
-    LOCAL_BRANCH="kept: not run in a Git clone"
-    TARGET_BRANCH="not updated: not run in a Git clone"
+    LOCAL_BRANCH_OUTCOME="kept: not run in a Git clone"
+    TARGET_BRANCH_OUTCOME="not updated: not run in a Git clone"
     return
   fi
   if ! remote=$(git_remote_for_repository); then
-    LOCAL_BRANCH="kept: no remote points at ${GH_OWNER}/${GH_REPO}"
-    TARGET_BRANCH="not updated: no remote points at ${GH_OWNER}/${GH_REPO}"
+    LOCAL_BRANCH_OUTCOME="kept: no remote points at ${GH_OWNER}/${GH_REPO}"
+    TARGET_BRANCH_OUTCOME="not updated: no remote points at ${GH_OWNER}/${GH_REPO}"
     return
   fi
   # The PR ref outlives the branch, so the merged head is known locally even after the deletion.
   if ! gh_git fetch --quiet "$remote" "+refs/heads/${TARGET}:refs/remotes/${remote}/${TARGET}" "refs/pull/${PR}/head" 2>/dev/null; then
-    LOCAL_BRANCH="kept: the fetch from ${remote} failed"
-    TARGET_BRANCH="not updated: the fetch from ${remote} failed"
+    LOCAL_BRANCH_OUTCOME="kept: the fetch from ${remote} failed"
+    TARGET_BRANCH_OUTCOME="not updated: the fetch from ${remote} failed"
     return
   fi
   if [[ "$1" == deleted || "$1" == "already deleted" ]]; then
@@ -235,26 +235,26 @@ clean_up_local_clone() {
   # The remote outcome decides for both copies, so a branch that GitHub keeps, such as the
   # default branch or a base of stacked PRs, stays in the clone too.
   if [[ "$1" != deleted && "$1" != "already deleted" ]]; then
-    LOCAL_BRANCH="kept: the branch on GitHub was kept"
+    LOCAL_BRANCH_OUTCOME="kept: the branch on GitHub was kept"
   elif ! git show-ref --verify --quiet "refs/heads/${HEAD_REF}"; then
-    LOCAL_BRANCH="absent"
+    LOCAL_BRANCH_OUTCOME="absent"
   # A squash merge leaves the branch looking unmerged, so `branch -d` would refuse it. The branch
   # is deleted only when the merged head contains it, so no local commit is lost.
   elif ! git merge-base --is-ancestor "refs/heads/${HEAD_REF}" "$HEAD_SHA" 2>/dev/null; then
-    LOCAL_BRANCH="kept: it holds commits that the PR did not merge"
+    LOCAL_BRANCH_OUTCOME="kept: it holds commits that the PR did not merge"
   else
     if [[ "$current" == "$HEAD_REF" ]]; then
       if error=$(git switch --quiet "$TARGET" 2>&1); then
         current="$TARGET"
       else
-        LOCAL_BRANCH="kept: the switch to ${TARGET} failed: $(printf '%s' "$error" | head -n 1)"
+        LOCAL_BRANCH_OUTCOME="kept: the switch to ${TARGET} failed: $(printf '%s' "$error" | head -n 1)"
       fi
     fi
     if [[ "$current" != "$HEAD_REF" ]]; then
       if git branch --quiet -D "$HEAD_REF" 2>/dev/null; then
-        LOCAL_BRANCH="deleted"
+        LOCAL_BRANCH_OUTCOME="deleted"
       else
-        LOCAL_BRANCH="kept: Git refused the deletion; it may be checked out in another worktree"
+        LOCAL_BRANCH_OUTCOME="kept: Git refused the deletion; it may be checked out in another worktree"
       fi
     fi
   fi
@@ -262,31 +262,31 @@ clean_up_local_clone() {
   # Fast-forward only: a target branch with local commits is left for the developer.
   if [[ "$current" == "$TARGET" ]]; then
     if git merge --quiet --ff-only "refs/remotes/${remote}/${TARGET}" >/dev/null 2>&1; then
-      TARGET_BRANCH="${TARGET} at $(git rev-parse --short HEAD)"
+      TARGET_BRANCH_OUTCOME="${TARGET} at $(git rev-parse --short HEAD)"
     else
-      TARGET_BRANCH="not updated: ${TARGET} has local commits, or local changes block the fast-forward"
+      TARGET_BRANCH_OUTCOME="not updated: ${TARGET} has local commits, or local changes block the fast-forward"
     fi
   elif git show-ref --verify --quiet "refs/heads/${TARGET}"; then
     # A fetch from the clone itself refuses a non-fast-forward and a branch checked out elsewhere.
     if git fetch --quiet . "refs/remotes/${remote}/${TARGET}:refs/heads/${TARGET}" 2>/dev/null; then
-      TARGET_BRANCH="${TARGET} at $(git rev-parse --short "refs/heads/${TARGET}")"
+      TARGET_BRANCH_OUTCOME="${TARGET} at $(git rev-parse --short "refs/heads/${TARGET}")"
     else
-      TARGET_BRANCH="not updated: ${TARGET} has local commits, or another worktree has it checked out"
+      TARGET_BRANCH_OUTCOME="not updated: ${TARGET} has local commits, or another worktree has it checked out"
     fi
   else
-    TARGET_BRANCH="absent"
+    TARGET_BRANCH_OUTCOME="absent"
   fi
 }
 
-REMOTE_BRANCH=$(delete_remote_branch)
-clean_up_local_clone "$REMOTE_BRANCH"
-for outcome in "remote branch: ${REMOTE_BRANCH}" "local branch: ${LOCAL_BRANCH}" "target branch: ${TARGET_BRANCH}"; do
+REMOTE_BRANCH_OUTCOME=$(delete_remote_branch)
+clean_up_local_clone "$REMOTE_BRANCH_OUTCOME"
+for outcome in "remote branch: ${REMOTE_BRANCH_OUTCOME}" "local branch: ${LOCAL_BRANCH_OUTCOME}" "target branch: ${TARGET_BRANCH_OUTCOME}"; do
   case "$outcome" in
     *": kept: "* | *": not updated: "*) printf 'WARNING: %s\n' "$outcome" >&2 ;;
   esac
 done
 
 jq -n --argjson id "$PR" --arg commit "$MERGE_SHA" --arg subject "$SUBJECT" --arg url "$URL" \
-  --arg remote "$REMOTE_BRANCH" --arg local "$LOCAL_BRANCH" --arg target "$TARGET_BRANCH" \
+  --arg remote "$REMOTE_BRANCH_OUTCOME" --arg local "$LOCAL_BRANCH_OUTCOME" --arg target "$TARGET_BRANCH_OUTCOME" \
   '{id: $id, merged: true, method: "squash", commit: $commit, subject: $subject, url: $url,
     remoteBranch: $remote, localBranch: $local, targetBranch: $target}'
