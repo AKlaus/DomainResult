@@ -291,6 +291,8 @@ When returning a standard `200` or `204` HTTP code is not enough, there are exte
 - `ToCustomActionResult()` and `ToCustomActionResultOfT()` for returning `IActionResult`
 - `ToCustomResult()` for returning `IResult`
 
+A `null` value skips the custom conversion and returns `204 NoContent`.
+
 Examples of returning [201 Created](https://httpstatuses.com/201) along with a location header field pointing to the created resource (as per [RFC7231](https://tools.ietf.org/html/rfc7231#section-7.2)):
 
 #### Example (custom response for IActionResult)
