@@ -13,23 +13,18 @@ internal static partial class RoutesExtension
 		DomainSuccessService service = new();
 		
 		app.MapGet("200OkWithNumber", () => service.GetSuccessWithNumericValue().ToResult())
-		   .WithTags("Success: 200 Ok")
-		   .Produces<int>();
+		   .WithTags("Success: 200 Ok");
 		
 		app.MapGet("Get200OkWithDefaultNumber", () => service.GetSuccessWithDefaultNumericValue().ToResult())
-		   .WithTags("Success: 200 Ok")
-		   .Produces<int>();
+		   .WithTags("Success: 200 Ok");
 		
 		app.MapGet("Get200OkWithNumberTask", () => service.GetSuccessWithNumericValueTask().ToResult())
-		   .WithTags("Success: 200 Ok")
-		   .Produces<int>();
+		   .WithTags("Success: 200 Ok");
 		
 		app.MapGet("Get200OkTupleWithNumber", () => service.GetSuccessWithNumericValueTuple().ToResult())
-		   .WithTags("Success: 200 Ok")
-		   .Produces<int>();
+		   .WithTags("Success: 200 Ok");
 				
 		app.MapGet("Get200OkTupleWithNumberTask", () => service.GetSuccessWithNumericValueTupleTask().ToResult())
-		   .WithTags("Success: 200 Ok")
-		   .Produces<int>();
+		   .WithTags("Success: 200 Ok");
 	}
 }

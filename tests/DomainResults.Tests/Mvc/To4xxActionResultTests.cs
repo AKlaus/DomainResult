@@ -187,7 +187,7 @@ public class To_4xx_ActionResult_Tests
 		// THEN the response type is correct and the ProblemDetails properties are as expected
 		res.AssertObjectResultTypeWithProblemDetails(expectedCode, expectedTitle, expectedErrorMsg);
 		// and the 'type' is the default for the HTTP code
-		Assert.Equal(GetIResultType(expectedCode), ((res as IValueHttpResult)?.Value as ProblemDetails)?.Type);
+		Assert.Equal(GetIResultType(expectedCode), ((res.GetInnerResult() as IValueHttpResult)?.Value as ProblemDetails)?.Type);
 	}
 
 	/// <summary>

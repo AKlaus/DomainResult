@@ -40,7 +40,7 @@ public class To_4xx_Result_With_Custom_ErrorAction_Tests
 		});
 
 		// THEN all properties are preserved
-		var problemDetails = (res as IValueHttpResult)?.Value as ProblemDetails;
+		var problemDetails = (res.Result as IValueHttpResult)?.Value as ProblemDetails;
 		Assert.NotNull(problemDetails);
 		Assert.Equal(CustomType, problemDetails.Type);
 		Assert.Equal(CustomInstance, problemDetails.Instance);
@@ -114,11 +114,11 @@ public class To_4xx_Result_With_Custom_ErrorAction_Tests
 	}
 	public static readonly TheoryData<string, Func<Task<IResult>>> IResultShapeCases = new()
 		{
-			{ "Task<IDomainResult<T>>",		() => DomainResult.FailedTask<int>("Error").ToResult((problemDetails, _) => SetCustomProperties(problemDetails)) },
-			{ "(T, IDomainResult)",			() => Task.FromResult((10, DomainResult.Failed("Error")).ToResult((problemDetails, _) => SetCustomProperties(problemDetails))) },
-			{ "Task<(T, IDomainResult)>",	() => Task.FromResult((10, DomainResult.Failed("Error"))).ToResult((problemDetails, _) => SetCustomProperties(problemDetails)) },
-			{ "IDomainResult",				() => Task.FromResult(DomainResult.Failed("Error").ToResult((problemDetails, _) => SetCustomProperties(problemDetails))) },
-			{ "Task<IDomainResult>",		() => DomainResult.FailedTask("Error").ToResult((problemDetails, _) => SetCustomProperties(problemDetails)) },
+			{ "Task<IDomainResult<T>>",		async () => (await DomainResult.FailedTask<int>("Error").ToResult((problemDetails, _) => SetCustomProperties(problemDetails))).Result },
+			{ "(T, IDomainResult)",			() => Task.FromResult((10, DomainResult.Failed("Error")).ToResult((problemDetails, _) => SetCustomProperties(problemDetails)).Result) },
+			{ "Task<(T, IDomainResult)>",	async () => (await Task.FromResult((10, DomainResult.Failed("Error"))).ToResult((problemDetails, _) => SetCustomProperties(problemDetails))).Result },
+			{ "IDomainResult",				() => Task.FromResult(DomainResult.Failed("Error").ToResult((problemDetails, _) => SetCustomProperties(problemDetails)).Result) },
+			{ "Task<IDomainResult>",		async () => (await DomainResult.FailedTask("Error").ToResult((problemDetails, _) => SetCustomProperties(problemDetails))).Result },
 		};
 
 	[Theory]

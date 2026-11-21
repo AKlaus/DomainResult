@@ -105,10 +105,11 @@ or for the _Minimal APIs_ convert to [IResult](https://devblogs.microsoft.com/do
 
 ```csharp
 app.MapGet("Invoice", () => _service.GetInvoice().ToResult())
-   .Produces<InvoiceResponseDto>()
    .ProducesProblem(StatusCodes.Status400BadRequest)
    .ProducesProblem(StatusCodes.Status404NotFound);
 ```
+
+`ToResult()` returns `Task<Results<Ok<InvoiceResponseDto>, NoContent, ProblemHttpResult>>`, so OpenAPI gets the `200 OK` response with its type from the return type.
 
 The above returns:
 
@@ -265,18 +266,29 @@ Task<(T, IDomainResult)>.ToActionResultOfT();
 
 For the modern [minimal API](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis), call `ToResult()` extension method on a `IDomainResult` value to return the corresponding `IResult` instance.
 
+The conversions return [`Results<...>`](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/responses#resultstresult1-tresultn) unions of typed results, which implement `IResult`.
+The minimal API reads the success responses and their types from the return type, so an endpoint needs no `.Produces<T>()`.
+The problem responses still need `.ProducesProblem()`, because `HttpCodeConvention` sets their HTTP codes at run time.
+On .NET 9, a `Task<Results<...>>` return type also adds a `200` response typed as the `Results<...>` union.
+
+| Returned type                                  | Returned type wrapped in `Task`                      | Extension methods  |
+|------------------------------------------------|------------------------------------------------------|--------------------|
+| `Results<NoContent, ProblemHttpResult>`        | `Task<Results<NoContent, ProblemHttpResult>>`        | `ToResult()`       |
+| `Results<Ok<T>, NoContent, ProblemHttpResult>` | `Task<Results<Ok<T>, NoContent, ProblemHttpResult>>` | `ToResult()`       |
+| `Results<TResult, ProblemHttpResult>`          | `Task<Results<TResult, ProblemHttpResult>>`          | `ToCustomResult()` |
+
 #### Examples (IResult conversion)
 
 ```csharp
-// Returns `IResult` with HTTP code `204 NoContent` on success
+// Returns `Results<NoContent, ProblemHttpResult>` with HTTP code `204 NoContent` on success
 IDomainResult.ToResult();
-// The same as above, but returns `Task<IResult>` with no need in 'await'
+// The same as above, but returns `Task<Results<NoContent, ProblemHttpResult>>` with no need in 'await'
 Task<IDomainResult>.ToResult();
 
-// Returns `IResult` with HTTP code `200 Ok` along with the value
+// Returns `Results<Ok<T>, NoContent, ProblemHttpResult>` with HTTP code `200 Ok` along with the value
 IDomainResult<T>.ToResult();
 (T, IDomainResult).ToResult();
-// As above, but returns `Task<IResult>` with no need in 'await'
+// As above, but returns `Task<Results<Ok<T>, NoContent, ProblemHttpResult>>` with no need in 'await'
 Task<IDomainResult<T>>.ToResult();
 Task<(T, IDomainResult)>.ToResult();
 ```
@@ -289,7 +301,7 @@ There is a way to tune the Problem Details output case-by-case.
 
 When returning a standard `200` or `204` HTTP code is not enough, there are extension methods to knock yourself out:
 - `ToCustomActionResult()` and `ToCustomActionResultOfT()` for returning `IActionResult`
-- `ToCustomResult()` for returning `IResult`
+- `ToCustomResult()` for returning `Results<TResult, ProblemHttpResult>`, where `TResult` is the type that the custom conversion returns
 
 The custom conversion runs for a `null` value too, and decides the response itself.
 
@@ -336,6 +348,9 @@ app.MapPost("/",
                           .ToCustomResult(val => TypedResults.CreatedAtRoute(val, "GetById", new { id = val }))
            )
 ```
+
+OpenAPI gets the `201 Created` response with its type from `CreatedAtRoute<T>`.
+To describe several success responses, return a `Results<...>` union from the custom conversion.
 
 ### Custom error handling
 
