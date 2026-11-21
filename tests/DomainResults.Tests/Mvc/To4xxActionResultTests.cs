@@ -137,11 +137,7 @@ public class To_4xx_ActionResult_Tests
 
 	#region Auxiliary methods [PRIVATE] -----------------------------------
 
-#if NET8_0_OR_GREATER
 	private const string ExpectedNotFoundType = "https://tools.ietf.org/html/rfc9110#section-15.5.5";
-#else
-	private const string ExpectedNotFoundType = "https://tools.ietf.org/html/rfc7231#section-6.5.4";
-#endif
 
 	/// <summary>
 	///		The 'THEN' section of the tests, checking the Response type (<see cref="ActionResult"/>), the nested <see cref="ProblemDetails"/> and the response body
