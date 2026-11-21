@@ -35,7 +35,7 @@ public static partial class DomainResultExtensions
 		ValueToResultFunc<V, TResult> valueToResultFunc)
 		where R : IDomainResultBase
 		where TResult : IResult
-		=> errorDetails.Status == DomainOperationStatus.Success
+		=> errorDetails.IsSuccess
 			? valueToResultFunc(value)
 			: ToProblemResult(errorDetails, errorAction);
 

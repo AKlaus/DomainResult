@@ -108,7 +108,7 @@ public static partial class DomainResultExtensions
 		Action<ProblemDetails, R>? errorAction)
 		where R : IDomainResultBase
 	{
-		if (errorDetails.Status != DomainOperationStatus.Success)
+		if (!errorDetails.IsSuccess)
 			return ToProblemResult(errorDetails, errorAction);
 		if (value is null)
 			return TypedResults.NoContent();
