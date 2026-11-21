@@ -33,6 +33,9 @@
 			 Without it, as in a local build, validation skips the baseline comparison.
 			 Record an intended break in the project's CompatibilitySuppressions.xml. -->
 		<EnablePackageValidation>true</EnablePackageValidation>
+		<!-- A suppression of an intended break is unnecessary without a baseline, as in a local build,
+			 and after the release that ships the break. -->
+		<ApiCompatPermitUnnecessarySuppressions>true</ApiCompatPermitUnnecessarySuppressions>
 
 		<!-- Reference README file for nuget.org (https://devblogs.microsoft.com/nuget/add-a-readme-to-your-nuget-package/)-->
 		<PackageReadmeFile>README.md</PackageReadmeFile>
