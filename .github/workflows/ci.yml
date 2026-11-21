@@ -49,8 +49,11 @@ jobs:
 
     # Test each targeted framework independently to spot errors faster
     # Generate coverage report for the latest framework only, as coverage on multiple is not supported
+    # coverlet.MTP adds a timestamp to the report name, so the step renames the report for Coveralls
     - name: Test on .NET 11
-      run: dotnet test --configuration Release --no-build --verbosity normal --framework net11.0 /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
+      run: |
+        dotnet test --configuration Release --no-build --verbosity normal --framework net11.0 --coverlet --results-directory TestResults/coverage
+        mv TestResults/coverage/coverage.*.info TestResults/coverage/coverage.info
     - name: Test on .NET 10
       run: dotnet test --configuration Release --no-build --verbosity normal --framework net10.0
     - name: Test on .NET 9
@@ -61,5 +64,5 @@ jobs:
     - name: Publish coverage report to coveralls.io
       uses: coverallsapp/github-action@8d6379e14d29928660c4ba802d8e85393440b329 # v2.3.8
       with:
-        file: ./tests/DomainResults.Tests/TestResults/coverage.net11.0.info
+        file: ./TestResults/coverage/coverage.info
         coverage-reporter-version: v0.6.22

@@ -1,0 +1,8 @@
+{
+  "platformOptions": {
+    "Coverlet": {
+      "include": "[DomainResults.Common]*,[DomainResults.Mvc]*",
+      "format": "lcov"
+    }
+  }
+}
