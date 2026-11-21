@@ -109,7 +109,7 @@ app.MapGet("Invoice", () => _service.GetInvoice().ToResult())
    .ProducesProblem(StatusCodes.Status404NotFound);
 ```
 
-`ToResult()` returns `Results<Ok<InvoiceResponseDto>, NoContent, ProblemHttpResult>`, so OpenAPI gets the `200 OK` response with its type from the return type.
+`ToResult()` returns `Task<Results<Ok<InvoiceResponseDto>, NoContent, ProblemHttpResult>>`, so OpenAPI gets the `200 OK` response with its type from the return type.
 
 The above returns:
 
@@ -269,6 +269,7 @@ For the modern [minimal API](https://docs.microsoft.com/en-us/aspnet/core/fundam
 The conversions return [`Results<...>`](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/responses#resultstresult1-tresultn) unions of typed results, which implement `IResult`.
 The minimal API reads the success responses and their types from the return type, so an endpoint needs no `.Produces<T>()`.
 The problem responses still need `.ProducesProblem()`, because `HttpCodeConvention` sets their HTTP codes at run time.
+On .NET 9, a `Task<Results<...>>` return type also adds a `200` response typed as the `Results<...>` union.
 
 | Returned type                                  | Returned type wrapped in `Task`                      | Extension methods  |
 |------------------------------------------------|------------------------------------------------------|--------------------|
