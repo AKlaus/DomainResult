@@ -74,76 +74,6 @@
   <Suppression>
     <DiagnosticId>CP0002</DiagnosticId>
     <Target>M:DomainResults.Mvc.DomainResultExtensions.ToCustomResult``2(DomainResults.Common.IDomainResult{``0},DomainResults.Mvc.DomainResultExtensions.ValueToResultFunc{``0,``1},System.Action{Microsoft.AspNetCore.Mvc.ProblemDetails,DomainResults.Common.IDomainResult{``0}})</Target>
-    <Left>lib/net7.0/DomainResults.Mvc.dll</Left>
-    <Right>lib/net7.0/DomainResults.Mvc.dll</Right>
-    <IsBaselineSuppression>true</IsBaselineSuppression>
-  </Suppression>
-  <Suppression>
-    <DiagnosticId>CP0002</DiagnosticId>
-    <Target>M:DomainResults.Mvc.DomainResultExtensions.ToCustomResult``2(System.Threading.Tasks.Task{DomainResults.Common.IDomainResult{``0}},DomainResults.Mvc.DomainResultExtensions.ValueToResultFunc{``0,``1},System.Action{Microsoft.AspNetCore.Mvc.ProblemDetails,DomainResults.Common.IDomainResult{``0}})</Target>
-    <Left>lib/net7.0/DomainResults.Mvc.dll</Left>
-    <Right>lib/net7.0/DomainResults.Mvc.dll</Right>
-    <IsBaselineSuppression>true</IsBaselineSuppression>
-  </Suppression>
-  <Suppression>
-    <DiagnosticId>CP0002</DiagnosticId>
-    <Target>M:DomainResults.Mvc.DomainResultExtensions.ToCustomResult``3(System.Threading.Tasks.Task{System.ValueTuple{``0,``1}},DomainResults.Mvc.DomainResultExtensions.ValueToResultFunc{``0,``2},System.Action{Microsoft.AspNetCore.Mvc.ProblemDetails,``1})</Target>
-    <Left>lib/net7.0/DomainResults.Mvc.dll</Left>
-    <Right>lib/net7.0/DomainResults.Mvc.dll</Right>
-    <IsBaselineSuppression>true</IsBaselineSuppression>
-  </Suppression>
-  <Suppression>
-    <DiagnosticId>CP0002</DiagnosticId>
-    <Target>M:DomainResults.Mvc.DomainResultExtensions.ToCustomResult``3(System.ValueTuple{``0,``1},DomainResults.Mvc.DomainResultExtensions.ValueToResultFunc{``0,``2},System.Action{Microsoft.AspNetCore.Mvc.ProblemDetails,``1})</Target>
-    <Left>lib/net7.0/DomainResults.Mvc.dll</Left>
-    <Right>lib/net7.0/DomainResults.Mvc.dll</Right>
-    <IsBaselineSuppression>true</IsBaselineSuppression>
-  </Suppression>
-  <Suppression>
-    <DiagnosticId>CP0002</DiagnosticId>
-    <Target>M:DomainResults.Mvc.DomainResultExtensions.ToResult``1(``0,System.Action{Microsoft.AspNetCore.Mvc.ProblemDetails,``0})</Target>
-    <Left>lib/net7.0/DomainResults.Mvc.dll</Left>
-    <Right>lib/net7.0/DomainResults.Mvc.dll</Right>
-    <IsBaselineSuppression>true</IsBaselineSuppression>
-  </Suppression>
-  <Suppression>
-    <DiagnosticId>CP0002</DiagnosticId>
-    <Target>M:DomainResults.Mvc.DomainResultExtensions.ToResult``1(DomainResults.Common.IDomainResult{``0},System.Action{Microsoft.AspNetCore.Mvc.ProblemDetails,DomainResults.Common.IDomainResult{``0}})</Target>
-    <Left>lib/net7.0/DomainResults.Mvc.dll</Left>
-    <Right>lib/net7.0/DomainResults.Mvc.dll</Right>
-    <IsBaselineSuppression>true</IsBaselineSuppression>
-  </Suppression>
-  <Suppression>
-    <DiagnosticId>CP0002</DiagnosticId>
-    <Target>M:DomainResults.Mvc.DomainResultExtensions.ToResult``1(System.Threading.Tasks.Task{``0},System.Action{Microsoft.AspNetCore.Mvc.ProblemDetails,``0})</Target>
-    <Left>lib/net7.0/DomainResults.Mvc.dll</Left>
-    <Right>lib/net7.0/DomainResults.Mvc.dll</Right>
-    <IsBaselineSuppression>true</IsBaselineSuppression>
-  </Suppression>
-  <Suppression>
-    <DiagnosticId>CP0002</DiagnosticId>
-    <Target>M:DomainResults.Mvc.DomainResultExtensions.ToResult``1(System.Threading.Tasks.Task{DomainResults.Common.IDomainResult{``0}},System.Action{Microsoft.AspNetCore.Mvc.ProblemDetails,DomainResults.Common.IDomainResult{``0}})</Target>
-    <Left>lib/net7.0/DomainResults.Mvc.dll</Left>
-    <Right>lib/net7.0/DomainResults.Mvc.dll</Right>
-    <IsBaselineSuppression>true</IsBaselineSuppression>
-  </Suppression>
-  <Suppression>
-    <DiagnosticId>CP0002</DiagnosticId>
-    <Target>M:DomainResults.Mvc.DomainResultExtensions.ToResult``2(System.Threading.Tasks.Task{System.ValueTuple{``0,``1}},System.Action{Microsoft.AspNetCore.Mvc.ProblemDetails,``1})</Target>
-    <Left>lib/net7.0/DomainResults.Mvc.dll</Left>
-    <Right>lib/net7.0/DomainResults.Mvc.dll</Right>
-    <IsBaselineSuppression>true</IsBaselineSuppression>
-  </Suppression>
-  <Suppression>
-    <DiagnosticId>CP0002</DiagnosticId>
-    <Target>M:DomainResults.Mvc.DomainResultExtensions.ToResult``2(System.ValueTuple{``0,``1},System.Action{Microsoft.AspNetCore.Mvc.ProblemDetails,``1})</Target>
-    <Left>lib/net7.0/DomainResults.Mvc.dll</Left>
-    <Right>lib/net7.0/DomainResults.Mvc.dll</Right>
-    <IsBaselineSuppression>true</IsBaselineSuppression>
-  </Suppression>
-  <Suppression>
-    <DiagnosticId>CP0002</DiagnosticId>
-    <Target>M:DomainResults.Mvc.DomainResultExtensions.ToCustomResult``2(DomainResults.Common.IDomainResult{``0},DomainResults.Mvc.DomainResultExtensions.ValueToResultFunc{``0,``1},System.Action{Microsoft.AspNetCore.Mvc.ProblemDetails,DomainResults.Common.IDomainResult{``0}})</Target>
     <Left>lib/net8.0/DomainResults.Mvc.dll</Left>
     <Right>lib/net8.0/DomainResults.Mvc.dll</Right>
     <IsBaselineSuppression>true</IsBaselineSuppression>
@@ -280,5 +210,9 @@
     <Left>lib/net9.0/DomainResults.Mvc.dll</Left>
     <Right>lib/net9.0/DomainResults.Mvc.dll</Right>
     <IsBaselineSuppression>true</IsBaselineSuppression>
+  </Suppression>
+  <Suppression>
+    <DiagnosticId>PKV006</DiagnosticId>
+    <Target>net7.0</Target>
   </Suppression>
 </Suppressions>
