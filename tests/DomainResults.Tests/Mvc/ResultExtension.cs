@@ -11,10 +11,17 @@ namespace DomainResults.Tests.Mvc;
 public static class ResultExtension
 {
 	/// <summary>
+	///		Returns the result that a <c>Results&lt;...&gt;</c> union wraps, or the result itself
+	/// </summary>
+	public static IResult GetInnerResult(this IResult res)
+		=> res is INestedHttpResult nested ? nested.Result : res;
+
+	/// <summary>
 	///		Assert that the <see cref="IResult"/> instance represent an internal 'ObjectResult' class with a 'ProblemDetails'
 	/// </summary>
 	public static void AssertObjectResultTypeWithProblemDetails(this IResult res, int expectedHttpStatus, string? expectedTitle = null, string? expectedDetail = null)
 	{
+		res = res.GetInnerResult();
 		// Assert on the status code
 		Assert.Equal(expectedHttpStatus, (res as IStatusCodeHttpResult)?.StatusCode);
 		var problemDetails = (res as IValueHttpResult)?.Value as ProblemDetails;
@@ -34,7 +41,7 @@ public static class ResultExtension
 	public static void AssertOkObjectResultTypeAndValue<TValue>(this IResult res, TValue expectedValue)
 	{
 		// Assert on 200 OK response type
-		var resTyped = res as Microsoft.AspNetCore.Http.HttpResults.Ok<TValue>;
+		var resTyped = res.GetInnerResult() as Microsoft.AspNetCore.Http.HttpResults.Ok<TValue>;
 		Assert.NotNull(resTyped);
 		Assert.Equal(200, resTyped!.StatusCode);
 
@@ -47,7 +54,7 @@ public static class ResultExtension
 	/// </summary>
 	public static void AssertNoContentResultType(this IResult res)
 	{
-		var resTyped = res as Microsoft.AspNetCore.Http.HttpResults.NoContent;
+		var resTyped = res.GetInnerResult() as Microsoft.AspNetCore.Http.HttpResults.NoContent;
 		Assert.NotNull(resTyped);
 		Assert.Equal(204, resTyped!.StatusCode);
 	}
@@ -58,7 +65,7 @@ public static class ResultExtension
 	public static void AssertCreatedResultTypeAndValueAndLocation<TValue>(this IResult res, TValue expectedValue, string expectedLocation)
 	{
 		// Assert on 201 Created response type
-		var resTyped = res as Microsoft.AspNetCore.Http.HttpResults.Created<TValue>;
+		var resTyped = res.GetInnerResult() as Microsoft.AspNetCore.Http.HttpResults.Created<TValue>;
 		Assert.NotNull(resTyped);
 		Assert.Equal(201, resTyped!.StatusCode);
 

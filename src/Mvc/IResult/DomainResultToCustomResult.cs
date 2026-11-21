@@ -2,6 +2,7 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 // ReSharper disable CheckNamespace
 // ReSharper disable InconsistentNaming
@@ -17,17 +18,22 @@ public static partial class DomainResultExtensions
 	/// <summary>
 	///		Custom conversion of successful and unsuccessful domain results to <see cref="IResult"/> types
 	/// </summary>
+	/// <remarks>
+	///		The return type gives OpenAPI the responses that <typeparamref name="TResult"/> describes, such as 201 (Created) with the value type.
+	///		Problem responses still need <c>.ProducesProblem()</c>, because <see cref="HttpCodeConvention"/> sets their HTTP codes at run time.
+	/// </remarks>
 	/// <typeparam name="V"> The value type returned in a successful response </typeparam>
 	/// <typeparam name="R"> The type derived from <see cref="IDomainResult"/>, e.g. <see cref="DomainResult"/> </typeparam>
 	/// <typeparam name="TResult"> The result type returned in <paramref name="valueToResultFunc"/> if the domain operation was successful </typeparam>
 	/// <param name="domainResult"> Returned value and details of the operation results (e.g. error messages) </param>
 	/// <param name="valueToResultFunc"> The custom function for converting a value to <see cref="IResult"/> type. </param>
 	/// <param name="errorAction"> Optional processing in case of an error </param>
-	public static IResult ToCustomResult<V, R, TResult>(this (V, R) domainResult,
-	                                                    ValueToResultFunc<V, TResult> valueToResultFunc,
-	                                                    Action<ProblemDetails, R>? errorAction = null)
-													where R : IDomainResultBase
-													where TResult : IResult
+	public static Results<TResult, ProblemHttpResult> ToCustomResult<V, R, TResult>(
+		this (V, R) domainResult,
+		ValueToResultFunc<V, TResult> valueToResultFunc,
+		Action<ProblemDetails, R>? errorAction = null)
+		where R : IDomainResultBase
+		where TResult : IResult
 	{
 		var (value, res) = domainResult;
 		return ToResult(value, res, errorAction, valueToResultFunc);
@@ -36,50 +42,65 @@ public static partial class DomainResultExtensions
 	/// <summary>
 	///		Custom conversion of successful and unsuccessful domain results to <see cref="IResult"/> types
 	/// </summary>
+	/// <remarks>
+	///		The return type gives OpenAPI the responses that <typeparamref name="TResult"/> describes, such as 201 (Created) with the value type.
+	///		Problem responses still need <c>.ProducesProblem()</c>, because <see cref="HttpCodeConvention"/> sets their HTTP codes at run time.
+	/// </remarks>
 	/// <typeparam name="V"> The value type returned in a successful response </typeparam>
 	/// <typeparam name="R"> The type derived from <see cref="IDomainResult"/>, e.g. <see cref="DomainResult"/> </typeparam>
 	/// <typeparam name="TResult"> The result type returned in <paramref name="valueToResultFunc"/> if the domain operation was successful </typeparam>
 	/// <param name="domainResultTask"> Returned value and details of the operation results (e.g. error messages) </param>
 	/// <param name="valueToResultFunc"> The custom function for converting a value to <see cref="IResult"/> type. </param>
 	/// <param name="errorAction"> Optional processing in case of an error </param>
-	public static async Task<IResult> ToCustomResult<V, R, TResult>(this Task<(V, R)> domainResultTask,
-													ValueToResultFunc<V, TResult> valueToResultFunc,
-													Action<ProblemDetails, R>? errorAction = null)
-													where R : IDomainResultBase
-													where TResult : IResult
+	public static async Task<Results<TResult, ProblemHttpResult>> ToCustomResult<V, R, TResult>(
+		this Task<(V, R)> domainResultTask,
+		ValueToResultFunc<V, TResult> valueToResultFunc,
+		Action<ProblemDetails, R>? errorAction = null)
+		where R : IDomainResultBase
+		where TResult : IResult
 	{
 		var (value, res) = await domainResultTask;
-		return ToResult(value, res, errorAction, valueToResultFunc); 
+		return ToResult(value, res, errorAction, valueToResultFunc);
 	}
 
 	/// <summary>
 	///		Custom conversion of successful and unsuccessful domain results to <see cref="IResult"/>
 	/// </summary>
+	/// <remarks>
+	///		The return type gives OpenAPI the responses that <typeparamref name="TResult"/> describes, such as 201 (Created) with the value type.
+	///		Problem responses still need <c>.ProducesProblem()</c>, because <see cref="HttpCodeConvention"/> sets their HTTP codes at run time.
+	/// </remarks>
 	/// <typeparam name="V"> The value type returned in a successful response </typeparam>
 	/// <typeparam name="TResult"> The result type returned in <paramref name="valueToResultFunc"/> if the domain operation was successful </typeparam>
 	/// <param name="domainResult"> Returned value and details of the operation results (e.g. error messages) </param>
 	/// <param name="valueToResultFunc"> The custom function for converting a value to <see cref="IResult"/> type. </param>
 	/// <param name="errorAction"> Optional processing in case of an error </param>
-	public static IResult ToCustomResult<V, TResult>(this IDomainResult<V> domainResult,
-													ValueToResultFunc<V, TResult> valueToResultFunc,
-													Action<ProblemDetails, IDomainResult<V>>? errorAction = null)
-													where TResult : IResult
+	public static Results<TResult, ProblemHttpResult> ToCustomResult<V, TResult>(
+		this IDomainResult<V> domainResult,
+		ValueToResultFunc<V, TResult> valueToResultFunc,
+		Action<ProblemDetails, IDomainResult<V>>? errorAction = null)
+		where TResult : IResult
 		=> ToResult(domainResult.Value, domainResult, errorAction, valueToResultFunc);
 
 	/// <summary>
 	///		Custom conversion of successful and unsuccessful domain results to <see cref="IResult"/>
 	/// </summary>
+	/// <remarks>
+	///		The return type gives OpenAPI the responses that <typeparamref name="TResult"/> describes, such as 201 (Created) with the value type.
+	///		Problem responses still need <c>.ProducesProblem()</c>, because <see cref="HttpCodeConvention"/> sets their HTTP codes at run time.
+	/// </remarks>
 	/// <typeparam name="V"> The value type returned in a successful response </typeparam>
 	/// <typeparam name="TResult"> The result type returned in <paramref name="valueToResultFunc"/> if the domain operation was successful </typeparam>
 	/// <param name="domainResultTask"> Returned value and details of the operation results (e.g. error messages) </param>
 	/// <param name="valueToResultFunc"> The custom function for converting a value to <see cref="IResult"/> type. </param>
 	/// <param name="errorAction"> Optional processing in case of an error </param>
-	public static async Task<IResult> ToCustomResult<V, TResult>(this Task<IDomainResult<V>> domainResultTask,
-													ValueToResultFunc<V, TResult> valueToResultFunc,
-													Action<ProblemDetails, IDomainResult<V>>? errorAction = null)
-													where TResult : IResult
+	public static async Task<Results<TResult, ProblemHttpResult>> ToCustomResult<V, TResult>(
+		this Task<IDomainResult<V>> domainResultTask,
+		ValueToResultFunc<V, TResult> valueToResultFunc,
+		Action<ProblemDetails, IDomainResult<V>>? errorAction = null)
+		where TResult : IResult
 	{
 		var domainResult = await domainResultTask;
-		return ToResult(domainResult.Value, domainResult, errorAction, valueToResultFunc); 
+		return ToResult(domainResult.Value, domainResult, errorAction, valueToResultFunc);
 	}
 }

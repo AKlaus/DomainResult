@@ -28,12 +28,21 @@ public static partial class DomainResultExtensions
 	/// <returns> <see cref="IResult"/> for the minimal API </returns>
 	public delegate T ValueToResultFunc<V, out T>([AllowNull] V value) where T : IResult;
 
-	private static IResult ToResult<V, R, TResult>([AllowNull] V value,
-	                                                R errorDetails,
-	                                                Action<ProblemDetails, R>? errorAction,
-	                                                ValueToResultFunc<V, TResult> valueToResultFunc)
-														where R : IDomainResultBase
-														where TResult : IResult
+	private static Results<TResult, ProblemHttpResult> ToResult<V, R, TResult>(
+		[AllowNull] V value,
+		R errorDetails,
+		Action<ProblemDetails, R>? errorAction,
+		ValueToResultFunc<V, TResult> valueToResultFunc)
+		where R : IDomainResultBase
+		where TResult : IResult
+		=> errorDetails.Status == DomainOperationStatus.Success
+			? valueToResultFunc(value)
+			: ToProblemResult(errorDetails, errorAction);
+
+	/// <summary>
+	///		Converts a status other than <see cref="DomainOperationStatus.Success"/> to a problem result with the HTTP code from <see cref="HttpCodeConvention"/>
+	/// </summary>
+	private static ProblemHttpResult ToProblemResult<R>(R errorDetails, Action<ProblemDetails, R>? errorAction) where R : IDomainResultBase
 		=> errorDetails.Status switch
 		{
 			DomainOperationStatus.NotFound		 => CreateProblemResult(HttpCodeConvention.NotFoundHttpCode,		HttpCodeConvention.NotFoundProblemDetailsTitle,			errorDetails, errorAction),
@@ -43,7 +52,6 @@ public static partial class DomainResultExtensions
 			DomainOperationStatus.Failed		 => CreateProblemResult(HttpCodeConvention.FailedHttpCode,			HttpCodeConvention.FailedProblemDetailsTitle,			errorDetails, errorAction),
 			DomainOperationStatus.CriticalDependencyError
 												 => CreateProblemResult(HttpCodeConvention.CriticalDependencyErrorHttpCode,	HttpCodeConvention.CriticalDependencyErrorProblemDetailsTitle,	errorDetails, errorAction),
-			DomainOperationStatus.Success		 => valueToResultFunc(value),
 			_ => throw new ArgumentOutOfRangeException(),
 		};
 

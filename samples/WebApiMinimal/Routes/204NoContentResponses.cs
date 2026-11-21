@@ -13,15 +13,12 @@ internal static partial class RoutesExtension
 		DomainSuccessService service = new();
 		
 		app.MapGet("Get204NoContent", () => service.GetSuccess().ToResult())
-		   .WithTags("Success: 204 NoContent")
-		   .Produces(StatusCodes.Status204NoContent);
+		   .WithTags("Success: 204 NoContent");
 		
 		app.MapGet("Get204NoContentTask", () => service.GetSuccessTask().ToResult())
-		   .WithTags("Success: 204 NoContent")
-		   .Produces(StatusCodes.Status204NoContent);
+		   .WithTags("Success: 204 NoContent");
 		
 		app.MapGet("Get204NoContentForNullNumber", () => service.GetSuccessWithNullNumericValue().ToResult())
-		   .WithTags("Success: 204 NoContent")
-		   .Produces(StatusCodes.Status204NoContent);
+		   .WithTags("Success: 204 NoContent");
 	}
 }
