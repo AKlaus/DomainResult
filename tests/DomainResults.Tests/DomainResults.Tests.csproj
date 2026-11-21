@@ -4,20 +4,14 @@
     <TargetFrameworks>net8.0;net9.0;net10.0;net11.0</TargetFrameworks>
 
     <IsPackable>false</IsPackable>
+    <!-- An xUnit v3 test project is an executable that runs on Microsoft Testing Platform -->
+    <OutputType>Exe</OutputType>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="coverlet.msbuild" Version="10.1.1">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.12.0" />
-    <PackageReference Include="xunit" Version="2.9.3" />
-    
-    <PackageReference Include="xunit.runner.visualstudio" Version="4.0.1">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
+    <!-- testconfig.json names the assemblies to measure. Without it, coverlet.MTP excludes the project references that it finds in deps.json. -->
+    <PackageReference Include="coverlet.MTP" Version="10.1.1" />
+    <PackageReference Include="xunit.v3" Version="4.0.3" />
   </ItemGroup>
   
   <ItemGroup>
