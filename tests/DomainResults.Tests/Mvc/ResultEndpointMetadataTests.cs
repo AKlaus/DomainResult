@@ -26,10 +26,8 @@ public class ResultEndpointMetadataTests
 		// WHEN the minimal API builds the endpoint
 		var responses = GetResponses(handler);
 
-		// THEN the metadata describes the success responses
-		Assert.Superset(expectedResponses.ToHashSet(), responses.ToHashSet());
-		// and no problem responses, as they need '.ProducesProblem()'
-		Assert.DoesNotContain(responses, IsProblemResponse);
+		// THEN the metadata describes exactly the success responses, as the problem responses need '.ProducesProblem()'
+		Assert.Equal(expectedResponses.ToHashSet(), responses.ToHashSet());
 	}
 	public static readonly TheoryData<string, Delegate, string[]> ToResultCases = new()
 		{
@@ -50,10 +48,8 @@ public class ResultEndpointMetadataTests
 		// WHEN the minimal API builds the endpoint
 		var responses = GetResponses(handler);
 
-		// THEN the metadata describes the responses of the custom conversion
-		Assert.Superset(expectedResponses.ToHashSet(), responses.ToHashSet());
-		// and no problem responses, as they need '.ProducesProblem()'
-		Assert.DoesNotContain(responses, IsProblemResponse);
+		// THEN the metadata describes exactly the responses of the custom conversion
+		Assert.Equal(expectedResponses.ToHashSet(), responses.ToHashSet());
 	}
 	public static readonly TheoryData<string, Delegate, string[]> ToCustomResultCases = new()
 		{
@@ -74,10 +70,6 @@ public class ResultEndpointMetadataTests
 	/// <summary>
 	///		Maps the handler to an endpoint, and returns its response metadata as '{HTTP code} {value type}' entries
 	/// </summary>
-	/// <remarks>
-	///		For a 'Task&lt;Results&lt;...&gt;&gt;' return type, .NET 9 also adds a 200 response with the 'Results&lt;...&gt;' type.
-	///		So the tests check for a superset.
-	/// </remarks>
 	private static string[] GetResponses(Delegate handler)
 	{
 		var app = WebApplication.CreateBuilder().Build();
@@ -85,11 +77,11 @@ public class ResultEndpointMetadataTests
 		var endpoint = ((IEndpointRouteBuilder)app).DataSources.Single().Endpoints.Single();
 		return endpoint.Metadata
 		               .GetOrderedMetadata<IProducesResponseTypeMetadata>()
+		               // .NET 9 adds a 200 response typed as the 'Results<...>' union for a 'Task<Results<...>>' return type
+		               .Where(m => m.Type is null || !typeof(IResult).IsAssignableFrom(m.Type))
 		               .Select(m => m.Type is null || m.Type == typeof(void) ? $"{m.StatusCode}" : $"{m.StatusCode} {m.Type.Name}")
 		               .ToArray();
 	}
-
-	private static bool IsProblemResponse(string response) => response[0] is '4' or '5';
 
 	private static Created<int> ToCreated(int value) => TypedResults.Created("/items/1", value);
 
