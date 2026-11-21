@@ -31,7 +31,7 @@ public static partial class DomainResultExtensions
 	public static Results<Ok<T>, NoContent, ProblemHttpResult> ToResult<T>(
 		this IDomainResult<T> domainResult,
 		Action<ProblemDetails, IDomainResult<T>>? errorAction = null)
-		=> ToOkOrNoContentResult(domainResult.Value, domainResult, errorAction);
+		=> ToOkNoContentOrProblemResult(domainResult.Value, domainResult, errorAction);
 
 	/// <summary>
 	///		Returns HTTP code 200 (OK) with a value or a 4xx code in case of an error.
@@ -50,7 +50,7 @@ public static partial class DomainResultExtensions
 		Action<ProblemDetails, IDomainResult<T>>? errorAction = null)
 	{
 		var domainResult = await domainResultTask;
-		return ToOkOrNoContentResult(domainResult.Value, domainResult, errorAction);
+		return ToOkNoContentOrProblemResult(domainResult.Value, domainResult, errorAction);
 	}
 
 	/// <summary>
@@ -71,7 +71,7 @@ public static partial class DomainResultExtensions
 		where R : IDomainResult
 	{
 		var (value, res) = domainResult;
-		return ToOkOrNoContentResult(value, res, errorAction);
+		return ToOkNoContentOrProblemResult(value, res, errorAction);
 	}
 
 	/// <summary>
@@ -93,7 +93,7 @@ public static partial class DomainResultExtensions
 		where R : IDomainResult
 	{
 		var (value, res) = await domainResultTask;
-		return ToOkOrNoContentResult(value, res, errorAction);
+		return ToOkNoContentOrProblemResult(value, res, errorAction);
 	}
 
 	/// <summary>
@@ -102,7 +102,7 @@ public static partial class DomainResultExtensions
 	/// <remarks>
 	///		A default value, such as 0 or false, is a value
 	/// </remarks>
-	private static Results<Ok<V>, NoContent, ProblemHttpResult> ToOkOrNoContentResult<V, R>(
+	private static Results<Ok<V>, NoContent, ProblemHttpResult> ToOkNoContentOrProblemResult<V, R>(
 		[AllowNull] V value,
 		R errorDetails,
 		Action<ProblemDetails, R>? errorAction)
