@@ -44,7 +44,7 @@ public partial class DomainResult_Throw_Exception_Extensions_Tests
 		Assert.True((await domainResult).IsSuccess);
 	}
 	[Fact]
-	public async void Successful_DomainResultOfT_Task_Doesnt_Throw_Exception_On_Check()
+	public async Task Successful_DomainResultOfT_Task_Doesnt_Throw_Exception_On_Check()
 	{
 		var domainResult = DomainResult.SuccessTask(10);
 		var value = await domainResult.ThrowIfNoSuccess();
@@ -53,7 +53,7 @@ public partial class DomainResult_Throw_Exception_Extensions_Tests
 		Assert.Equal(10, value);
 	}
 	[Fact]
-	public async void Successful_IDomainResultOfT_Task_Doesnt_Throw_Exception_On_Check()
+	public async Task Successful_IDomainResultOfT_Task_Doesnt_Throw_Exception_On_Check()
 	{
 		var domainResult = IDomainResult.SuccessTask(10);
 		var value = await domainResult.ThrowIfNoSuccess();
