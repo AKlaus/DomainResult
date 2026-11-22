@@ -138,7 +138,7 @@ It's built around `IDomainResult` interface that has these properties:
 ```csharp
 IReadOnlyCollection<string> Errors { get; } // Collection of error messages if any
 string Error { get; }                       // Error messages (if any) joined into a line for simplicity
-IReadOnlyDictionary<string, string[]> ValidationErrors { get; } // Validation error messages (if any) keyed by member name
+IReadOnlyDictionary<string, IReadOnlyCollection<string>> ValidationErrors { get; } // Validation error messages (if any) keyed by member name
 bool IsSuccess { get; }                     // Flag, whether the current status is successful or not
 DomainOperationStatus Status { get; }       // Current status of the domain operation: Success, Failed, NotFound, Unauthorized, etc.
 ```

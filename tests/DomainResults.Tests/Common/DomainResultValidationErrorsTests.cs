@@ -25,7 +25,7 @@ public class DomainResultValidationErrorsTests
 
 		// THEN the messages are grouped by member, and the message without a member has an empty key
 		Assert.Equal(DomainOperationStatus.Failed, domainResult.Status);
-		Assert.Equal(new Dictionary<string, string[]>
+		Assert.Equal(new Dictionary<string, IReadOnlyCollection<string>>
 			{
 				["a"] = ["1", "2"],
 				["b"] = ["2"],
@@ -47,7 +47,7 @@ public class DomainResultValidationErrorsTests
 
 		// THEN the result has the validation errors
 		Assert.Equal(DomainOperationStatus.Failed, domainResult.Status);
-		Assert.Equal(new Dictionary<string, string[]> { ["a"] = ["1"] }, domainResult.ValidationErrors);
+		Assert.Equal(new Dictionary<string, IReadOnlyCollection<string>> { ["a"] = ["1"] }, domainResult.ValidationErrors);
 	}
 	public static TheoryData<Func<IEnumerable<ValidationResult>, IDomainResultBase>> ShapeCases => new()
 		{

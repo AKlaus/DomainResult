@@ -22,7 +22,7 @@ public interface IDomainResultBase
 	///		A message without a member name has the key <see cref="string.Empty"/>. A message with several member names appears under each of them.
 	///		<see cref="Errors"/> holds the same messages, with the member names in brackets.
 	/// </remarks>
-	IReadOnlyDictionary<string, string[]> ValidationErrors => DomainResult.NoValidationErrors;
+	IReadOnlyDictionary<string, IReadOnlyCollection<string>> ValidationErrors => DomainResult.NoValidationErrors;
 
 	/// <summary>
 	///		Flag, whether the current status is successful or not

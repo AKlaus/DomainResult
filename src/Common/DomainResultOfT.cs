@@ -15,7 +15,7 @@ public class DomainResult<TValue> : IDomainResult<TValue>
 	/// <inheritdoc/>
 	public IReadOnlyCollection<string> Errors	=> _status.Errors;
 	/// <inheritdoc/>
-	public IReadOnlyDictionary<string, string[]> ValidationErrors => _status.ValidationErrors;
+	public IReadOnlyDictionary<string, IReadOnlyCollection<string>> ValidationErrors => _status.ValidationErrors;
 	/// <inheritdoc/>
 	public bool IsSuccess						=> _status.IsSuccess;
 

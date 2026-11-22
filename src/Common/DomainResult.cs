@@ -13,11 +13,11 @@ public partial class DomainResult : IDomainResult
 	/// <inheritdoc/>
 	public IReadOnlyCollection<string> Errors { get; }
 	/// <inheritdoc/>
-	public IReadOnlyDictionary<string, string[]> ValidationErrors { get; }
+	public IReadOnlyDictionary<string, IReadOnlyCollection<string>> ValidationErrors { get; }
 	/// <inheritdoc/>
 	public bool IsSuccess => Status == DomainOperationStatus.Success;
 
-	internal static readonly IReadOnlyDictionary<string, string[]> NoValidationErrors = new ReadOnlyDictionary<string, string[]>(new Dictionary<string, string[]>());
+	internal static readonly IReadOnlyDictionary<string, IReadOnlyCollection<string>> NoValidationErrors = new ReadOnlyDictionary<string, IReadOnlyCollection<string>>(new Dictionary<string, IReadOnlyCollection<string>>());
 
 	#region Constructors [PUBLIC, PROTECTED] ------------------------------
 
@@ -40,7 +40,7 @@ public partial class DomainResult : IDomainResult
 	/// <summary>
 	///		Creates a new instance with a status, error messages and validation error messages keyed by member name
 	/// </summary>
-	internal DomainResult(DomainOperationStatus status, IEnumerable<string> errors, IReadOnlyDictionary<string, string[]> validationErrors)
+	internal DomainResult(DomainOperationStatus status, IEnumerable<string> errors, IReadOnlyDictionary<string, IReadOnlyCollection<string>> validationErrors)
 	{
 		Status = status;
 		Errors = errors.ToArray();
@@ -172,10 +172,10 @@ public partial class DomainResult : IDomainResult
 	/// <summary>
 	///		Groups the validation error messages by member name. A message without a member name gets the key <see cref="string.Empty"/>
 	/// </summary>
-	private static IReadOnlyDictionary<string, string[]> ToValidationErrors(IEnumerable<ValidationResult> validationResults)
-		=> new ReadOnlyDictionary<string, string[]>(
+	private static IReadOnlyDictionary<string, IReadOnlyCollection<string>> ToValidationErrors(IEnumerable<ValidationResult> validationResults)
+		=> new ReadOnlyDictionary<string, IReadOnlyCollection<string>>(
 			(from result in validationResults
 			 from member in result.MemberNames?.Any() == true ? result.MemberNames : new[] { string.Empty }
 			 group result.ErrorMessage ?? string.Empty by member ?? string.Empty
-			 ).ToDictionary(g => g.Key, g => g.ToArray(), StringComparer.Ordinal));
+			 ).ToDictionary(g => g.Key, g => (IReadOnlyCollection<string>)Array.AsReadOnly(g.ToArray()), StringComparer.Ordinal));
 }
