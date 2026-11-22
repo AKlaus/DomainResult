@@ -1,10 +1,12 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
 using DomainResults.Common;
+using DomainResults.Mvc.Helpers;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.DependencyInjection;
 
 // ReSharper disable once CheckNamespace
@@ -54,12 +56,14 @@ public static partial class DomainResultExtensions
 	                                                     R errorDetails,
 	                                                     Action<ProblemDetails, R>? errorAction = null) where R : IDomainResultBase
 	{
-		var problemDetails = new ProblemDetails
-		{
-			Title = title,
-			Detail = errorDetails?.Errors.Any() == true ? string.Join(", ", errorDetails.Errors) : null,
-			Status = statusCode
-		};
+		var problemDetails = errorDetails?.ValidationErrors.Count > 0
+			? ValidationProblemDetailsHelper.Create<ValidationProblemDetails>(statusCode, title, errorDetails.ValidationErrors)
+			: new ProblemDetails
+				{
+					Title = title,
+					Detail = errorDetails?.Errors.Any() == true ? string.Join(", ", errorDetails.Errors) : null,
+					Status = statusCode
+				};
 
 		errorAction?.Invoke(problemDetails, errorDetails!);
 
@@ -73,6 +77,7 @@ public static partial class DomainResultExtensions
 	///		The response then matches <c>ControllerBase.Problem()</c>: the factory adds 'type' and 'traceId', and applies the <c>AddProblemDetails()</c> customisation.
 	///		The factory gets the fields that the 'errorAction' set, so it keeps them. Extensions that the factory also sets keep the factory value.
 	///		The customisation runs before the 'errorAction' extensions join the body, so it cannot read them. From .NET 8, the <c>IResult</c> conversion passes them to the customisation.
+	///		A <see cref="ValidationProblemDetails"/> stays one, and keeps its 'errors'. The customisation runs before the 'errors' join the body, so it cannot read them.
 	///		Without a registered factory, the response keeps the <see cref="ProblemDetails"/> as it is.
 	/// </remarks>
 	private sealed class ProblemDetailsObjectResult(ProblemDetails problemDetails) : ObjectResult(problemDetails)
@@ -82,7 +87,9 @@ public static partial class DomainResultExtensions
 			var factory = context.HttpContext.RequestServices.GetService<ProblemDetailsFactory>();
 			if (factory is not null && Value is ProblemDetails source)
 			{
-				var target = factory.CreateProblemDetails(context.HttpContext, source.Status ?? StatusCode, source.Title, source.Type, source.Detail, source.Instance);
+				var target = source is ValidationProblemDetails validationSource
+					? CreateValidationProblemDetails(factory, context.HttpContext, validationSource)
+					: factory.CreateProblemDetails(context.HttpContext, source.Status ?? StatusCode, source.Title, source.Type, source.Detail, source.Instance);
 				foreach (var (key, value) in source.Extensions)
 					target.Extensions.TryAdd(key, value);
 
@@ -90,6 +97,15 @@ public static partial class DomainResultExtensions
 				StatusCode = target.Status;
 			}
 			return base.ExecuteResultAsync(context);
+		}
+
+		private ValidationProblemDetails CreateValidationProblemDetails(ProblemDetailsFactory factory, HttpContext httpContext, ValidationProblemDetails source)
+		{
+			// An empty model state keeps the messages and the member names as they are. The model state would replace an empty message and merge member names that differ in case.
+			var target = factory.CreateValidationProblemDetails(httpContext, new ModelStateDictionary(), source.Status ?? StatusCode, source.Title, source.Type, source.Detail, source.Instance);
+			foreach (var (member, messages) in source.Errors)
+				target.Errors[member] = messages;
+			return target;
 		}
 	}
 }

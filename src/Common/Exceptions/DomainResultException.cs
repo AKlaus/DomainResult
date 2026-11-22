@@ -6,6 +6,6 @@ public class DomainResultException : Exception
 	
 	public DomainResultException(IDomainResultBase domainResult, string? message = null) : base(message)
 	{
-		DomainResult = new DomainResult(domainResult.Status, domainResult.Errors);
+		DomainResult = new DomainResult(domainResult.Status, domainResult.Errors, domainResult.ValidationErrors);
 	}
 }

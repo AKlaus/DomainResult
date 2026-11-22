@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 
 // ReSharper disable MemberCanBePrivate.Global
 
@@ -12,7 +13,11 @@ public partial class DomainResult : IDomainResult
 	/// <inheritdoc/>
 	public IReadOnlyCollection<string> Errors { get; }
 	/// <inheritdoc/>
+	public IReadOnlyDictionary<string, string[]> ValidationErrors { get; }
+	/// <inheritdoc/>
 	public bool IsSuccess => Status == DomainOperationStatus.Success;
+
+	internal static readonly IReadOnlyDictionary<string, string[]> NoValidationErrors = new ReadOnlyDictionary<string, string[]>(new Dictionary<string, string[]>());
 
 	#region Constructors [PUBLIC, PROTECTED] ------------------------------
 
@@ -31,10 +36,15 @@ public partial class DomainResult : IDomainResult
 	/// </summary>
 	/// <param name="status"> The state </param>
 	/// <param name="errors"> Custom error messages </param>
-	public DomainResult(DomainOperationStatus status, IEnumerable<string> errors)
+	public DomainResult(DomainOperationStatus status, IEnumerable<string> errors) : this(status, errors, NoValidationErrors) { }
+	/// <summary>
+	///		Creates a new instance with a status, error messages and validation error messages keyed by member name
+	/// </summary>
+	internal DomainResult(DomainOperationStatus status, IEnumerable<string> errors, IReadOnlyDictionary<string, string[]> validationErrors)
 	{
 		Status = status;
 		Errors = errors.ToArray();
+		ValidationErrors = validationErrors;
 	}
 	/// <summary>
 	///		Creates a new instance with faulty status and validation error messages
@@ -42,10 +52,12 @@ public partial class DomainResult : IDomainResult
 	/// <param name="validationResults"> Validation error messages </param>
 	protected DomainResult(IEnumerable<ValidationResult> validationResults)
 	{
+		var results = validationResults.ToArray();
 		Status = DomainOperationStatus.Failed;
-		Errors = (from message in validationResults
+		Errors = (from message in results
 				select $"{message.ErrorMessage}{(message.MemberNames?.Any() == true ? " (" + string.Join(", ", message.MemberNames) + ")" : "")}"
 			).ToArray();
+		ValidationErrors = ToValidationErrors(results);
 	}
 	#endregion // Constructors [PUBLIC, PROTECTED] ------------------------
 
@@ -156,4 +168,14 @@ public partial class DomainResult : IDomainResult
 	public static Task<IDomainResult> CriticalDependencyErrorTask(string? error = null)	=> Task.FromResult(CriticalDependencyError(error));
 
 	#endregion // Extensions of 'Task<IDomainResult>' [STATIC, PUBLIC] ----
+
+	/// <summary>
+	///		Groups the validation error messages by member name. A message without a member name gets the key <see cref="string.Empty"/>
+	/// </summary>
+	private static IReadOnlyDictionary<string, string[]> ToValidationErrors(IEnumerable<ValidationResult> validationResults)
+		=> new ReadOnlyDictionary<string, string[]>(
+			(from result in validationResults
+			 from member in result.MemberNames?.Any() == true ? result.MemberNames : new[] { string.Empty }
+			 group result.ErrorMessage ?? string.Empty by member ?? string.Empty
+			 ).ToDictionary(g => g.Key, g => g.ToArray(), StringComparer.Ordinal));
 }

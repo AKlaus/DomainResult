@@ -21,14 +21,17 @@ internal static partial class RoutesExtension
 				app.MapGet("GetErrorWithNoMessage", () => service.GetFailedWithNoMessage().ToResult()),
 				app.MapGet("GetErrorWithMessage", () => service.GetFailedWithMessage().ToResult()),
 				app.MapGet("GetErrorWithMessages", () => service.GetFailedWithMessages().ToResult()),
+				app.MapGet("GetErrorWithValidationMessages", () => service.GetErrorWithValidationMessages().ToResult()),
 				
 				app.MapGet("GetErrorWithNoMessageWhenExpectedNumber", () => service.GetFailedWithNoMessageWhenExpectedNumber().ToResult()),
 				app.MapGet("GetFailedWithMessageWhenExpectedNumber", () => service.GetFailedWithMessageWhenExpectedNumber().ToResult()),
 				app.MapGet("GetFailedWithMessagesWhenExpectedNumber", () => service.GetFailedWithMessagesWhenExpectedNumber().ToResult()),
+				app.MapGet("GetErrorWithValidationMessagesWhenExpectedNumber", () => service.GetErrorWithValidationMessagesWhenExpectedNumber().ToResult()),
 				
 				app.MapGet("GetFailedWithNoMessageWhenExpectedNumberTuple", () => service.GetFailedWithNoMessageWhenExpectedNumberTuple().ToResult()),
 				app.MapGet("GetFailedWithMessageWhenExpectedNumberTuple", () => service.GetFailedWithMessageWhenExpectedNumberTuple().ToResult()),
-				app.MapGet("GetFailedWithMessagesWhenExpectedNumberTuple", () => service.GetFailedWithMessagesWhenExpectedNumberTuple().ToResult())
+				app.MapGet("GetFailedWithMessagesWhenExpectedNumberTuple", () => service.GetFailedWithMessagesWhenExpectedNumberTuple().ToResult()),
+				app.MapGet("GetFailedWithValidationMessagesWhenExpectedNumberTuple", () => service.GetFailedWithValidationMessagesWhenExpectedNumberTuple().ToResult())
 			};
 		
 		foreach (var route in routes)                               

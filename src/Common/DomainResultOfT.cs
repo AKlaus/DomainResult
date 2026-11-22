@@ -15,6 +15,8 @@ public class DomainResult<TValue> : IDomainResult<TValue>
 	/// <inheritdoc/>
 	public IReadOnlyCollection<string> Errors	=> _status.Errors;
 	/// <inheritdoc/>
+	public IReadOnlyDictionary<string, string[]> ValidationErrors => _status.ValidationErrors;
+	/// <inheritdoc/>
 	public bool IsSuccess						=> _status.IsSuccess;
 
 	/// <inheritdoc/>
@@ -141,7 +143,7 @@ public class DomainResult<TValue> : IDomainResult<TValue>
 	/// 	Initiate from a <see cref="IDomainResult{T}"/> instance of another 'T'
 	/// </summary>
 	public static IDomainResult<TValue> From<TOld>(IDomainResult<TOld> result) 
-		=> new DomainResult<TValue>(default, new DomainResult(result.Status, result.Errors));
+		=> new DomainResult<TValue>(default, new DomainResult(result.Status, result.Errors, result.ValidationErrors));
 		
 	#endregion // Extensions of 'IDomainResult<T>' [STATIC, PUBLIC] -------
 
