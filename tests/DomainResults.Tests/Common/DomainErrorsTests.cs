@@ -30,6 +30,20 @@ public class DomainErrorsTests
 		Assert.Equal(["1 (a)", "2 (a, b)", "3"], domainResult.Errors);
 	}
 
+	[Fact]
+	public void Failed_NullMessageAndNullMemberName_KeepsThemAsEmptyText()
+	{
+		// GIVEN validation results with a null message, and with a null member name
+		var domainResult = DomainResult.Failed([new ValidationResult(null), new ValidationResult("2", [null!])]);
+
+		// WHEN the domain errors are read
+		var domainErrors = domainResult.DomainErrors;
+
+		// THEN the null message and the null member name become empty text
+		Assert.Equal([": ", "2: "], Describe(domainErrors));
+		Assert.Equal(["", "2 ()"], domainResult.Errors);
+	}
+
 	[Theory]
 	[MemberData(nameof(ShapeCases))]
 	public void Failed_ValidationResultsInEachShape_HasDomainErrors(Func<IEnumerable<ValidationResult>, IDomainResultBase> failedFunc)
