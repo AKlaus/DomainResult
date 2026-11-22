@@ -38,7 +38,7 @@ public partial class DomainResult : IDomainResult
 	///		Creates a new instance with a status and errors with their member names
 	/// </summary>
 	/// <remarks>
-	///		<see cref="Errors"/> gets the text of each <see cref="DomainError"/>, so the errors are stored once.
+	///		<see cref="Errors"/> holds the text of each <see cref="DomainError"/>, so the two cannot differ.
 	/// </remarks>
 	internal DomainResult(DomainOperationStatus status, IEnumerable<DomainError> domainErrors)
 	{
