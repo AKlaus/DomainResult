@@ -70,6 +70,19 @@ public class DomainResultValidationErrorsTests
 	}
 
 	[Fact]
+	public void ValidationErrors_ResultWithoutOwnImplementation_IsEmpty()
+	{
+		// GIVEN a consumer's result type that does not implement 'ValidationErrors'
+		IDomainResultBase domainResult = new ConsumerResult();
+
+		// WHEN the validation errors are read
+		var validationErrors = domainResult.ValidationErrors;
+
+		// THEN they are empty
+		Assert.Empty(validationErrors);
+	}
+
+	[Fact]
 	public void Deconstruct_ValidationErrors_KeepsValidationErrors()
 	{
 		// GIVEN a failed result with a value type and validation errors
@@ -106,5 +119,12 @@ public class DomainResultValidationErrorsTests
 
 		// THEN the result in the exception keeps the validation errors
 		Assert.Equal(domainResult.ValidationErrors, exception.DomainResult.ValidationErrors);
+	}
+
+	private sealed class ConsumerResult : IDomainResult
+	{
+		public IReadOnlyCollection<string> Errors => ["1"];
+		public bool IsSuccess => false;
+		public DomainOperationStatus Status => DomainOperationStatus.Failed;
 	}
 }
