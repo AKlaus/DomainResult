@@ -29,7 +29,7 @@ public interface IDomainResult<T> : IDomainResultBase
 	/// </summary>
 	/// <param name="value"> The result value returned by the domain operation </param>
 	/// <param name="details"> Details of the domain operation (like status) </param>
-	void Deconstruct([AllowNull] out T value, out IDomainResult details) => (value, details) = (Value, new DomainResult(Status, Errors));
+	void Deconstruct([AllowNull] out T value, out IDomainResult details) => (value, details) = (Value, new DomainResult(Status, DomainErrors));
 
 	// TODO: Make a call on using either the extension methods in this interface (below) (and move them to 'IDomainResult') or extension methods on DomainResult class 
 

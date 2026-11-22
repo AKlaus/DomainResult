@@ -34,5 +34,16 @@ internal static partial class RoutesExtension
 		foreach (var route in routes)                               
 		   route.WithTags("Failed: 400 BadRequest")
 				.ProducesProblem(StatusCodes.Status400BadRequest);
+
+		var validationRoutes = new []
+			{
+				app.MapGet("GetErrorWithValidationMessages", () => service.GetErrorWithValidationMessages().ToResult()),
+				app.MapGet("GetErrorWithValidationMessagesWhenExpectedNumber", () => service.GetErrorWithValidationMessagesWhenExpectedNumber().ToResult()),
+				app.MapGet("GetFailedWithValidationMessagesWhenExpectedNumberTuple", () => service.GetFailedWithValidationMessagesWhenExpectedNumberTuple().ToResult())
+			};
+
+		foreach (var route in validationRoutes)
+			route.WithTags("Failed: 400 BadRequest")
+				.ProducesValidationProblem();
 	}
 }

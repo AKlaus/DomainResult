@@ -12,6 +12,8 @@ public partial class DomainResult : IDomainResult
 	/// <inheritdoc/>
 	public IReadOnlyCollection<string> Errors { get; }
 	/// <inheritdoc/>
+	public IReadOnlyCollection<DomainError> DomainErrors { get; }
+	/// <inheritdoc/>
 	public bool IsSuccess => Status == DomainOperationStatus.Success;
 
 	#region Constructors [PUBLIC, PROTECTED] ------------------------------
@@ -31,22 +33,25 @@ public partial class DomainResult : IDomainResult
 	/// </summary>
 	/// <param name="status"> The state </param>
 	/// <param name="errors"> Custom error messages </param>
-	public DomainResult(DomainOperationStatus status, IEnumerable<string> errors)
+	public DomainResult(DomainOperationStatus status, IEnumerable<string> errors) : this(status, errors.Select(error => new DomainError(error))) { }
+	/// <summary>
+	///		Creates a new instance with a status and errors with their member names
+	/// </summary>
+	/// <remarks>
+	///		<see cref="Errors"/> holds the text of each <see cref="DomainError"/>, so the two cannot differ.
+	/// </remarks>
+	internal DomainResult(DomainOperationStatus status, IEnumerable<DomainError> domainErrors)
 	{
 		Status = status;
-		Errors = errors.ToArray();
+		DomainErrors = domainErrors.ToArray();
+		Errors = DomainErrors.Select(error => error.ToString()).ToArray();
 	}
 	/// <summary>
 	///		Creates a new instance with faulty status and validation error messages
 	/// </summary>
 	/// <param name="validationResults"> Validation error messages </param>
 	protected DomainResult(IEnumerable<ValidationResult> validationResults)
-	{
-		Status = DomainOperationStatus.Failed;
-		Errors = (from message in validationResults
-				select $"{message.ErrorMessage}{(message.MemberNames?.Any() == true ? " (" + string.Join(", ", message.MemberNames) + ")" : "")}"
-			).ToArray();
-	}
+		: this(DomainOperationStatus.Failed, validationResults.Select(result => new DomainError(result.ErrorMessage ?? string.Empty, result.MemberNames))) { }
 	#endregion // Constructors [PUBLIC, PROTECTED] ------------------------
 
 	#region Extensions of 'IDomainResult' [STATIC, PUBLIC] ----------------

@@ -24,6 +24,9 @@ public class BadRequestResponsesController : ControllerBase
 	[HttpGet("[action]")]
 	[ProducesResponseType(StatusCodes.Status400BadRequest)]
 	public IActionResult GetErrorWithMessages()	=> _service.GetFailedWithMessages().ToActionResult();
+	[HttpGet("[action]")]
+	[ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+	public IActionResult GetErrorWithValidationMessages() => _service.GetErrorWithValidationMessages().ToActionResult();
 
 	[HttpGet("[action]")]
 	[ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -34,6 +37,9 @@ public class BadRequestResponsesController : ControllerBase
 	[HttpGet("[action]")]
 	[ProducesResponseType(StatusCodes.Status400BadRequest)]
 	public IActionResult GetErrorWithMessagesWhenExpectedNumber()	=> _service.GetFailedWithMessagesWhenExpectedNumber().ToActionResult();
+	[HttpGet("[action]")]
+	[ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+	public IActionResult GetErrorWithValidationMessagesWhenExpectedNumber() => _service.GetErrorWithValidationMessagesWhenExpectedNumber().ToActionResult();
 
 	[HttpGet("[action]")]
 	[ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -44,4 +50,7 @@ public class BadRequestResponsesController : ControllerBase
 	[HttpGet("[action]")]
 	[ProducesResponseType(StatusCodes.Status400BadRequest)]
 	public IActionResult GetErrorWithMessagesWhenExpectedNumberTuple()	=> _service.GetFailedWithMessagesWhenExpectedNumberTuple().ToActionResult();
+	[HttpGet("[action]")]
+	[ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+	public IActionResult GetErrorWithValidationMessagesWhenExpectedNumberTuple() => _service.GetFailedWithValidationMessagesWhenExpectedNumberTuple().ToActionResult();
 }
