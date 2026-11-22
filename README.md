@@ -136,9 +136,9 @@ A tiny package with no dependency on `Microsoft.AspNetCore.*` namespaces that pr
 It's built around `IDomainResult` interface that has these properties:
 
 ```csharp
-IReadOnlyCollection<string> Errors { get; } // Collection of error messages if any
+IReadOnlyCollection<string> Errors { get; } // Collection of error messages if any, as the text of DomainErrors
 string Error { get; }                       // Error messages (if any) joined into a line for simplicity
-IReadOnlyDictionary<string, IReadOnlyCollection<string>> ValidationErrors { get; } // Validation error messages (if any) keyed by member name
+IReadOnlyCollection<DomainError> DomainErrors { get; } // Errors (if any) with the names of the members they are about
 bool IsSuccess { get; }                     // Flag, whether the current status is successful or not
 DomainOperationStatus Status { get; }       // Current status of the domain operation: Success, Failed, NotFound, Unauthorized, etc.
 ```
@@ -187,7 +187,7 @@ _Notes_:
 
 - The `Task` suffix on the extension methods indicates that the returned type is wrapped in a `Task` (e.g. `SuccessTask()`, `FailedTask()`, `NotFoundTask()`, `UnauthorizedTask()`).
 - The `Failed()` and `NotFound()` methods take as input parameters: `string`, `string[]`. `Failed()` can also take [ValidationResult](https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.dataannotations.validationresult).
-- `Failed()` with `ValidationResult` items keeps the member names in `ValidationErrors`. A message without a member name has an empty key.
+- `DomainErrors` is the source of `Errors`. Each `DomainError` has a `Message` and `MemberNames`. Only `Failed()` with `ValidationResult` items sets `MemberNames`, and `Errors` shows them in brackets.
 
 ### Type conversion
 Type conversion comes in handy for propagating errors from nested method calls, e.g. from `IDomainResult` to `IDomainResult<T>`, or the other way around, etc.
@@ -230,8 +230,9 @@ The mapping rules are built around `IDomainResult.Status`:
 | `ContentTooLarge`         | HTTP code `413 Content Too Large` ([docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/413))                                                                                                                                                       |
 | `CriticalDependencyError` | HTTP code `503 Service Unavailable` ([docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/503))                                                                                                                                                     |
 
-A `Failed` result with `ValidationResult` items converts to `ValidationProblemDetails` for `IActionResult`, and to `HttpValidationProblemDetails` for `IResult`.
-As in the ASP.NET Core model validation response, `errors` holds the messages keyed by member name, and the response has no `detail`:
+A result with member names in its `DomainErrors` converts to `ValidationProblemDetails` for `IActionResult`, and to `HttpValidationProblemDetails` for `IResult`.
+As in the ASP.NET Core model validation response, `errors` holds the messages keyed by member name, and the response has no `detail`.
+A message without a member name has the key `""`:
 
 ```json
 {

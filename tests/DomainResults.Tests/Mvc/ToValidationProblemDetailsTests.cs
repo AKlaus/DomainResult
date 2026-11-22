@@ -18,9 +18,9 @@ public class ToValidationProblemDetailsTests
 {
 	[Theory]
 	[MemberData(nameof(ActionResultCases))]
-	public async Task ToActionResult_ValidationErrors_ReturnsValidationProblemDetails(Func<IEnumerable<ValidationResult>, IActionResult> toActionResult)
+	public async Task ToActionResult_ErrorsWithMemberNames_ReturnsValidationProblemDetails(Func<IEnumerable<ValidationResult>, IActionResult> toActionResult)
 	{
-		// GIVEN a failed result with validation errors of two members
+		// GIVEN a failed result with validation results of two members
 		// WHEN the IActionResult conversion runs
 		var actionResult = toActionResult(ValidationResults);
 
@@ -46,9 +46,9 @@ public class ToValidationProblemDetailsTests
 
 	[Theory]
 	[MemberData(nameof(ResultCases))]
-	public async Task ToResult_ValidationErrors_ReturnsHttpValidationProblemDetails(Func<IEnumerable<ValidationResult>, IResult> toResult)
+	public async Task ToResult_ErrorsWithMemberNames_ReturnsHttpValidationProblemDetails(Func<IEnumerable<ValidationResult>, IResult> toResult)
 	{
-		// GIVEN a failed result with validation errors of two members
+		// GIVEN a failed result with validation results of two members
 		// WHEN the IResult conversion runs
 		var result = toResult(ValidationResults);
 
@@ -71,9 +71,40 @@ public class ToValidationProblemDetailsTests
 		};
 
 	[Fact]
+	public void ToActionResultAndToResult_ErrorsWithSeveralOrNoMemberNames_GroupsMessagesByMember()
+	{
+		// GIVEN validation results: two for one member, one for two members, and one without a member
+		var domainResult = DomainResult.Failed([new ValidationResult("1", ["a"]), new ValidationResult("2", ["a", "b"]), new ValidationResult("3")]);
+
+		// WHEN the IActionResult and the IResult conversions run
+		var actionProblemDetails = (ValidationProblemDetails)((ObjectResult)domainResult.ToActionResult()).Value!;
+		var resultProblemDetails = (HttpValidationProblemDetails)((ProblemHttpResult)domainResult.ToResult().GetInnerResult()).ProblemDetails;
+
+		// THEN the messages are grouped by member, and the message without a member has an empty key
+		var expected = new Dictionary<string, string[]> { ["a"] = ["1", "2"], ["b"] = ["2"], [""] = ["3"] };
+		Assert.Equal(expected, actionProblemDetails.Errors);
+		Assert.Equal(expected, resultProblemDetails.Errors);
+	}
+
+	[Fact]
+	public void ToActionResultAndToResult_ErrorsWithoutMemberNames_ReturnsProblemDetailsWithDetail()
+	{
+		// GIVEN validation results without member names
+		var domainResult = DomainResult.Failed([new ValidationResult("1"), new ValidationResult("2")]);
+
+		// WHEN the IActionResult and the IResult conversions run
+		var actionProblemDetails = ((ObjectResult)domainResult.ToActionResult()).Value;
+		var resultProblemDetails = ((ProblemHttpResult)domainResult.ToResult().GetInnerResult()).ProblemDetails;
+
+		// THEN both are a plain ProblemDetails with the joined messages in 'detail'
+		Assert.Equal("1, 2", Assert.IsType<ProblemDetails>(actionProblemDetails).Detail);
+		Assert.Equal("1, 2", Assert.IsType<ProblemDetails>(resultProblemDetails).Detail);
+	}
+
+	[Fact]
 	public async Task ToActionResult_EmptyMessageAndMembersThatDifferInCase_KeepsErrorsAsTheyAre()
 	{
-		// GIVEN validation errors with an empty message, and two members that differ only in case
+		// GIVEN validation results with an empty message, and two members that differ only in case
 		var domainResult = DomainResult.Failed([new ValidationResult("", ["name"]), new ValidationResult("2", ["Name"])]);
 
 		// WHEN the IActionResult conversion runs with the ProblemDetailsFactory
@@ -86,14 +117,14 @@ public class ToValidationProblemDetailsTests
 	[Fact]
 	public async Task ToActionResult_ErrorActionAddsError_WritesAddedError()
 	{
-		// GIVEN an 'errorAction' that adds a validation error
+		// GIVEN an 'errorAction' that adds an error of a member
 		var domainResult = DomainResult.Failed(ValidationResults);
 		void AddError(ProblemDetails problemDetails, IDomainResult _) => ((ValidationProblemDetails)problemDetails).Errors["extra"] = ["3"];
 
 		// WHEN the IActionResult conversion runs with the ProblemDetailsFactory
 		var (_, body) = await domainResult.ToActionResult(AddError).ExecuteToJsonAsync();
 
-		// THEN the body has the added error next to the validation errors
+		// THEN the body has the added error next to the errors of the result
 		Assert.Equal(new Dictionary<string, string[]>(ExpectedErrors) { ["extra"] = ["3"] }, ReadErrors(body));
 	}
 

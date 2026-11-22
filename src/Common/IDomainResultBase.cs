@@ -8,6 +8,9 @@ public interface IDomainResultBase
 	/// <summary>
 	///		Collection of error messages if any
 	/// </summary>
+	/// <remarks>
+	///		Each message is the text of a <see cref="DomainErrors"/> item: the message, followed by the member names in brackets if any.
+	/// </remarks>
 	IReadOnlyCollection<string> Errors { get; }
 		
 	/// <summary>
@@ -16,13 +19,13 @@ public interface IDomainResultBase
 	string Error => !Errors.Any() ? string.Empty : string.Join(". ", Errors);
 		
 	/// <summary>
-	///		Validation error messages keyed by member name, if the result came from validation results
+	///		Collection of errors with the names of the members they are about, if any
 	/// </summary>
 	/// <remarks>
-	///		A message without a member name has the key <see cref="string.Empty"/>. A message with several member names appears under each of them.
-	///		<see cref="Errors"/> holds the same messages, with the member names in brackets.
+	///		It is the source of <see cref="Errors"/>. Only a result from validation results has member names.
+	///		The default implementation returns each item of <see cref="Errors"/> without member names.
 	/// </remarks>
-	IReadOnlyDictionary<string, IReadOnlyCollection<string>> ValidationErrors => DomainResult.NoValidationErrors;
+	IReadOnlyCollection<DomainError> DomainErrors => Errors.Select(error => new DomainError(error)).ToArray();
 
 	/// <summary>
 	///		Flag, whether the current status is successful or not

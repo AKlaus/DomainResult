@@ -1,5 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 // ReSharper disable MemberCanBePrivate.Global
 
@@ -13,11 +12,9 @@ public partial class DomainResult : IDomainResult
 	/// <inheritdoc/>
 	public IReadOnlyCollection<string> Errors { get; }
 	/// <inheritdoc/>
-	public IReadOnlyDictionary<string, IReadOnlyCollection<string>> ValidationErrors { get; }
+	public IReadOnlyCollection<DomainError> DomainErrors { get; }
 	/// <inheritdoc/>
 	public bool IsSuccess => Status == DomainOperationStatus.Success;
-
-	internal static readonly IReadOnlyDictionary<string, IReadOnlyCollection<string>> NoValidationErrors = new ReadOnlyDictionary<string, IReadOnlyCollection<string>>(new Dictionary<string, IReadOnlyCollection<string>>());
 
 	#region Constructors [PUBLIC, PROTECTED] ------------------------------
 
@@ -36,29 +33,25 @@ public partial class DomainResult : IDomainResult
 	/// </summary>
 	/// <param name="status"> The state </param>
 	/// <param name="errors"> Custom error messages </param>
-	public DomainResult(DomainOperationStatus status, IEnumerable<string> errors) : this(status, errors, NoValidationErrors) { }
+	public DomainResult(DomainOperationStatus status, IEnumerable<string> errors) : this(status, errors.Select(error => new DomainError(error))) { }
 	/// <summary>
-	///		Creates a new instance with a status, error messages and validation error messages keyed by member name
+	///		Creates a new instance with a status and errors with their member names
 	/// </summary>
-	internal DomainResult(DomainOperationStatus status, IEnumerable<string> errors, IReadOnlyDictionary<string, IReadOnlyCollection<string>> validationErrors)
+	/// <remarks>
+	///		<see cref="Errors"/> gets the text of each <see cref="DomainError"/>, so the errors are stored once.
+	/// </remarks>
+	internal DomainResult(DomainOperationStatus status, IEnumerable<DomainError> domainErrors)
 	{
 		Status = status;
-		Errors = errors.ToArray();
-		ValidationErrors = validationErrors;
+		DomainErrors = domainErrors.ToArray();
+		Errors = DomainErrors.Select(error => error.ToString()).ToArray();
 	}
 	/// <summary>
 	///		Creates a new instance with faulty status and validation error messages
 	/// </summary>
 	/// <param name="validationResults"> Validation error messages </param>
 	protected DomainResult(IEnumerable<ValidationResult> validationResults)
-	{
-		var results = validationResults.ToArray();
-		Status = DomainOperationStatus.Failed;
-		Errors = (from message in results
-				select $"{message.ErrorMessage}{(message.MemberNames?.Any() == true ? " (" + string.Join(", ", message.MemberNames) + ")" : "")}"
-			).ToArray();
-		ValidationErrors = ToValidationErrors(results);
-	}
+		: this(DomainOperationStatus.Failed, validationResults.Select(result => new DomainError(result.ErrorMessage ?? string.Empty, result.MemberNames))) { }
 	#endregion // Constructors [PUBLIC, PROTECTED] ------------------------
 
 	#region Extensions of 'IDomainResult' [STATIC, PUBLIC] ----------------
@@ -168,14 +161,4 @@ public partial class DomainResult : IDomainResult
 	public static Task<IDomainResult> CriticalDependencyErrorTask(string? error = null)	=> Task.FromResult(CriticalDependencyError(error));
 
 	#endregion // Extensions of 'Task<IDomainResult>' [STATIC, PUBLIC] ----
-
-	/// <summary>
-	///		Groups the validation error messages by member name. A message without a member name gets the key <see cref="string.Empty"/>
-	/// </summary>
-	private static IReadOnlyDictionary<string, IReadOnlyCollection<string>> ToValidationErrors(IEnumerable<ValidationResult> validationResults)
-		=> new ReadOnlyDictionary<string, IReadOnlyCollection<string>>(
-			(from result in validationResults
-			 from member in result.MemberNames?.Any() == true ? result.MemberNames : new[] { string.Empty }
-			 group result.ErrorMessage ?? string.Empty by member ?? string.Empty
-			 ).ToDictionary(g => g.Key, g => (IReadOnlyCollection<string>)Array.AsReadOnly(g.ToArray()), StringComparer.Ordinal));
 }
