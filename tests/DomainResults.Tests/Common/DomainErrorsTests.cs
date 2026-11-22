@@ -40,7 +40,8 @@ public class DomainErrorsTests
 		var domainErrors = domainResult.DomainErrors;
 
 		// THEN the null message and the null member name become empty text
-		Assert.Equal([": ", "2: "], Describe(domainErrors));
+		Assert.Equal(["", "2"], domainErrors.Select(error => error.Message));
+		Assert.Equal([""], domainErrors.Last().MemberNames);
 		Assert.Equal(["", "2 ()"], domainResult.Errors);
 	}
 
