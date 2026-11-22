@@ -61,14 +61,7 @@ public static partial class DomainResultExtensions
 	/// </summary>
 	private static ProblemHttpResult CreateProblemResult<R>(int statusCode, string title, R? errorDetails, Action<ProblemDetails, R>? errorAction = null) where R : IDomainResultBase
 	{
-		var problemDetails = errorDetails?.ValidationErrors.Count > 0
-			? ValidationProblemDetailsHelper.Create<HttpValidationProblemDetails>(statusCode, title, errorDetails.ValidationErrors)
-			: new ProblemDetails
-				{
-					Title = title,
-					Detail = errorDetails?.Errors.Any() == true ? string.Join(", ", errorDetails.Errors) : null,
-					Status = statusCode
-				};
+		var problemDetails = ProblemDetailsHelper.Create<HttpValidationProblemDetails>(statusCode, title, errorDetails);
 		errorAction?.Invoke(problemDetails, errorDetails!);
 
 		// Since .NET 7 `TypedResults.Problem` is preferred over a more generic `Results.Problem`

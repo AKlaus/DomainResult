@@ -56,14 +56,7 @@ public static partial class DomainResultExtensions
 	                                                     R errorDetails,
 	                                                     Action<ProblemDetails, R>? errorAction = null) where R : IDomainResultBase
 	{
-		var problemDetails = errorDetails?.ValidationErrors.Count > 0
-			? ValidationProblemDetailsHelper.Create<ValidationProblemDetails>(statusCode, title, errorDetails.ValidationErrors)
-			: new ProblemDetails
-				{
-					Title = title,
-					Detail = errorDetails?.Errors.Any() == true ? string.Join(", ", errorDetails.Errors) : null,
-					Status = statusCode
-				};
+		var problemDetails = ProblemDetailsHelper.Create<ValidationProblemDetails>(statusCode, title, errorDetails);
 
 		errorAction?.Invoke(problemDetails, errorDetails!);
 
